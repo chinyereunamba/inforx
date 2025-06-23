@@ -8,6 +8,7 @@ const inter = Inter({ subsets: ['latin'], display: 'swap', fallback: ['sans-seri
 
 export const metadata: Metadata = {
   title: 'InfoRx - Revolutionary Healthcare for Nigeria',
+  metadataBase: new URL('http://localhost:3000'),
   description: 'Transform your healthcare experience with AI-powered diagnostics, telemedicine, and 24/7 medical support designed specifically for Nigerian communities.',
   keywords: 'healthcare, Nigeria, telemedicine, AI diagnostics, medical care, health platform',
   authors: [{ name: 'InfoRx Team' }],
