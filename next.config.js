@@ -3,9 +3,10 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  images: { unoptimized: true },
+  images: {
+    unoptimized: true,
+  },
   webpack: (config, { isServer }) => {
-    // Avoid errors when importing optional native modules
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -16,15 +17,16 @@ const nextConfig = {
         tls: false,
       };
     }
+
     config.ignoreWarnings = [
       {
         module: /@supabase\/realtime-js/,
         message: /Critical dependency: the request of a dependency is an expression/,
       },
     ];
+
     return config;
   },
 };
-
 
 module.exports = nextConfig;
