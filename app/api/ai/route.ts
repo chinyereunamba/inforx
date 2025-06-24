@@ -57,6 +57,7 @@ ${input}
     const data = await response.json();
     console.log('[AI RESPONSE]', data, response.body)
     const result = data.choices?.[0]?.message?.content || 'Sorry, I couldn’t understand that.';
+    console.log(result)
 
     return NextResponse.json({ result });
   } catch (error) {
