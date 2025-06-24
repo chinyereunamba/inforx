@@ -49,7 +49,7 @@ ${input}
         'X-Title': 'InfoRx'
       },
       body: JSON.stringify({
-        model: "google/gemini-2.0-flash-exp:free",
+        model: "minimax/minimax-m1",
         messages: [{ role: 'user', content: prompt }]
       })
     });
