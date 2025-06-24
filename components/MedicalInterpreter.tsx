@@ -7,6 +7,12 @@ import { BookOpen, Lightbulb, AlertTriangle, Copy, ChevronDown, Loader2, Send, F
 import { Button } from '@/components/ui/button';
 import type { InterpreterState, ExampleSnippet, MedicalInterpretation } from '@/lib/types/medical-interpreter';
 
+interface MedicalSection {
+  title: string;
+  type: 'explanation' | 'recommendation' | 'warning' | 'unknown';
+  content: string[];
+}
+
 // Register ScrollTrigger plugin
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -202,70 +208,67 @@ export default function MedicalInterpreter() {
    * The API returns formatted text with emojis and sections that need to be parsed
    */
   const parseApiResponse = (response: string): MedicalInterpretation => {
-    // Initialize default values
-    let simpleExplanation = '';
-    let recommendedActions: string[] = [];
-    let medicalAttentionIndicators: string[] = [];
+  const sections: MedicalSection[] = [];
 
-    try {
-      // Split the response into sections based on emoji markers
-      const sections = response.split(/(?=📘|💡|⚠️)/);
-      
-      sections.forEach(section => {
-        const cleanSection = section.trim();
-        
-        if (cleanSection.startsWith('📘')) {
-          // Extract explanation section
-          const explanationMatch = cleanSection.match(/📘.*?:\s*([\s\S]*?)(?=💡|⚠️|$)/);
-          if (explanationMatch) {
-            simpleExplanation = explanationMatch[1].trim();
-          }
-        } else if (cleanSection.startsWith('💡')) {
-          // Extract recommended actions
-          const actionsMatch = cleanSection.match(/💡.*?:\s*([\s\S]*?)(?=⚠️|$)/);
-          if (actionsMatch) {
-            const actionsText = actionsMatch[1].trim();
-            // Split by numbered items or bullet points
-            recommendedActions = actionsText
-              .split(/\n/)
-              .map(item => item.replace(/^[\d\-•\*\.]\s*/, '').trim())
-              .filter(item => item.length > 0);
-          }
-        } else if (cleanSection.startsWith('⚠️')) {
-          // Extract medical attention indicators
-          const indicatorsMatch = cleanSection.match(/⚠️.*?:\s*([\s\S]*)/);
-          if (indicatorsMatch) {
-            const indicatorsText = indicatorsMatch[1].trim();
-            // Split by numbered items or bullet points
-            medicalAttentionIndicators = indicatorsText
-              .split(/\n/)
-              .map(item => item.replace(/^[\d\-•\*\.]\s*/, '').trim())
-              .filter(item => item.length > 0);
-          }
-        }
-      });
+  // Define known emojis/types
+  const emojiMap: Record<string, { type: MedicalSection['type'], title: string }> = {
+    '📘': { type: 'explanation', title: 'Explanation' },
+    '💡': { type: 'recommendation', title: 'What to Do' },
+    '⚠️': { type: 'warning', title: 'When to See a Doctor' }
+  };
 
-      // Fallback: if parsing fails, use the entire response as explanation
-      if (!simpleExplanation && !recommendedActions.length && !medicalAttentionIndicators.length) {
-        simpleExplanation = response.trim();
-        recommendedActions = ['Consult with your healthcare provider for detailed guidance'];
-        medicalAttentionIndicators = ['Seek immediate medical attention if you experience concerning symptoms'];
+  try {
+    const rawSections = response.split(/(?=📘|💡|⚠️)/);
+
+    rawSections.forEach((raw) => {
+      const section = raw.trim();
+      const emoji = section.slice(0, 2);
+      const meta = emojiMap[emoji] || { type: 'unknown', title: 'Other Information' };
+
+      // Strip emoji and heading
+      const contentStart = section.indexOf(':');
+      const content = contentStart !== -1 ? section.slice(contentStart + 1).trim() : section;
+
+      let items: string[] = [];
+
+      if (meta.type === 'explanation') {
+        // Split paragraphs
+        items = content.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+      } else {
+        // Split list items
+        items = content
+          .split(/\n/)
+          .map(item => item.replace(/^[\d\-•\*\.]+\s*/, '').trim())
+          .filter(Boolean);
       }
 
-    } catch (error) {
-      console.error('Error parsing API response:', error);
-      // Fallback to safe defaults
-      simpleExplanation = 'Your medical information has been processed. Please consult with a healthcare professional for detailed interpretation.';
-      recommendedActions = ['Schedule an appointment with your healthcare provider', 'Bring this document to your next medical consultation'];
-      medicalAttentionIndicators = ['Contact your doctor if you have concerns', 'Seek immediate care for urgent symptoms'];
+      sections.push({
+        type: meta.type,
+        title: meta.title,
+        content: items
+      });
+    });
+
+    // Fallback if nothing was parsed
+    if (sections.length === 0) {
+      sections.push({
+        type: 'explanation',
+        title: 'Explanation',
+        content: [response.trim()]
+      });
     }
 
-    return {
-      simpleExplanation,
-      recommendedActions,
-      medicalAttentionIndicators
-    };
-  };
+  } catch (error) {
+    console.error('Parsing failed:', error);
+    sections.push({
+      type: 'explanation',
+      title: 'Explanation',
+      content: ['Your medical information has been processed. Please consult a healthcare professional for details.']
+    });
+  }
+
+  return { sections };
+};
 
   /**
    * Call the AI API to interpret medical text
