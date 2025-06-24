@@ -34,11 +34,13 @@ export default function AuthCallbackPage() {
             setStatus('success');
             
             // Check if user has a profile
-            const { data: profile } = await supabase
+
+            const { data: profile, error } = await supabase
               .from('profiles')
               .select('*')
               .eq('id', data.user.id)
-              .single();
+              .maybeSingle();
+
 
             // If no profile exists, create one
             if (!profile) {
