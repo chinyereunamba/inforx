@@ -67,6 +67,25 @@ export const useAuthState = () => {
     }
 
     const profile = await getUserProfile(session.user.id);
+
+    if (!profile) {
+    const { email, user_metadata } = session.user;
+
+    const { error } = await supabase.from('profiles').insert({
+      id: session.user.id,
+      email,
+      full_name: user_metadata?.full_name || user_metadata?.name || '',
+      avatar_url: user_metadata?.avatar_url || null,
+      role: 'patient',
+    });
+
+    if (error) {
+      console.error('Error creating profile after Google sign-in:', error);
+    } else {
+      profile = await getUserProfile(session.user.id);
+    }
+  }
+
     setState({ user: session.user, profile, loading: false, error: null });
   });
 
