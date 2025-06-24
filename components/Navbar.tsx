@@ -13,8 +13,7 @@ interface NavLink {
 const navigationLinks: NavLink[] = [
   { href: '/about', label: 'About us' },
   { href: '/demo', label: 'Demo' },
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/interpreter', label: 'AI Interpreter' },
+  { href: '/roadmap', label: 'Roadmap' },
 ];
 
 export default function Navbar() {
