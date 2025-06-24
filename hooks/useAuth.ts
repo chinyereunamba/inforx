@@ -66,7 +66,7 @@ export const useAuthState = () => {
       return;
     }
 
-    const profile = await getUserProfile(session.user.id);
+    let profile = await getUserProfile(session.user.id);
 
     if (!profile) {
     const { email, user_metadata } = session.user;
