@@ -1,9 +1,82 @@
-For all designs I ask you to make, have them be beautiful, not cookie cutter. Make webpages that are fully featured and worthy for production.
+Design and build fully responsive, beautiful, and production-ready web pages and components for a healthcare web app called InfoRx. Use the following strict rules and standards:
 
-When using client-side hooks (useState and useEffect) in a component that's being treated as a Server Component by Next.js, always add the "use client" directive at the top of the file.
+🎨 Visual & UX Design
 
-Do not write code that will trigger this error: "Warning: Extra attributes from the server: %s%s""class,style"
+    Modern, clean, and elegant layout with excellent visual hierarchy.
 
-By default, this template supports JSX syntax with Tailwind CSS classes, the shadcn/ui library, React hooks, and Lucide React for icons. Do not install other packages for UI themes, icons, etc unless absolutely necessary or I request them.
+    Use a mobile-first approach. Must be fully responsive on mobile, tablet, and desktop.
 
-Use icons from lucide-react for logos.
+    Design should reflect trust, healthcare, and technology using the approved color palette.
+
+    Incorporate GSAP animations and smooth transitions for subtle, professional motion effects.
+
+    Layout must not be cookie-cutter. Every screen should feel intentional and high-quality.
+
+🧱 Tech Stack & Component Style
+
+    Use JSX with Tailwind CSS, Shadcn/UI for base components, Lucide-react for icons.
+
+    Do NOT use other UI libraries or icon sets unless specifically requested.
+
+    If using useState, useEffect, or other client hooks, add "use client" at the top of the file.
+
+    Avoid any code that causes hydration warnings like:
+
+        "Warning: Extra attributes from the server..."
+
+🧩 Reusability & Maintainability
+
+    Build components to be modular, reusable, and themable.
+
+    Organize using semantic naming: e.g., UploadSection, ResultCard, PatientTracker.
+
+    Favor composition over duplication. Prefer <Card><CardHeader /><CardContent /></Card> over raw divs.
+
+♿ Accessibility (a11y)
+
+    All interactive elements must be keyboard accessible and screen reader friendly.
+
+    Use semantic HTML: <button>, <nav>, <form>, etc. Avoid clickable <div>/<span> unless properly handled with role, tabIndex, and aria-*.
+
+    Support screen readers with clear aria-labels or visible <label> tags.
+
+    Ensure all forms have proper focus styles, required indicators, error messages, and are navigable via keyboard.
+
+    Use visible focus outlines (don’t remove browser defaults).
+
+    Maintain sufficient color contrast (min 4.5:1 for text).
+
+    Include a "Skip to content" link and support prefers-reduced-motion.
+
+🔒 Data & Form Handling
+
+    Forms must be accessible and labeled.
+
+    Inputs should have placeholder, aria-* attributes, and visible feedback.
+
+    If needed, use aria-live="polite" to announce updates to assistive tech.
+
+🌍 Branding & Theme
+
+Use Option 1 Color Palette:
+
+    #0ea5e9 (sky-500) – Primary medical blue
+
+    #10b981 (emerald-500) – Innovation and health
+
+    #1e293b (slate-800) – Professional dark
+
+    Support with sky-50, emerald-50, slate-500, red-500 where needed.
+
+Reflect Nigerian healthcare context: clear, helpful, warm, and trustworthy.
+📦 Page/Component Output Format
+
+Whenever I request a page or UI:
+
+    Use full JSX with Tailwind and Shadcn UI
+
+    Include placeholder text that fits healthcare + Nigerian context
+
+    Wrap reusable parts as components if applicable
+
+    Always indicate "use client" when using hooks
