@@ -43,7 +43,7 @@ ${input}
         'X-Title': 'InfoRx'
       },
       body: JSON.stringify({
-        model: "anthropic/claude-3-haiku",
+        model: "meta-llama/llama-4-maverick:free",
         messages: [{ role: 'user', content: prompt }]
       })
     });
