@@ -172,28 +172,12 @@ export const useAuthState = () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
     
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
-
-      if (data.user) {
-        // Create profile record
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: authData.user.id,
-            email: data.email,
-            full_name: data.fullName,
-            role: data.role,
-          });
-
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-        }
-      }
 
       if (error) throw error;
     } catch (error) {
