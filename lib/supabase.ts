@@ -56,7 +56,7 @@ export async function getUserProfile(userId: string): Promise<Profile | null> {
     .from('profiles')
     .select('*')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error('Failed to fetch profile:', error);
