@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface OAuthButtonProps {
-  provider: 'google';
-  onClick: () => void;
+  provider: "google";
+  onClick?: () => void;
   loading?: boolean;
   disabled?: boolean;
   className?: string;
+  type?: "button" | "submit";
 }
 
 const GoogleIcon = () => (
@@ -32,50 +33,50 @@ const GoogleIcon = () => (
   </svg>
 );
 
+const providerConfig = {
+  google: {
+    name: "Google",
+    icon: GoogleIcon,
+    bgColor: "bg-white",
+    textColor: "text-slate-700",
+    hoverColor: "hover:bg-slate-50",
+    borderColor: "border-slate-300",
+  },
+};
+
 export default function OAuthButton({
   provider,
   onClick,
   loading = false,
   disabled = false,
   className,
+  type = "submit",
 }: OAuthButtonProps) {
-  const providerConfig = {
-    google: {
-      name: 'Google',
-      icon: GoogleIcon,
-      bgColor: 'bg-white',
-      textColor: 'text-slate-700',
-      hoverColor: 'hover:bg-slate-50',
-      borderColor: 'border-slate-300'
-    }
-  };
-
   const config = providerConfig[provider];
-  const IconComponent = config.icon;
+  if (!config) return null;
+
+  const Icon = config.icon;
 
   return (
     <button
-      type="button"
+      type={type}
       onClick={onClick}
       disabled={disabled || loading}
+      aria-disabled={disabled || loading}
+      aria-label={`Sign in with ${config.name}`}
       className={cn(
-        'w-full flex items-center justify-center gap-3 px-6 py-3 rounded-lg border-2 font-medium transition-all duration-200',
-        'focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-slate-200',
-        'disabled:cursor-not-allowed disabled:opacity-50',
-        'transform active:scale-[0.98]',
+        "w-full flex items-center justify-center gap-3 px-6 py-3 rounded-lg border-2 font-medium transition-all duration-200",
+        "focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-slate-200",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        "transform active:scale-[0.98]",
         config.bgColor,
         config.textColor,
         config.hoverColor,
         config.borderColor,
         className
       )}
-      aria-label={`Sign in with ${config.name}`}
     >
-      {loading ? (
-        <Loader2 className="h-5 w-5 animate-spin" />
-      ) : (
-        <IconComponent />
-      )}
+      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Icon />}
       <span>Continue with {config.name}</span>
     </button>
   );

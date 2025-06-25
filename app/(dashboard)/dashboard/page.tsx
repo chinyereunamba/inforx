@@ -1,23 +1,38 @@
-import DashboardLayout from '@/components/dashboard/DashboardLayout';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Dashboard - InfoRx Medical Interpreter',
-  description: 'Access your medical document interpretation dashboard with advanced AI-powered analysis and personalized healthcare insights.',
-  keywords: 'medical dashboard, document interpretation, healthcare AI, medical analysis, InfoRx dashboard',
-  openGraph: {
-    title: 'Dashboard - InfoRx Medical Interpreter',
-    description: 'Access your medical document interpretation dashboard with advanced AI-powered analysis and personalized healthcare insights.',
-    type: 'website',
-    locale: 'en_NG'
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Dashboard - InfoRx Medical Interpreter',
-    description: 'Access your medical document interpretation dashboard with advanced AI-powered analysis.',
-  }
-};
+"use client";
+import InterpreterInterface from "@/components/dashboard/InterpreterInterface";
+import ResultsDisplay from "@/components/dashboard/ResultsDisplay";
+import { InterpreterResult } from "@/lib/types/medical-interpreter";
+import { use, useState } from "react";
 
 export default function DashboardPage() {
-  return <DashboardLayout />;
+  const [state, setState] = useState({
+    isLoading: false,
+    error: null,
+    currentResult: null,
+  });
+  const [result, setResult] = useState<InterpreterResult | null>();
+  const [error, setError] = useState<string | null>();
+  const [loading, setLoading] = useState(false);
+
+  return (
+    <>
+      <div className="lg:w-2/5 bg-white border-r border-gray-200 flex flex-col">
+        <InterpreterInterface
+          onResult={setResult}
+          onLoading={setLoading}
+          onError={setError}
+          isLoading={state.isLoading}
+          error={state.error}
+        />
+      </div>
+
+      <div className="flex-1 bg-gray-50 flex flex-col">
+        <ResultsDisplay
+          result={state.currentResult}
+          isLoading={state.isLoading}
+          error={state.error}
+        />
+      </div>
+    </>
+  );
 }

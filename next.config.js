@@ -5,6 +5,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    serverActions: true,
+  },
   images: {
     unoptimized: true,
   },
@@ -20,7 +23,6 @@ const nextConfig = {
       };
     }
 
-    // Suppress specific warning from @supabase/realtime-js
     config.ignoreWarnings = [
       {
         module: /@supabase\/realtime-js/,
@@ -29,7 +31,6 @@ const nextConfig = {
       },
     ];
 
-    // ✅ Add IgnorePlugin here instead of in `plugins` root field
     config.plugins.push(
       new webpack.IgnorePlugin({
         resourceRegExp: /^(bufferutil|utf-8-validate)$/,

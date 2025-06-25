@@ -6,7 +6,7 @@ import type { User } from "@supabase/supabase-js";
 
 export interface AuthState {
   user: User | null;
-  profile: any | null; // Using any temporarily, will be properly typed
+  profile: any | null;
   loading: boolean;
   error: string | null;
 }

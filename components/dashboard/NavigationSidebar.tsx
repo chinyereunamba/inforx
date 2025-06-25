@@ -12,13 +12,15 @@ import {
   LogOut,
   Plus,
 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { signOut } from "@/app/(auth)/auth/auth";
+import { User as UserType } from "@supabase/supabase-js";
 
 interface NavigationSidebarProps {
   isOpen: boolean;
   activeTab: string;
   onTabChange: (tab: string) => void;
   onClose: () => void;
+  user: UserType;
 }
 
 const navigationItems = [
@@ -43,13 +45,12 @@ export default function NavigationSidebar({
   activeTab,
   onTabChange,
   onClose,
+  user,
 }: NavigationSidebarProps) {
   const sidebarRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const navItemsRef = useRef<HTMLDivElement[]>([]);
   const userSectionRef = useRef<HTMLDivElement>(null);
-
-  const { user, profile, signOut } = useAuth();
 
   const handleSignOut = async () => {
     try {
@@ -210,9 +211,7 @@ export default function NavigationSidebar({
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {profile?.full_name ||
-                    user?.user_metadata?.full_name ||
-                    user?.email}
+                  {user?.user_metadata?.full_name || user?.email}
                 </p>
                 <p className="text-xs text-gray-500 truncate">{user?.email}</p>
               </div>

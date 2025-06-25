@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { User, Stethoscope } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
 import FormContainer from "@/components/auth/FormContainer";
 import FormInput from "@/components/auth/FormInput";
 import SubmitButton from "@/components/auth/SubmitButton";
@@ -12,6 +11,7 @@ import OAuthButton from "@/components/auth/OAuthButton";
 import ErrorMessage from "@/components/auth/ErrorMessage";
 import { validateSignUpForm } from "@/lib/utils/validation";
 import type { SignUpData } from "@/lib/types/auth";
+import { signUp, signInWithGoogle } from "../auth";
 
 interface FormData extends SignUpData {
   confirmPassword: string;
@@ -19,7 +19,6 @@ interface FormData extends SignUpData {
 
 export default function SignUpPage() {
   const router = useRouter();
-  const { signUp, signInWithGoogle, loading, error } = useAuth();
 
   const [formData, setFormData] = useState<FormData>({
     email: "",
@@ -32,6 +31,7 @@ export default function SignUpPage() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -54,22 +54,28 @@ export default function SignUpPage() {
 
     setIsSubmitting(true);
     setFormErrors({});
+    setError(null);
 
     try {
-      await signUp({
-        email: formData.email,
-        password: formData.password,
-        fullName: formData.fullName,
-        role: formData.role,
-      });
+      // Convert form data to FormData object for the signUp function
+      const formDataObj = new FormData();
+      formDataObj.append("email", formData.email);
+      formDataObj.append("password", formData.password);
+      formDataObj.append("role", formData.role);
+      formDataObj.append("full_name", formData.fullName);
 
-      setShowSuccess(true);
-      // Redirect to email verification page
-      setTimeout(() => {
-        router.push("/auth/verify-email");
-      }, 2000);
-    } catch (error) {
+      const result = await signUp(formDataObj);
+
+      if (result?.user) {
+        setShowSuccess(true);
+        // Redirect to email verification page
+        setTimeout(() => {
+          router.push("/auth/verify-email");
+        }, 2000);
+      }
+    } catch (error: any) {
       console.error("Sign up failed:", error);
+      setError(error?.message || "Sign up failed. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -77,9 +83,14 @@ export default function SignUpPage() {
 
   const handleGoogleSignUp = async () => {
     try {
-      await signInWithGoogle();
-    } catch (error) {
+      setError(null);
+      const result = await signInWithGoogle();
+      if (result?.error) {
+        setError(result.error);
+      }
+    } catch (error: any) {
       console.error("Google sign up failed:", error);
+      setError(error?.message || "Google sign up failed. Please try again.");
     }
   };
 
@@ -210,10 +221,7 @@ export default function SignUpPage() {
         />
 
         {/* Submit Button */}
-        <SubmitButton
-          loading={isSubmitting || loading}
-          disabled={isSubmitting || loading}
-        >
+        <SubmitButton loading={isSubmitting} disabled={isSubmitting}>
           Create Account
         </SubmitButton>
 
@@ -233,8 +241,8 @@ export default function SignUpPage() {
         <OAuthButton
           provider="google"
           onClick={handleGoogleSignUp}
-          loading={loading}
-          disabled={isSubmitting || loading}
+          loading={isSubmitting}
+          disabled={isSubmitting}
         />
 
         {/* Sign In Link */}

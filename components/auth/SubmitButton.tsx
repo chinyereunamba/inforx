@@ -20,7 +20,6 @@ export default function SubmitButton({
   disabled = false,
   variant = 'primary',
   size = 'md',
-  onClick,
   type = 'submit',
   className,
 }: SubmitButtonProps) {
@@ -41,7 +40,6 @@ export default function SubmitButton({
   return (
     <button
       type={type}
-      onClick={onClick}
       disabled={disabled || loading}
       className={cn(
         baseClasses,

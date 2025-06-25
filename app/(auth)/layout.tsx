@@ -1,29 +1,36 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-import { Loader2 } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/auth-store";
+import { Loader2 } from "lucide-react";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
 }
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
-  const { user, loading } = useAuth();
+  const { user, loading, initialized, initialize } = useAuthStore();
   const router = useRouter();
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
-    // If user is already authenticated, redirect to dashboard
-    if (!loading && user && !isRedirecting) {
-      setIsRedirecting(true);
-      router.replace('/dashboard');
+    if (!initialized) {
+      initialize();
     }
-  }, [user, loading, router, isRedirecting]);
+  }, [initialized, initialize]);
 
-  // Show loading state only for a short time to prevent flash
-  if (loading && !user) {
+  useEffect(() => {
+    // Only redirect if we're not already redirecting and user is authenticated
+    if (!loading && user && !isRedirecting && initialized) {
+      console.log("Redirecting authenticated user to dashboard");
+      setIsRedirecting(true);
+      router.replace("/dashboard");
+    }
+  }, [user, loading, router, isRedirecting, initialized]);
+
+  // Show loading state while initializing
+  if (loading || !initialized) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 flex items-center justify-center">
         <div className="text-center">
