@@ -495,10 +495,10 @@ function UploadProgress({
           {uploadedFile.status !== "completed" &&
             uploadedFile.status !== "error" && (
               <Progress
-                value={uploadedFile.progress}
+                value={Math.max(0, Math.min(100, uploadedFile.progress || 0))}
                 className="h-2"
                 aria-label={`${getStatusText(uploadedFile.status)} ${
-                  uploadedFile.progress
+                  uploadedFile.progress || 0
                 }%`}
               />
             )}
