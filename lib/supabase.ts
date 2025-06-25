@@ -1,65 +1,42 @@
 /**
  * Supabase client configuration for InfoRx healthcare platform
- * This file contains only client-side Supabase utilities
+ * This file contains essential database operations for user profiles
  */
 
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from './types/database';
+import { createBrowserClient } from "@supabase/ssr";
+import type { Database } from "./types/database";
+import type { Profile } from "./types/database";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+  throw new Error("Missing Supabase environment variables");
 }
 
 /**
  * Creates a Supabase client for client components
  * This client handles authentication and real-time features
  */
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-  },
-});
+export const supabase = createBrowserClient<Database>(
+  supabaseUrl,
+  supabaseAnonKey
+);
 
 /**
- * Helper function to get the current user's session
- * @returns Promise resolving to the current session or null
+ * Helper function to get user profile from database
+ * @param userId - The user's ID
+ * @returns Promise resolving to the user's profile or null
  */
-export async function getSession() {
-  const { data: { session }, error } = await supabase.auth.getSession();
-  if (error) {
-    console.error('Error getting session:', error);
-    return null;
-  }
-  return session;
-}
-
-/**
- * Helper function to get the current user
- * @returns Promise resolving to the current user or null
- */
-export async function getCurrentUser() {
-  const { data: { user }, error } = await supabase.auth.getUser();
-  if (error) {
-    console.error('Error getting user:', error);
-    return null;
-  }
-  return user;
-}
-
 export async function getUserProfile(userId: string): Promise<Profile | null> {
   const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
     .maybeSingle();
 
   if (error) {
-    console.error('Failed to fetch profile:', error);
+    console.error("Failed to fetch profile:", error);
     return null;
   }
 
@@ -67,25 +44,27 @@ export async function getUserProfile(userId: string): Promise<Profile | null> {
 }
 
 /**
- * Helper function to sign out the current user
- * @returns Promise resolving to sign out result
+ * Helper function to create or update user profile
+ * @param profile - The profile data to insert/update
+ * @returns Promise resolving to the operation result
  */
-export async function signOut() {
-  const { error } = await supabase.auth.signOut();
+export async function upsertUserProfile(profile: {
+  id: string;
+  email: string;
+  full_name?: string;
+  avatar_url?: string;
+  role?: "patient" | "doctor" | "admin";
+}) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .upsert(profile, { onConflict: "id" })
+    .select()
+    .single();
+
   if (error) {
-    console.error('Error signing out:', error);
+    console.error("Failed to upsert profile:", error);
     throw error;
   }
-  return { success: true };
-}
 
-/**
- * Helper function to check if user is authenticated
- * @returns Promise resolving to boolean indicating auth status
- */
-export async function isAuthenticated(): Promise<boolean> {
-  const session = await getSession();
-  return !!session;
+  return data;
 }
-
-export default supabase;

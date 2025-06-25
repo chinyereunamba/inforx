@@ -1,39 +1,57 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { ArrowRight, Download, Calendar } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { gsap } from 'gsap';
+import { useEffect, useRef } from "react";
+import { ArrowRight, Download, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { gsap } from "gsap";
 
 export default function CTASection() {
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
-  
+
   const { fadeInAnimation } = useScrollAnimation();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       if (contentRef.current) {
-        fadeInAnimation([contentRef.current], { overwrite: true });
-      }
-
-      if (buttonRef.current) {
-        fadeInAnimation([buttonRef.current], {
-          duration: 0.6,
-          delay: 0.2,
-          ease: 'back.out(1.7)',
-          overwrite: true
-        });
+        fadeInAnimation([contentRef.current]);
       }
     }, sectionRef);
 
     return () => ctx.revert();
   }, [fadeInAnimation]);
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (buttonRef.current) {
+        gsap.fromTo(
+          buttonRef.current,
+          { opacity: 0, scale: 0.9, y: 20 },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "back.out(1.7)",
+            scrollTrigger: {
+              trigger: buttonRef.current,
+              start: "top 85%",
+              end: "bottom 20%",
+              toggleActions: "play none none none",
+              once: true,
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="py-24 bg-gradient-to-br from-emerald-600 to-sky-600 relative overflow-hidden"
     >
@@ -50,10 +68,10 @@ export default function CTASection() {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
             Ready to Experience the Future of Healthcare?
           </h2>
-          
+
           <p className="text-xl md:text-2xl text-emerald-100 leading-relaxed max-w-3xl mx-auto mb-8">
-            Join thousands of users who have already transformed their healthcare journey 
-            with InfoRx's intelligent platform.
+            Join thousands of users who have already transformed their
+            healthcare journey with InfoRx's intelligent platform.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-emerald-100 mb-8">
@@ -72,7 +90,10 @@ export default function CTASection() {
           </div>
         </div>
 
-        <div ref={buttonRef} className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+        <div
+          ref={buttonRef}
+          className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+        >
           <Button
             size="lg"
             className="bg-white text-emerald-700 hover:bg-emerald-50 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
@@ -80,7 +101,7 @@ export default function CTASection() {
             <Download className="mr-2 h-5 w-5" />
             Get Started Now
           </Button>
-          
+
           <Button
             variant="outline"
             size="lg"
@@ -94,7 +115,9 @@ export default function CTASection() {
 
         {/* Trust Indicators */}
         <div className="mt-16 pt-8 border-t border-emerald-400">
-          <p className="text-emerald-200 text-sm mb-4">Trusted by healthcare professionals worldwide</p>
+          <p className="text-emerald-200 text-sm mb-4">
+            Trusted by healthcare professionals worldwide
+          </p>
           <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
             <div className="text-white font-semibold">WHO</div>
             <div className="text-white font-semibold">FDA Cleared</div>

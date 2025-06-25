@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Mail, CheckCircle, RefreshCw } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import FormContainer from '@/components/auth/FormContainer';
-import SubmitButton from '@/components/auth/SubmitButton';
-import ErrorMessage from '@/components/auth/ErrorMessage';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Mail, CheckCircle, RefreshCw } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import FormContainer from "@/components/auth/FormContainer";
+import SubmitButton from "@/components/auth/SubmitButton";
+import ErrorMessage from "@/components/auth/ErrorMessage";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function VerifyEmailPage() {
 
   const handleResendEmail = async () => {
     if (!user?.email) {
-      setResendError('No email address found. Please sign up again.');
+      setResendError("No email address found. Please sign up again.");
       return;
     }
 
@@ -30,10 +30,10 @@ export default function VerifyEmailPage() {
       // Note: Supabase doesn't have a direct resend verification email method
       // In a real app, you might need to implement this on the backend
       // For now, we'll simulate the action
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       setResendSuccess(true);
     } catch (error) {
-      setResendError('Failed to resend verification email. Please try again.');
+      setResendError("Failed to resend verification email. Please try again.");
     } finally {
       setIsResending(false);
     }
@@ -70,26 +70,20 @@ export default function VerifyEmailPage() {
             <p className="text-sm text-slate-600">
               Verification email sent to:
             </p>
-            <p className="font-medium text-slate-900 break-all">
-              {user.email}
-            </p>
+            <p className="font-medium text-slate-900 break-all">{user.email}</p>
           </div>
         )}
 
         {resendSuccess && (
-          <ErrorMessage 
-            message="Verification email resent successfully!" 
-            type="success" 
+          <ErrorMessage
+            message="Verification email resent successfully!"
+            type="success"
             className="mb-4"
           />
         )}
 
         {resendError && (
-          <ErrorMessage 
-            message={resendError} 
-            type="error" 
-            className="mb-4"
-          />
+          <ErrorMessage message={resendError} type="error" className="mb-4" />
         )}
 
         <div className="space-y-4">
@@ -105,7 +99,7 @@ export default function VerifyEmailPage() {
           </SubmitButton>
 
           <div className="text-sm text-slate-500">
-            <p>Didn't receive the email? Check your spam folder or</p>
+            <p>Didn&apos;t receive the email? Check your spam folder or</p>
             <Link
               href="/auth/signup"
               className="text-blue-600 hover:underline font-medium"

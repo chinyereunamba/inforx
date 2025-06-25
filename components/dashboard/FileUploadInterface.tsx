@@ -1,31 +1,31 @@
-'use client';
+"use client";
 
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { gsap } from 'gsap';
-import { useDropzone } from 'react-dropzone';
-import { 
-  Upload, 
-  File, 
-  Image, 
-  FileText, 
-  Camera, 
-  X, 
-  CheckCircle, 
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import { gsap } from "gsap";
+import { useDropzone } from "react-dropzone";
+import {
+  Upload,
+  File,
+  Image,
+  FileText,
+  Camera,
+  X,
+  CheckCircle,
   AlertCircle,
   Loader2,
   RotateCcw,
-  Eye
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
+  Eye,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 interface UploadedFile {
   file: File;
   preview?: string;
-  status: 'uploading' | 'processing' | 'completed' | 'error';
+  status: "uploading" | "processing" | "completed" | "error";
   progress: number;
   result?: InterpretationResult;
   error?: string;
@@ -40,10 +40,12 @@ interface InterpretationResult {
 }
 
 const ACCEPTED_FILE_TYPES = {
-  'application/pdf': ['.pdf'],
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-  'image/jpeg': ['.jpg', '.jpeg'],
-  'image/png': ['.png']
+  "application/pdf": [".pdf"],
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+    ".docx",
+  ],
+  "image/jpeg": [".jpg", ".jpeg"],
+  "image/png": [".png"],
 };
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -51,7 +53,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 export default function FileUploadInterface() {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragActive, setIsDragActive] = useState(false);
-  
+
   const uploadZoneRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -63,7 +65,7 @@ export default function FileUploadInterface() {
         gsap.fromTo(
           uploadZoneRef.current,
           { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
+          { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
         );
       }
     }, uploadZoneRef);
@@ -78,11 +80,12 @@ export default function FileUploadInterface() {
       errors.forEach((error: any) => {
         let message = `Error with ${file.name}: `;
         switch (error.code) {
-          case 'file-too-large':
-            message += 'File is too large. Maximum size is 10MB.';
+          case "file-too-large":
+            message += "File is too large. Maximum size is 10MB.";
             break;
-          case 'file-invalid-type':
-            message += 'File type not supported. Please use PDF, DOCX, JPG, or PNG.';
+          case "file-invalid-type":
+            message +=
+              "File type not supported. Please use PDF, DOCX, JPG, or PNG.";
             break;
           default:
             message += error.message;
@@ -95,17 +98,17 @@ export default function FileUploadInterface() {
     acceptedFiles.forEach((file) => {
       const newFile: UploadedFile = {
         file,
-        status: 'uploading',
-        progress: 0
+        status: "uploading",
+        progress: 0,
       };
 
       // Create preview for images
-      if (file.type.startsWith('image/')) {
+      if (file.type.startsWith("image/")) {
         newFile.preview = URL.createObjectURL(file);
       }
 
-      setUploadedFiles(prev => [...prev, newFile]);
-      
+      setUploadedFiles((prev) => [...prev, newFile]);
+
       // Start upload simulation
       simulateUpload(file);
     });
@@ -117,49 +120,49 @@ export default function FileUploadInterface() {
         duration: 0.1,
         yoyo: true,
         repeat: 1,
-        ease: 'power2.out'
+        ease: "power2.out",
       });
     }
 
     toast.success(`${acceptedFiles.length} file(s) uploaded successfully`);
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive: dropzoneActive } = useDropzone({
+  const {
+    getRootProps,
+    getInputProps,
+    isDragActive: dropzoneActive,
+  } = useDropzone({
     onDrop,
     accept: ACCEPTED_FILE_TYPES,
     maxSize: MAX_FILE_SIZE,
     multiple: true,
     onDragEnter: () => setIsDragActive(true),
-    onDragLeave: () => setIsDragActive(false)
+    onDragLeave: () => setIsDragActive(false),
   });
 
   const simulateUpload = async (file: File) => {
     const fileIndex = uploadedFiles.length;
-    
+
     // Upload phase
     for (let progress = 0; progress <= 100; progress += 10) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-      setUploadedFiles(prev => 
-        prev.map((f, i) => 
-          i === fileIndex ? { ...f, progress } : f
-        )
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      setUploadedFiles((prev) =>
+        prev.map((f, i) => (i === fileIndex ? { ...f, progress } : f))
       );
     }
 
     // Processing phase
-    setUploadedFiles(prev => 
-      prev.map((f, i) => 
-        i === fileIndex ? { ...f, status: 'processing', progress: 0 } : f
+    setUploadedFiles((prev) =>
+      prev.map((f, i) =>
+        i === fileIndex ? { ...f, status: "processing", progress: 0 } : f
       )
     );
 
     // Simulate AI processing
     for (let progress = 0; progress <= 100; progress += 5) {
-      await new Promise(resolve => setTimeout(resolve, 150));
-      setUploadedFiles(prev => 
-        prev.map((f, i) => 
-          i === fileIndex ? { ...f, progress } : f
-        )
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      setUploadedFiles((prev) =>
+        prev.map((f, i) => (i === fileIndex ? { ...f, progress } : f))
       );
     }
 
@@ -168,25 +171,27 @@ export default function FileUploadInterface() {
       id: `result-${Date.now()}`,
       simpleExplanation: `Analysis complete for ${file.name}. This appears to be a medical document with important health information.`,
       recommendedActions: [
-        'Follow medication schedule as prescribed',
-        'Schedule follow-up appointment in 2 weeks',
-        'Monitor symptoms daily'
+        "Follow medication schedule as prescribed",
+        "Schedule follow-up appointment in 2 weeks",
+        "Monitor symptoms daily",
       ],
       warnings: [
-        'Contact doctor if symptoms worsen',
-        'Do not skip prescribed medications'
+        "Contact doctor if symptoms worsen",
+        "Do not skip prescribed medications",
       ],
-      confidence: 92
+      confidence: 92,
     };
 
-    setUploadedFiles(prev => 
-      prev.map((f, i) => 
-        i === fileIndex ? { 
-          ...f, 
-          status: 'completed', 
-          progress: 100, 
-          result: mockResult 
-        } : f
+    setUploadedFiles((prev) =>
+      prev.map((f, i) =>
+        i === fileIndex
+          ? {
+              ...f,
+              status: "completed",
+              progress: 100,
+              result: mockResult,
+            }
+          : f
       )
     );
 
@@ -207,26 +212,28 @@ export default function FileUploadInterface() {
     if (file.preview) {
       URL.revokeObjectURL(file.preview);
     }
-    
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
-    toast.success('File removed');
+
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+    toast.success("File removed");
   };
 
   const retryFile = (index: number) => {
     const file = uploadedFiles[index];
-    setUploadedFiles(prev => 
-      prev.map((f, i) => 
-        i === index ? { ...f, status: 'uploading', progress: 0, error: undefined } : f
+    setUploadedFiles((prev) =>
+      prev.map((f, i) =>
+        i === index
+          ? { ...f, status: "uploading", progress: 0, error: undefined }
+          : f
       )
     );
     simulateUpload(file.file);
   };
 
   const openCamera = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment';
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.capture = "environment";
     input.onchange = (e) => {
       const files = (e.target as HTMLInputElement).files;
       if (files) {
@@ -267,7 +274,7 @@ export default function FileUploadInterface() {
       {/* Results Section */}
       <div ref={resultsRef} className="space-y-4">
         {uploadedFiles
-          .filter(f => f.status === 'completed' && f.result)
+          .filter((f) => f.status === "completed" && f.result)
           .map((uploadedFile, index) => (
             <ResultCard
               key={`result-${uploadedFile.file.name}-${index}`}
@@ -299,37 +306,44 @@ const FileUploadZone = React.forwardRef<
           className={`
             aspect-square max-h-80 border-2 border-dashed transition-all duration-300 cursor-pointer
             flex flex-col items-center justify-center p-6 space-y-4
-            ${isDragActive 
-              ? 'border-sky-500 bg-sky-50' 
-              : 'border-sky-300 hover:border-sky-500 hover:bg-sky-25'
+            ${
+              isDragActive
+                ? "border-sky-500 bg-sky-50"
+                : "border-sky-300 hover:border-sky-500 hover:bg-sky-25"
             }
           `}
           role="button"
           tabIndex={0}
           aria-label="Upload medical documents"
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
               // Trigger file dialog
             }
           }}
         >
           <input {...getInputProps()} aria-describedby="upload-description" />
-          
-          <div className={`
+
+          <div
+            className={`
             w-16 h-16 rounded-full flex items-center justify-center transition-colors duration-300
-            ${isDragActive ? 'bg-sky-500' : 'bg-sky-100'}
-          `}>
-            <Upload className={`h-8 w-8 ${isDragActive ? 'text-white' : 'text-sky-600'}`} />
+            ${isDragActive ? "bg-sky-500" : "bg-sky-100"}
+          `}
+          >
+            <Upload
+              className={`h-8 w-8 ${
+                isDragActive ? "text-white" : "text-sky-600"
+              }`}
+            />
           </div>
 
           <div className="text-center space-y-2">
             <h3 className="text-lg font-semibold text-slate-900">
-              {isDragActive ? 'Drop files here' : 'Upload Medical Documents'}
+              {isDragActive ? "Drop files here" : "Upload Medical Documents"}
             </h3>
             <p id="upload-description" className="text-slate-600 max-w-sm">
-              Drag and drop your files here, or click to browse. 
-              Supports PDF, DOCX, JPG, and PNG files up to 10MB.
+              Drag and drop your files here, or click to browse. Supports PDF,
+              DOCX, JPG, and PNG files up to 10MB.
             </p>
           </div>
 
@@ -376,28 +390,28 @@ const FileUploadZone = React.forwardRef<
   );
 });
 
-FileUploadZone.displayName = 'FileUploadZone';
+FileUploadZone.displayName = "FileUploadZone";
 
 // UploadProgress Component
-function UploadProgress({ 
-  uploadedFile, 
-  onRemove, 
-  onRetry 
-}: { 
+function UploadProgress({
+  uploadedFile,
+  onRemove,
+  onRetry,
+}: {
   uploadedFile: UploadedFile;
   onRemove: () => void;
   onRetry: () => void;
 }) {
   const getFileIcon = (fileName: string) => {
-    const ext = fileName.split('.').pop()?.toLowerCase();
+    const ext = fileName.split(".").pop()?.toLowerCase();
     switch (ext) {
-      case 'pdf':
+      case "pdf":
         return <FileText className="h-5 w-5 text-red-500" />;
-      case 'docx':
+      case "docx":
         return <FileText className="h-5 w-5 text-blue-500" />;
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
+      case "jpg":
+      case "jpeg":
+      case "png":
         return <Image className="h-5 w-5 text-green-500" />;
       default:
         return <File className="h-5 w-5 text-slate-500" />;
@@ -406,31 +420,31 @@ function UploadProgress({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'uploading':
-        return 'text-blue-600';
-      case 'processing':
-        return 'text-yellow-600';
-      case 'completed':
-        return 'text-green-600';
-      case 'error':
-        return 'text-red-600';
+      case "uploading":
+        return "text-blue-600";
+      case "processing":
+        return "text-yellow-600";
+      case "completed":
+        return "text-green-600";
+      case "error":
+        return "text-red-600";
       default:
-        return 'text-slate-600';
+        return "text-slate-600";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'uploading':
-        return 'Uploading...';
-      case 'processing':
-        return 'AI Processing...';
-      case 'completed':
-        return 'Complete';
-      case 'error':
-        return 'Error';
+      case "uploading":
+        return "Uploading...";
+      case "processing":
+        return "AI Processing...";
+      case "completed":
+        return "Complete";
+      case "error":
+        return "Error";
       default:
-        return 'Unknown';
+        return "Unknown";
     }
   };
 
@@ -458,14 +472,18 @@ function UploadProgress({
             <h4 className="text-sm font-medium text-slate-900 truncate">
               {uploadedFile.file.name}
             </h4>
-            <span className={`text-xs font-medium ${getStatusColor(uploadedFile.status)}`}>
+            <span
+              className={`text-xs font-medium ${getStatusColor(
+                uploadedFile.status
+              )}`}
+            >
               {getStatusText(uploadedFile.status)}
             </span>
           </div>
-          
+
           <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
             <span>{(uploadedFile.file.size / 1024 / 1024).toFixed(1)} MB</span>
-            {uploadedFile.status === 'processing' && (
+            {uploadedFile.status === "processing" && (
               <div className="flex items-center gap-1">
                 <Loader2 className="h-3 w-3 animate-spin" />
                 <span>Analyzing with AI</span>
@@ -474,13 +492,16 @@ function UploadProgress({
           </div>
 
           {/* Progress Bar */}
-          {uploadedFile.status !== 'completed' && uploadedFile.status !== 'error' && (
-            <Progress 
-              value={uploadedFile.progress} 
-              className="h-2"
-              aria-label={`${getStatusText(uploadedFile.status)} ${uploadedFile.progress}%`}
-            />
-          )}
+          {uploadedFile.status !== "completed" &&
+            uploadedFile.status !== "error" && (
+              <Progress
+                value={uploadedFile.progress}
+                className="h-2"
+                aria-label={`${getStatusText(uploadedFile.status)} ${
+                  uploadedFile.progress
+                }%`}
+              />
+            )}
 
           {/* Error Message */}
           {uploadedFile.error && (
@@ -492,7 +513,7 @@ function UploadProgress({
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          {uploadedFile.status === 'completed' && (
+          {uploadedFile.status === "completed" && (
             <Button
               variant="ghost"
               size="sm"
@@ -502,8 +523,8 @@ function UploadProgress({
               <Eye className="h-4 w-4" />
             </Button>
           )}
-          
-          {uploadedFile.status === 'error' && (
+
+          {uploadedFile.status === "error" && (
             <Button
               variant="ghost"
               size="sm"
@@ -552,10 +573,10 @@ function ProcessingView({ fileName }: { fileName: string }) {
 }
 
 // ResultCard Component
-function ResultCard({ 
-  result, 
-  fileName 
-}: { 
+function ResultCard({
+  result,
+  fileName,
+}: {
   result: InterpretationResult;
   fileName: string;
 }) {
@@ -568,13 +589,11 @@ function ResultCard({
           </CardTitle>
           <div className="flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-green-500" />
-            <Badge variant="secondary">
-              {result.confidence}% Confidence
-            </Badge>
+            <Badge variant="secondary">{result.confidence}% Confidence</Badge>
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="p-6 space-y-6">
         {/* Simple Explanation */}
         <div>

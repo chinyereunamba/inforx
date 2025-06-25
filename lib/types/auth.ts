@@ -2,12 +2,11 @@
  * Authentication-related TypeScript types
  */
 
-import type { User } from '@supabase/supabase-js';
-import type { Profile } from './database';
+import type { User } from "@supabase/supabase-js";
 
 export interface AuthState {
   user: User | null;
-  profile: Profile | null;
+  profile: any | null; // Using any temporarily, will be properly typed
   loading: boolean;
   error: string | null;
 }
@@ -16,7 +15,7 @@ export interface SignUpData {
   email: string;
   password: string;
   fullName: string;
-  role: 'patient' | 'doctor';
+  role: "patient" | "doctor";
 }
 
 export interface SignInData {
@@ -41,17 +40,17 @@ export interface FormState {
   success: string | null;
 }
 
-export type AuthAction = 
-  | 'signUp'
-  | 'signIn'
-  | 'signOut'
-  | 'googleSignIn'
-  | 'resetPassword'
-  | 'updateProfile';
+export type AuthAction =
+  | "signUp"
+  | "signIn"
+  | "signOut"
+  | "googleSignIn"
+  | "resetPassword"
+  | "updateProfile";
 
 export interface OAuthProvider {
   name: string;
-  provider: 'google' | 'github' | 'apple';
+  provider: "google" | "github" | "apple";
   icon: React.ComponentType<any>;
   bgColor: string;
   textColor: string;

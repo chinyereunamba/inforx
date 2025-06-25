@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { User, Stethoscope } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import FormContainer from '@/components/auth/FormContainer';
-import FormInput from '@/components/auth/FormInput';
-import SubmitButton from '@/components/auth/SubmitButton';
-import OAuthButton from '@/components/auth/OAuthButton';
-import ErrorMessage from '@/components/auth/ErrorMessage';
-import { validateSignUpForm } from '@/lib/utils/validation';
-import type { SignUpData } from '@/lib/types/auth';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { User, Stethoscope } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import FormContainer from "@/components/auth/FormContainer";
+import FormInput from "@/components/auth/FormInput";
+import SubmitButton from "@/components/auth/SubmitButton";
+import OAuthButton from "@/components/auth/OAuthButton";
+import ErrorMessage from "@/components/auth/ErrorMessage";
+import { validateSignUpForm } from "@/lib/utils/validation";
+import type { SignUpData } from "@/lib/types/auth";
 
 interface FormData extends SignUpData {
   confirmPassword: string;
@@ -20,13 +20,13 @@ interface FormData extends SignUpData {
 export default function SignUpPage() {
   const router = useRouter();
   const { signUp, signInWithGoogle, loading, error } = useAuth();
-  
+
   const [formData, setFormData] = useState<FormData>({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    fullName: '',
-    role: 'patient',
+    email: "",
+    password: "",
+    confirmPassword: "",
+    fullName: "",
+    role: "patient",
   });
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -34,17 +34,17 @@ export default function SignUpPage() {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // Clear field error when user starts typing
     if (formErrors[field]) {
-      setFormErrors(prev => ({ ...prev, [field]: '' }));
+      setFormErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate form
     const validation = validateSignUpForm(formData);
     if (!validation.isValid) {
@@ -66,10 +66,10 @@ export default function SignUpPage() {
       setShowSuccess(true);
       // Redirect to email verification page
       setTimeout(() => {
-        router.push('/auth/verify-email');
+        router.push("/auth/verify-email");
       }, 2000);
     } catch (error) {
-      console.error('Sign up failed:', error);
+      console.error("Sign up failed:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -79,7 +79,7 @@ export default function SignUpPage() {
     try {
       await signInWithGoogle();
     } catch (error) {
-      console.error('Google sign up failed:', error);
+      console.error("Google sign up failed:", error);
     }
   };
 
@@ -95,7 +95,8 @@ export default function SignUpPage() {
             <User className="h-8 w-8 text-emerald-600" />
           </div>
           <p className="text-slate-600 mb-6">
-            We've sent a verification email to <strong>{formData.email}</strong>
+            We&apos;ve sent a verification email to{" "}
+            <strong>{formData.email}</strong>
           </p>
           <Link
             href="/auth/verify-email"
@@ -115,9 +116,7 @@ export default function SignUpPage() {
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Global error */}
-        {error && (
-          <ErrorMessage message={error} type="error" />
-        )}
+        {error && <ErrorMessage message={error} type="error" />}
 
         {/* Full Name */}
         <FormInput
@@ -125,7 +124,7 @@ export default function SignUpPage() {
           type="text"
           placeholder="Enter your full name"
           value={formData.fullName}
-          onChange={(value) => handleInputChange('fullName', value)}
+          onChange={(value) => handleInputChange("fullName", value)}
           error={formErrors.fullName}
           required
           autoComplete="name"
@@ -137,7 +136,7 @@ export default function SignUpPage() {
           type="email"
           placeholder="Enter your email"
           value={formData.email}
-          onChange={(value) => handleInputChange('email', value)}
+          onChange={(value) => handleInputChange("email", value)}
           error={formErrors.email}
           required
           autoComplete="email"
@@ -151,30 +150,34 @@ export default function SignUpPage() {
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={() => handleInputChange('role', 'patient')}
+              onClick={() => handleInputChange("role", "patient")}
               className={`p-4 border-2 rounded-lg transition-all duration-200 text-left ${
-                formData.role === 'patient'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-slate-200 hover:border-slate-300'
+                formData.role === "patient"
+                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  : "border-slate-200 hover:border-slate-300"
               }`}
             >
               <User className="h-6 w-6 mb-2" />
               <div className="font-medium">Patient</div>
-              <div className="text-sm text-slate-600">Seeking healthcare guidance</div>
+              <div className="text-sm text-slate-600">
+                Seeking healthcare guidance
+              </div>
             </button>
-            
+
             <button
               type="button"
-              onClick={() => handleInputChange('role', 'doctor')}
+              onClick={() => handleInputChange("role", "doctor")}
               className={`p-4 border-2 rounded-lg transition-all duration-200 text-left ${
-                formData.role === 'doctor'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-slate-200 hover:border-slate-300'
+                formData.role === "doctor"
+                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  : "border-slate-200 hover:border-slate-300"
               }`}
             >
               <Stethoscope className="h-6 w-6 mb-2" />
               <div className="font-medium">Doctor</div>
-              <div className="text-sm text-slate-600">Providing medical care</div>
+              <div className="text-sm text-slate-600">
+                Providing medical care
+              </div>
             </button>
           </div>
           {formErrors.role && (
@@ -188,7 +191,7 @@ export default function SignUpPage() {
           type="password"
           placeholder="Create a strong password"
           value={formData.password}
-          onChange={(value) => handleInputChange('password', value)}
+          onChange={(value) => handleInputChange("password", value)}
           error={formErrors.password}
           required
           autoComplete="new-password"
@@ -200,7 +203,7 @@ export default function SignUpPage() {
           type="password"
           placeholder="Confirm your password"
           value={formData.confirmPassword}
-          onChange={(value) => handleInputChange('confirmPassword', value)}
+          onChange={(value) => handleInputChange("confirmPassword", value)}
           error={formErrors.confirmPassword}
           required
           autoComplete="new-password"
@@ -220,7 +223,9 @@ export default function SignUpPage() {
             <div className="w-full border-t border-slate-300" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-slate-500">Or continue with</span>
+            <span className="px-2 bg-white text-slate-500">
+              Or continue with
+            </span>
           </div>
         </div>
 
@@ -234,13 +239,15 @@ export default function SignUpPage() {
 
         {/* Sign In Link */}
         <div className="text-center text-sm">
-          <span className="text-slate-600">Already have an account? </span>
-          <Link
-            href="/auth/signin"
-            className="text-blue-600 hover:underline font-medium"
-          >
-            Sign in
-          </Link>
+          <span className="text-slate-600">
+            Already have an account?{" "}
+            <Link
+              href="/auth/signin"
+              className="text-teal-600 hover:text-teal-700 font-medium"
+            >
+              Sign in here
+            </Link>
+          </span>
         </div>
       </form>
     </FormContainer>

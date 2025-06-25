@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Menu, X, Globe } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Menu, X, Globe } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface NavLink {
   href: string;
@@ -11,9 +11,9 @@ interface NavLink {
 }
 
 const navigationLinks: NavLink[] = [
-  { href: '/about', label: 'About us' },
-  { href: '/demo', label: 'Demo' },
-  { href: '/roadmap', label: 'Roadmap' },
+  { href: "/about", label: "About us" },
+  { href: "/demo", label: "Demo" },
+  { href: "/roadmap", label: "Roadmap" },
 ];
 
 export default function Navbar() {
@@ -30,38 +30,38 @@ export default function Navbar() {
     // Set initial scroll state
     handleScroll();
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Close mobile menu when clicking outside or on escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         setIsMobileMenuOpen(false);
       }
     };
 
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (!target.closest('[data-navbar]')) {
+      if (!target.closest("[data-navbar]")) {
         setIsMobileMenuOpen(false);
       }
     };
 
     if (isMobileMenuOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.addEventListener('click', handleClickOutside);
+      document.addEventListener("keydown", handleEscape);
+      document.addEventListener("click", handleClickOutside);
       // Prevent body scroll when mobile menu is open
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.removeEventListener('click', handleClickOutside);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("click", handleClickOutside);
+      document.body.style.overflow = "unset";
     };
   }, [isMobileMenuOpen]);
 
@@ -74,9 +74,9 @@ export default function Navbar() {
   };
 
   return (
-    <nav 
+    <nav
       className={`sticky top-0 z-50 bg-white  transition-shadow duration-200 ${
-        isScrolled ? 'shadow-sm' : ''
+        isScrolled ? "shadow-sm" : ""
       }`}
       data-navbar
       role="navigation"
@@ -86,8 +86,8 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="flex items-center space-x-3 group"
               aria-label="InfoRx homepage"
             >
@@ -120,13 +120,23 @@ export default function Navbar() {
             >
               <Link href="/contact">Contact us</Link>
             </Button>
-            
+
             {/* Language Selector */}
             <div className="flex items-center space-x-2 text-slate-700 hover:text-teal-600 cursor-pointer transition-colors duration-200">
               <Globe className="w-5 h-5" />
               <span className="font-medium">EN</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </div>
           </div>
@@ -156,8 +166,8 @@ export default function Navbar() {
         id="mobile-menu"
         className={`lg:hidden transition-all duration-300 ease-in-out ${
           isMobileMenuOpen
-            ? 'max-h-screen opacity-100 visible'
-            : 'max-h-0 opacity-0 invisible'
+            ? "max-h-screen opacity-100 visible"
+            : "max-h-0 opacity-0 invisible"
         } overflow-hidden bg-white border-t border-gray-100`}
       >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
@@ -165,15 +175,14 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-slate-700 hover:text-teal-600 px-4 py-2 text-base font-medium transition-colors duration-200 rounded-md hover:bg-teal-50"
-              onClick={closeMobileMenu}
               className="text-gray-700 hover:text-teal-600 hover:bg-teal-50 block px-3 py-2 text-base font-medium rounded-md transition-colors duration-200"
+              onClick={closeMobileMenu}
             >
               {link.label}
             </Link>
           ))}
         </div>
-        
+
         {/* Mobile CTA Section */}
         <div className="border-t border-gray-100 px-4 py-4 space-y-3">
           <Button
@@ -182,16 +191,26 @@ export default function Navbar() {
           >
             <Link href="/contact" onClick={closeMobileMenu}>
               Contact us
-          <div className="w-10" /> {/* Spacer for centering */}
+              <div className="w-10" /> {/* Spacer for centering */}
             </Link>
           </Button>
-          
+
           {/* Mobile Language Selector */}
           <div className="flex items-center justify-center space-x-2 text-slate-700 py-2">
             <Globe className="w-5 h-5" />
             <span className="font-medium">EN</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </div>
         </div>
@@ -199,7 +218,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-25 z-40 lg:hidden"
           onClick={closeMobileMenu}
           aria-hidden="true"

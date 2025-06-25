@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Shield, Award, Users, CheckCircle, Star, Quote } from 'lucide-react';
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Shield, Award, Users, CheckCircle, Star, Quote } from "lucide-react";
 
 // Register ScrollTrigger plugin
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
@@ -20,33 +20,35 @@ interface TrustIndicator {
 
 const trustIndicators: TrustIndicator[] = [
   {
-    id: 'compliance',
+    id: "compliance",
     icon: Shield,
-    title: 'HIPAA Compliant',
-    description: 'Bank-level security and data protection for all medical information',
-    badge: 'Certified'
+    title: "HIPAA Compliant",
+    description:
+      "Bank-level security and data protection for all medical information",
+    badge: "Certified",
   },
   {
-    id: 'certification',
+    id: "certification",
     icon: Award,
-    title: 'Nigerian Medical Association Approved',
-    description: 'Officially recognized by Nigerian healthcare authorities',
-    badge: 'Approved'
+    title: "Nigerian Medical Association Approved",
+    description: "Officially recognized by Nigerian healthcare authorities",
+    badge: "Approved",
   },
   {
-    id: 'professionals',
+    id: "professionals",
     icon: Users,
-    title: '500+ Certified Doctors',
-    description: 'Licensed Nigerian medical professionals available 24/7',
-    badge: 'Verified'
+    title: "500+ Certified Doctors",
+    description: "Licensed Nigerian medical professionals available 24/7",
+    badge: "Verified",
   },
   {
-    id: 'accuracy',
+    id: "accuracy",
     icon: CheckCircle,
-    title: '99.2% Diagnostic Accuracy',
-    description: 'Clinically validated AI models trained on Nigerian health data',
-    badge: 'Validated'
-  }
+    title: "99.2% Diagnostic Accuracy",
+    description:
+      "Clinically validated AI models trained on Nigerian health data",
+    badge: "Validated",
+  },
 ];
 
 export default function TrustSection() {
@@ -59,7 +61,7 @@ export default function TrustSection() {
 
   useEffect(() => {
     if (hasAnimated) return;
-    
+
     const ctx = gsap.context(() => {
       // Title animation
       gsap.fromTo(
@@ -69,16 +71,16 @@ export default function TrustSection() {
           opacity: 1,
           y: 0,
           duration: 0.6,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: titleRef.current,
-            start: 'top 85%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
+            start: "top 85%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
             once: true,
-            onEnter: () => setHasAnimated(true)
-          }
+            onEnter: () => setHasAnimated(true),
+          },
         }
       );
 
@@ -90,15 +92,15 @@ export default function TrustSection() {
           opacity: 1,
           x: 0,
           duration: 0.8,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: leftContentRef.current,
-            start: 'top 80%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
-            once: true
-          }
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
+            once: true,
+          },
         }
       );
 
@@ -110,15 +112,15 @@ export default function TrustSection() {
           opacity: 1,
           x: 0,
           duration: 0.8,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: rightContentRef.current,
-            start: 'top 80%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
-            once: true
-          }
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
+            once: true,
+          },
         }
       );
 
@@ -127,26 +129,26 @@ export default function TrustSection() {
         if (card) {
           gsap.fromTo(
             card,
-            { 
-              opacity: 0, 
-              y: 30, 
-              scale: 0.95 
+            {
+              opacity: 0,
+              y: 30,
+              scale: 0.95,
             },
             {
               opacity: 1,
               y: 0,
               scale: 1,
               duration: 0.6,
-              ease: 'back.out(1.7)',
+              ease: "back.out(1.7)",
               overwrite: true,
               scrollTrigger: {
                 trigger: card,
-                start: 'top 85%',
-                end: 'bottom 20%',
-                toggleActions: 'play none none none',
-                once: true
+                start: "top 85%",
+                end: "bottom 20%",
+                toggleActions: "play none none none",
+                once: true,
               },
-              delay: index * 0.1
+              delay: index * 0.1,
             }
           );
         }
@@ -172,7 +174,7 @@ export default function TrustSection() {
             Trusted by Healthcare Professionals
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Built with the highest standards of security, accuracy, and cultural 
+            Built with the highest standards of security, accuracy, and cultural
             relevance for Nigerian healthcare.
           </p>
         </div>
@@ -183,11 +185,11 @@ export default function TrustSection() {
             <h3 className="text-2xl font-bold text-slate-900 mb-8">
               Why Healthcare Professionals Choose InfoRx
             </h3>
-            
+
             <div className="grid gap-6">
               {trustIndicators.map((indicator, index) => {
                 const IconComponent = indicator.icon;
-                
+
                 return (
                   <div
                     key={indicator.id}
@@ -200,7 +202,7 @@ export default function TrustSection() {
                       <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0">
                         <IconComponent className="h-6 w-6 text-emerald-600" />
                       </div>
-                      
+
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <h4 className="text-lg font-semibold text-slate-900">
@@ -228,27 +230,37 @@ export default function TrustSection() {
             <div className="bg-white rounded-2xl p-8 shadow-xl border border-sky-100">
               <div className="flex items-center gap-2 mb-6">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} className="h-5 w-5 text-yellow-400 fill-current" />
+                  <Star
+                    key={star}
+                    className="h-5 w-5 text-yellow-400 fill-current"
+                  />
                 ))}
-                <span className="text-slate-600 ml-2">(4.9/5 from 2,000+ reviews)</span>
+                <span className="text-slate-600 ml-2">
+                  (4.9/5 from 2,000+ reviews)
+                </span>
               </div>
 
               <Quote className="h-8 w-8 text-emerald-500 mb-4" />
-              
-              <blockquote className="text-lg text-slate-700 leading-relaxed mb-6">
-                "InfoRx has revolutionized how we provide healthcare in rural Nigeria. 
-                The AI accuracy is remarkable, and our patients finally have access to 
-                quality medical guidance 24/7. It's like having a specialist in every village."
-              </blockquote>
+
+              <p className="text-lg text-slate-600 mb-6">
+                &ldquo;InfoRx has transformed how we approach patient care. The
+                AI&apos;s ability to explain complex medical terms in simple
+                language has improved patient understanding
+                significantly.&rdquo;
+              </p>
 
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-sky-400 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-lg">DR</span>
                 </div>
                 <div>
-                  <div className="font-semibold text-slate-900">Dr. Adaora Okafor</div>
+                  <div className="font-semibold text-slate-900">
+                    Dr. Adaora Okafor
+                  </div>
                   <div className="text-slate-600">Chief Medical Officer</div>
-                  <div className="text-slate-500 text-sm">Lagos State Primary Healthcare Board</div>
+                  <div className="text-slate-500 text-sm">
+                    Lagos State Primary Healthcare Board
+                  </div>
                 </div>
               </div>
             </div>
@@ -256,7 +268,9 @@ export default function TrustSection() {
             {/* Additional Trust Badges */}
             <div className="mt-8 grid grid-cols-2 gap-4">
               <div className="bg-white rounded-lg p-4 shadow-md text-center border border-slate-200">
-                <div className="text-2xl font-bold text-emerald-600 mb-1">ISO 27001</div>
+                <div className="text-2xl font-bold text-emerald-600 mb-1">
+                  ISO 27001
+                </div>
                 <div className="text-sm text-slate-600">Security Certified</div>
               </div>
               <div className="bg-white rounded-lg p-4 shadow-md text-center border border-slate-200">
@@ -274,7 +288,9 @@ export default function TrustSection() {
               Trusted by Leading Nigerian Healthcare Institutions
             </h3>
             <div className="flex flex-wrap justify-center items-center gap-8 text-slate-600">
-              <div className="font-semibold">University of Lagos Teaching Hospital</div>
+              <div className="font-semibold">
+                University of Lagos Teaching Hospital
+              </div>
               <div className="font-semibold">Lagos State Health Ministry</div>
               <div className="font-semibold">Federal Medical Centre</div>
               <div className="font-semibold">Nigerian Medical Association</div>

@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Mail, MapPin, Phone, MessageSquare, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Mail, MapPin, Phone, MessageSquare, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Register ScrollTrigger plugin
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
@@ -20,7 +20,7 @@ export default function ContactSection() {
 
   useEffect(() => {
     if (hasAnimated) return;
-    
+
     const ctx = gsap.context(() => {
       // Title animation
       gsap.fromTo(
@@ -30,16 +30,16 @@ export default function ContactSection() {
           opacity: 1,
           y: 0,
           duration: 0.6,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: titleRef.current,
-            start: 'top 85%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
+            start: "top 85%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
             once: true,
-            onEnter: () => setHasAnimated(true)
-          }
+            onEnter: () => setHasAnimated(true),
+          },
         }
       );
 
@@ -51,15 +51,15 @@ export default function ContactSection() {
           opacity: 1,
           x: 0,
           duration: 0.8,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: leftContentRef.current,
-            start: 'top 80%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
-            once: true
-          }
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
+            once: true,
+          },
         }
       );
 
@@ -71,15 +71,15 @@ export default function ContactSection() {
           opacity: 1,
           x: 0,
           duration: 0.8,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: rightContentRef.current,
-            start: 'top 80%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
-            once: true
-          }
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
+            once: true,
+          },
         }
       );
     }, sectionRef);
@@ -88,7 +88,9 @@ export default function ContactSection() {
   }, [hasAnimated]);
 
   const handleContactEmail = () => {
-    const subject = encodeURIComponent('Partnership Inquiry - InfoRx Healthcare Platform');
+    const subject = encodeURIComponent(
+      "Partnership Inquiry - InfoRx Healthcare Platform"
+    );
     const body = encodeURIComponent(`Hello InfoRx Team,
 
 I'm interested in learning more about InfoRx and potential collaboration opportunities.
@@ -100,32 +102,32 @@ Please provide more information about:
 
 Best regards,
 `);
-    
+
     window.location.href = `mailto:hello@inforx.ng?subject=${subject}&body=${body}`;
   };
 
   const contactMethods = [
     {
       icon: Mail,
-      title: 'Email Us',
-      description: 'General inquiries and partnerships',
-      contact: 'hello@inforx.ng',
-      action: 'Send Email'
+      title: "Email Us",
+      description: "General inquiries and partnerships",
+      contact: "hello@inforx.ng",
+      action: "Send Email",
     },
     {
       icon: Phone,
-      title: 'Call Us',
-      description: 'Speak with our team directly',
-      contact: '+234 (0) 123 456 7890',
-      action: 'Call Now'
+      title: "Call Us",
+      description: "Speak with our team directly",
+      contact: "+234 (0) 123 456 7890",
+      action: "Call Now",
     },
     {
       icon: MessageSquare,
-      title: 'WhatsApp',
-      description: 'Quick questions and support',
-      contact: '+234 (0) 123 456 7890',
-      action: 'Chat Now'
-    }
+      title: "WhatsApp",
+      description: "Quick questions and support",
+      contact: "+234 (0) 123 456 7890",
+      action: "Chat Now",
+    },
   ];
 
   return (
@@ -140,13 +142,13 @@ Best regards,
             id="contact-heading"
             ref={titleRef}
             className="text-3xl md:text-4xl font-bold text-slate-900 mb-6"
-            style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+            style={{ fontFamily: "Inter, system-ui, sans-serif" }}
           >
             Get in Touch
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Have a question or want to collaborate? We'd love to hear from you. 
-            Let's work together to improve healthcare in Nigeria.
+          <p className="text-lg text-slate-600 mb-8">
+            Let&apos;s work together to improve healthcare in Nigeria.
+            We&apos;re here to help you build a healthier future.
           </p>
         </div>
 
@@ -156,11 +158,11 @@ Best regards,
             <h3 className="text-2xl font-bold text-slate-900 mb-8">
               Let's Start a Conversation
             </h3>
-            
+
             <div className="space-y-6 mb-8">
               {contactMethods.map((method) => {
                 const IconComponent = method.icon;
-                
+
                 return (
                   <div
                     key={method.title}
@@ -170,7 +172,7 @@ Best regards,
                       <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0">
                         <IconComponent className="h-6 w-6 text-blue-600" />
                       </div>
-                      
+
                       <div className="flex-1">
                         <h4 className="text-lg font-bold text-slate-900 mb-1">
                           {method.title}
@@ -198,11 +200,16 @@ Best regards,
                 <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center">
                   <MapPin className="h-6 w-6 text-white" />
                 </div>
-                <h4 className="text-lg font-bold text-slate-900">Our Location</h4>
+                <h4 className="text-lg font-bold text-slate-900">
+                  Our Location
+                </h4>
               </div>
               <p className="text-slate-700 leading-relaxed">
-                Victoria Island, Lagos, Nigeria<br />
-                <span className="text-slate-600 text-sm">Serving healthcare across all 36 states</span>
+                Victoria Island, Lagos, Nigeria
+                <br />
+                <span className="text-slate-600 text-sm">
+                  Serving healthcare across all 36 states
+                </span>
               </p>
             </div>
           </div>
@@ -213,17 +220,19 @@ Best regards,
               <h3 className="text-2xl font-bold mb-6">
                 Ready to Transform Healthcare Together?
               </h3>
-              
+
               <p className="text-blue-100 leading-relaxed mb-8">
-                Whether you're a healthcare institution, government body, or technology partner, 
-                we're always looking for collaborators who share our vision of accessible 
-                healthcare for all Nigerians.
+                Whether you're a healthcare institution, government body, or
+                technology partner, we're always looking for collaborators who
+                share our vision of accessible healthcare for all Nigerians.
               </p>
 
               <div className="space-y-4 mb-8">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-emerald-300 rounded-full"></div>
-                  <span className="text-blue-100">Partnership opportunities</span>
+                  <span className="text-blue-100">
+                    Partnership opportunities
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-emerald-300 rounded-full"></div>
@@ -235,7 +244,9 @@ Best regards,
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-emerald-300 rounded-full"></div>
-                  <span className="text-blue-100">Community impact programs</span>
+                  <span className="text-blue-100">
+                    Community impact programs
+                  </span>
                 </div>
               </div>
 
@@ -252,11 +263,15 @@ Best regards,
             {/* Quick Stats */}
             <div className="mt-8 grid grid-cols-2 gap-4">
               <div className="bg-white rounded-xl p-6 shadow-lg border border-slate-100 text-center">
-                <div className="text-2xl font-bold text-blue-600 mb-1">24/7</div>
+                <div className="text-2xl font-bold text-blue-600 mb-1">
+                  24/7
+                </div>
                 <div className="text-slate-600 text-sm">Response Time</div>
               </div>
               <div className="bg-white rounded-xl p-6 shadow-lg border border-slate-100 text-center">
-                <div className="text-2xl font-bold text-emerald-600 mb-1">100+</div>
+                <div className="text-2xl font-bold text-emerald-600 mb-1">
+                  100+
+                </div>
                 <div className="text-slate-600 text-sm">Active Partners</div>
               </div>
             </div>

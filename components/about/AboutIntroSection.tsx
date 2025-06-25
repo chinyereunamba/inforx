@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Heart, Users, Target } from 'lucide-react';
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Heart, Users, Target } from "lucide-react";
 
 // Register ScrollTrigger plugin
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
@@ -20,66 +20,66 @@ export default function AboutIntroSection() {
 
   useEffect(() => {
     if (hasAnimated) return;
-    
+
     const ctx = gsap.context(() => {
       // Sequential animations
       const tl = gsap.timeline({
-        onComplete: () => setHasAnimated(true)
+        onComplete: () => setHasAnimated(true),
       });
 
       // Title animation
       tl.fromTo(
         titleRef.current,
         { opacity: 0, y: 50 },
-        { 
-          opacity: 1, 
-          y: 0, 
-          duration: 0.8, 
-          ease: 'power2.out',
-          overwrite: true
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+          overwrite: true,
         }
       )
-      // Subtitle animation
-      .fromTo(
-        subtitleRef.current,
-        { opacity: 0, y: 30 },
-        { 
-          opacity: 1, 
-          y: 0, 
-          duration: 0.6, 
-          ease: 'power2.out',
-          overwrite: true
-        },
-        '-=0.4'
-      )
-      // Vision statement
-      .fromTo(
-        visionRef.current,
-        { opacity: 0, scale: 0.95 },
-        { 
-          opacity: 1, 
-          scale: 1, 
-          duration: 0.6, 
-          ease: 'back.out(1.7)',
-          overwrite: true
-        },
-        '-=0.3'
-      )
-      // Values cards stagger
-      .fromTo(
-        valuesRef.current,
-        { opacity: 0, y: 40, scale: 0.9 },
-        { 
-          opacity: 1, 
-          y: 0, 
-          scale: 1,
-          duration: 0.5, 
-          stagger: 0.15,
-          ease: 'power2.out',
-          overwrite: true
-        },
-        '-=0.2'
-      );
+        // Subtitle animation
+        .fromTo(
+          subtitleRef.current,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "power2.out",
+            overwrite: true,
+          },
+          "-=0.4"
+        )
+        // Vision statement
+        .fromTo(
+          visionRef.current,
+          { opacity: 0, scale: 0.95 },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.6,
+            ease: "back.out(1.7)",
+            overwrite: true,
+          },
+          "-=0.3"
+        )
+        // Values cards stagger
+        .fromTo(
+          valuesRef.current,
+          { opacity: 0, y: 40, scale: 0.9 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.5,
+            stagger: 0.15,
+            ease: "power2.out",
+            overwrite: true,
+          },
+          "-=0.2"
+        );
     }, sectionRef);
 
     return () => ctx.revert();
@@ -88,19 +88,22 @@ export default function AboutIntroSection() {
   const values = [
     {
       icon: Heart,
-      title: 'Health Equity',
-      description: 'Making quality healthcare accessible to every Nigerian, regardless of location or economic status'
+      title: "Health Equity",
+      description:
+        "Making quality healthcare accessible to every Nigerian, regardless of location or economic status",
     },
     {
       icon: Users,
-      title: 'Community First',
-      description: 'Building solutions that understand and serve the unique needs of Nigerian communities'
+      title: "Community First",
+      description:
+        "Building solutions that understand and serve the unique needs of Nigerian communities",
     },
     {
       icon: Target,
-      title: 'Innovation',
-      description: 'Leveraging cutting-edge AI technology to solve real healthcare challenges in Nigeria'
-    }
+      title: "Innovation",
+      description:
+        "Leveraging cutting-edge AI technology to solve real healthcare challenges in Nigeria",
+    },
   ];
 
   return (
@@ -117,26 +120,27 @@ export default function AboutIntroSection() {
 
       <div className="max-w-7xl mx-auto px-4 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
-          <h1 
+          <h1
             ref={titleRef}
             className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-8 leading-tight"
-            style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+            style={{ fontFamily: "Inter, system-ui, sans-serif" }}
           >
             Our Mission at
             <span className="text-blue-500 block">InfoRx</span>
           </h1>
-          
-          <p 
+
+          <p
             ref={subtitleRef}
             className="text-xl md:text-2xl text-slate-600 leading-relaxed mb-12"
           >
-            We're on a mission to simplify healthcare through intelligent innovation in Nigeria. 
-            By bridging the gap between complex medical information and patient understanding, 
-            we're making quality healthcare accessible to every Nigerian community.
+            We're on a mission to simplify healthcare through intelligent
+            innovation in Nigeria. By bridging the gap between complex medical
+            information and patient understanding, we're making quality
+            healthcare accessible to every Nigerian community.
           </p>
 
           {/* Vision Statement */}
-          <div 
+          <div
             ref={visionRef}
             className="bg-gradient-to-r from-blue-500 to-emerald-500 text-white rounded-2xl p-8 shadow-xl mb-16"
           >
@@ -150,7 +154,7 @@ export default function AboutIntroSection() {
           <div className="grid md:grid-cols-3 gap-8">
             {values.map((value, index) => {
               const IconComponent = value.icon;
-              
+
               return (
                 <div
                   key={value.title}
@@ -162,11 +166,11 @@ export default function AboutIntroSection() {
                   <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <IconComponent className="h-8 w-8 text-blue-600" />
                   </div>
-                  
+
                   <h3 className="text-xl font-bold text-slate-900 mb-4">
                     {value.title}
                   </h3>
-                  
+
                   <p className="text-slate-600 leading-relaxed">
                     {value.description}
                   </p>

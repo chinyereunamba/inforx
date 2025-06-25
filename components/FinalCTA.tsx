@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ArrowRight, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Register ScrollTrigger plugin
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
@@ -19,7 +19,7 @@ export default function FinalCTA() {
 
   useEffect(() => {
     if (hasAnimated) return;
-    
+
     const ctx = gsap.context(() => {
       // Content fade-in animation
       gsap.fromTo(
@@ -29,16 +29,16 @@ export default function FinalCTA() {
           opacity: 1,
           y: 0,
           duration: 0.8,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: contentRef.current,
-            start: 'top 85%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
+            start: "top 85%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
             once: true,
-            onEnter: () => setHasAnimated(true)
-          }
+            onEnter: () => setHasAnimated(true),
+          },
         }
       );
 
@@ -50,25 +50,25 @@ export default function FinalCTA() {
           opacity: 1,
           scale: 1,
           duration: 0.6,
-          ease: 'back.out(1.7)',
+          ease: "back.out(1.7)",
           overwrite: true,
           scrollTrigger: {
             trigger: ctaButtonRef.current,
-            start: 'top 85%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
-            once: true
-          }
+            start: "top 85%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
+            once: true,
+          },
         }
       );
 
       // Infinite pulse animation for the primary button
-      gsap.to('.pulse-button', {
+      gsap.to(".pulse-button", {
         scale: 1.05,
         duration: 1,
         repeat: -1,
         yoyo: true,
-        ease: 'power2.inOut'
+        ease: "power2.inOut",
       });
     }, sectionRef);
 
@@ -89,17 +89,14 @@ export default function FinalCTA() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-        <div
-          ref={contentRef}
-          className="mb-12"
-        >
+        <div ref={contentRef} className="mb-12">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
             Ready to Transform Your Healthcare Experience?
           </h2>
-          
-          <p className="text-xl md:text-2xl text-teal-100 leading-relaxed max-w-3xl mx-auto mb-8">
-            Join thousands of Nigerians who have already improved their health outcomes
-            with InfoRx's comprehensive healthcare platform.
+
+          <p className="text-xl text-white/90 mb-8 max-w-2xl">
+            Don&apos;t wait for healthcare to come to you. Take control of your
+            health journey with InfoRx today.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-teal-100">
@@ -129,7 +126,7 @@ export default function FinalCTA() {
             <Download className="mr-2 h-5 w-5" />
             Download InfoRx Now
           </Button>
-          
+
           <Button
             variant="outline"
             size="lg"
@@ -142,10 +139,16 @@ export default function FinalCTA() {
 
         {/* Trust Indicators */}
         <div className="mt-12 pt-8 border-t border-teal-500">
-          <p className="text-teal-200 text-sm mb-4">Trusted by leading healthcare institutions</p>
+          <p className="text-teal-200 text-sm mb-4">
+            Trusted by leading healthcare institutions
+          </p>
           <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-            <div className="text-white font-semibold">Nigerian Medical Association</div>
-            <div className="text-white font-semibold">Lagos State Health Ministry</div>
+            <div className="text-white font-semibold">
+              Nigerian Medical Association
+            </div>
+            <div className="text-white font-semibold">
+              Lagos State Health Ministry
+            </div>
             <div className="text-white font-semibold">WHO Nigeria</div>
           </div>
         </div>

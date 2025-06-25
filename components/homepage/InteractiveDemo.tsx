@@ -1,43 +1,46 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { MessageSquare, User, Bot, Send, Play } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { MessageSquare, User, Bot, Send, Play } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 // Register ScrollTrigger plugin
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 interface ChatMessage {
   id: string;
-  type: 'user' | 'ai';
+  type: "user" | "ai";
   content: string;
   timestamp: string;
 }
 
 const demoConversation: ChatMessage[] = [
   {
-    id: '1',
-    type: 'user',
-    content: 'I have a persistent headache and mild fever for 2 days. Should I be worried?',
-    timestamp: '10:30 AM'
+    id: "1",
+    type: "user",
+    content:
+      "I have a persistent headache and mild fever for 2 days. Should I be worried?",
+    timestamp: "10:30 AM",
   },
   {
-    id: '2',
-    type: 'ai',
-    content: 'Based on your symptoms, this could indicate a viral infection or tension headache. Let me analyze this further...',
-    timestamp: '10:30 AM'
+    id: "2",
+    type: "ai",
+    content:
+      "Based on your symptoms, this could indicate a viral infection or tension headache. Let me analyze this further...",
+    timestamp: "10:30 AM",
   },
   {
-    id: '3',
-    type: 'ai',
-    content: '📘 **Analysis**: Your symptoms suggest a mild viral infection. The combination of headache and low-grade fever is common with viral illnesses.\n\n💡 **Recommendations**: \n• Rest and stay hydrated\n• Take paracetamol for fever\n• Monitor temperature\n\n⚠️ **Seek medical care if**: Fever exceeds 39°C, severe headache, or neck stiffness develops.',
-    timestamp: '10:31 AM'
-  }
+    id: "3",
+    type: "ai",
+    content:
+      "📘 **Analysis**: Your symptoms suggest a mild viral infection. The combination of headache and low-grade fever is common with viral illnesses.\n\n💡 **Recommendations**: \n• Rest and stay hydrated\n• Take paracetamol for fever\n• Monitor temperature\n\n⚠️ **Seek medical care if**: Fever exceeds 39°C, severe headache, or neck stiffness develops.",
+    timestamp: "10:31 AM",
+  },
 ];
 
 export default function InteractiveDemo() {
@@ -45,7 +48,7 @@ export default function InteractiveDemo() {
   const [visibleMessages, setVisibleMessages] = useState<ChatMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [demoStarted, setDemoStarted] = useState(false);
-  
+
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const demoRef = useRef<HTMLDivElement>(null);
@@ -53,14 +56,14 @@ export default function InteractiveDemo() {
 
   // Simulate typing animation
   const simulateTyping = async (message: ChatMessage, index: number) => {
-    if (message.type === 'ai') {
+    if (message.type === "ai") {
       setIsTyping(true);
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       setIsTyping(false);
     }
-    
-    setVisibleMessages(prev => [...prev, message]);
-    
+
+    setVisibleMessages((prev) => [...prev, message]);
+
     // Auto-scroll to latest message
     setTimeout(() => {
       if (messagesRef.current) {
@@ -73,16 +76,16 @@ export default function InteractiveDemo() {
     if (demoStarted) return;
     setDemoStarted(true);
     setVisibleMessages([]);
-    
+
     for (let i = 0; i < demoConversation.length; i++) {
       await simulateTyping(demoConversation[i], i);
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise((resolve) => setTimeout(resolve, 800));
     }
   };
 
   useEffect(() => {
     if (hasAnimated) return;
-    
+
     const ctx = gsap.context(() => {
       // Title animation
       gsap.fromTo(
@@ -92,51 +95,51 @@ export default function InteractiveDemo() {
           opacity: 1,
           y: 0,
           duration: 0.6,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: titleRef.current,
-            start: 'top 85%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
+            start: "top 85%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
             once: true,
-            onEnter: () => setHasAnimated(true)
-          }
+            onEnter: () => setHasAnimated(true),
+          },
         }
       );
 
       // Demo interface animation
       gsap.fromTo(
         demoRef.current,
-        { 
-          opacity: 0, 
-          y: 50, 
-          scale: 0.95 
+        {
+          opacity: 0,
+          y: 50,
+          scale: 0.95,
         },
         {
           opacity: 1,
           y: 0,
           scale: 1,
           duration: 0.8,
-          ease: 'back.out(1.7)',
+          ease: "back.out(1.7)",
           overwrite: true,
           scrollTrigger: {
             trigger: demoRef.current,
-            start: 'top 80%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
             once: true,
             onEnter: () => {
               // Auto-start demo after animation
               setTimeout(startDemo, 1000);
-            }
-          }
+            },
+          },
         }
       );
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [hasAnimated, demoStarted]);
+  }, [hasAnimated, demoStarted, startDemo]);
 
   return (
     <section
@@ -154,7 +157,7 @@ export default function InteractiveDemo() {
             See InfoRx AI in Action
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Watch how our AI provides instant, accurate medical guidance 
+            Watch how our AI provides instant, accurate medical guidance
             tailored to Nigerian healthcare needs.
           </p>
         </div>
@@ -181,7 +184,7 @@ export default function InteractiveDemo() {
             </div>
 
             {/* Chat Messages */}
-            <div 
+            <div
               ref={messagesRef}
               className="h-96 overflow-y-auto p-6 space-y-4"
             >
@@ -190,7 +193,9 @@ export default function InteractiveDemo() {
                   <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <MessageSquare className="h-8 w-8 text-emerald-600" />
                   </div>
-                  <p className="text-slate-600 mb-4">Ready to see AI-powered healthcare in action?</p>
+                  <p className="text-slate-600 mb-4">
+                    Ready to see AI-powered healthcare in action?
+                  </p>
                   <Button
                     onClick={startDemo}
                     className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-medium"
@@ -204,35 +209,53 @@ export default function InteractiveDemo() {
               {visibleMessages.map((message, index) => (
                 <div
                   key={message.id}
-                  className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${
+                    message.type === "user" ? "justify-end" : "justify-start"
+                  }`}
                 >
-                  <div className={`max-w-xs lg:max-w-md ${message.type === 'user' ? 'order-2' : 'order-1'}`}>
-                    <div className={`flex items-start gap-3 ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        message.type === 'user' 
-                          ? 'bg-emerald-500 text-white' 
-                          : 'bg-sky-100 text-sky-600'
-                      }`}>
-                        {message.type === 'user' ? (
+                  <div
+                    className={`max-w-xs lg:max-w-md ${
+                      message.type === "user" ? "order-2" : "order-1"
+                    }`}
+                  >
+                    <div
+                      className={`flex items-start gap-3 ${
+                        message.type === "user"
+                          ? "flex-row-reverse"
+                          : "flex-row"
+                      }`}
+                    >
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                          message.type === "user"
+                            ? "bg-emerald-500 text-white"
+                            : "bg-sky-100 text-sky-600"
+                        }`}
+                      >
+                        {message.type === "user" ? (
                           <User className="h-4 w-4" />
                         ) : (
                           <Bot className="h-4 w-4" />
                         )}
                       </div>
-                      
-                      <div className={`rounded-2xl px-4 py-3 ${
-                        message.type === 'user'
-                          ? 'bg-emerald-500 text-white'
-                          : 'bg-slate-100 text-slate-900'
-                      }`}>
+
+                      <div
+                        className={`rounded-2xl px-4 py-3 ${
+                          message.type === "user"
+                            ? "bg-emerald-500 text-white"
+                            : "bg-slate-100 text-slate-900"
+                        }`}
+                      >
                         <div className="text-sm whitespace-pre-line">
                           {message.content}
                         </div>
-                        <div className={`text-xs mt-2 ${
-                          message.type === 'user' 
-                            ? 'text-emerald-100' 
-                            : 'text-slate-500'
-                        }`}>
+                        <div
+                          className={`text-xs mt-2 ${
+                            message.type === "user"
+                              ? "text-emerald-100"
+                              : "text-slate-500"
+                          }`}
+                        >
                           {message.timestamp}
                         </div>
                       </div>
@@ -250,8 +273,14 @@ export default function InteractiveDemo() {
                     <div className="bg-slate-100 rounded-2xl px-4 py-3">
                       <div className="flex items-center gap-1">
                         <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                        <div
+                          className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.1s" }}
+                        ></div>
+                        <div
+                          className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.2s" }}
+                        ></div>
                       </div>
                     </div>
                   </div>
@@ -281,7 +310,7 @@ export default function InteractiveDemo() {
               Ready to try the full AI assistant?
             </h3>
             <p className="text-lg text-slate-600 mb-6">
-              Experience comprehensive healthcare AI with document analysis, 
+              Experience comprehensive healthcare AI with document analysis,
               multi-language support, and real doctor consultations.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -290,9 +319,7 @@ export default function InteractiveDemo() {
                 className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3 rounded-xl font-semibold"
                 asChild
               >
-                <Link href="/interpreter">
-                  Try Full AI Interpreter
-                </Link>
+                <Link href="/interpreter">Try Full AI Interpreter</Link>
               </Button>
               <Button
                 variant="outline"
@@ -300,9 +327,7 @@ export default function InteractiveDemo() {
                 className="border-2 border-sky-500 text-sky-600 hover:bg-sky-50 px-8 py-3 rounded-xl font-semibold"
                 asChild
               >
-                <Link href="/dashboard">
-                  Explore Dashboard
-                </Link>
+                <Link href="/dashboard">Explore Dashboard</Link>
               </Button>
             </div>
           </div>

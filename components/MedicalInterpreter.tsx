@@ -1,50 +1,63 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { BookOpen, Lightbulb, AlertTriangle, Copy, ChevronDown, Loader2, Send, FileText, Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import type { InterpreterState, ExampleSnippet, MedicalInterpretation } from '@/lib/types/medical-interpreter';
-
+import { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  BookOpen,
+  Lightbulb,
+  AlertTriangle,
+  Copy,
+  ChevronDown,
+  Loader2,
+  Send,
+  FileText,
+  Check,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type {
+  InterpreterState,
+  ExampleSnippet,
+  MedicalInterpretation,
+} from "@/lib/types/medical-interpreter";
 
 // Register ScrollTrigger plugin
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 const exampleSnippets: ExampleSnippet[] = [
   {
-    id: 'prescription',
-    title: 'Prescription',
-    text: 'Metformin 500mg - Take 1 tablet twice daily with meals for Type 2 diabetes management. Continue for 3 months then review. Avoid alcohol consumption.',
-    type: 'prescription'
+    id: "prescription",
+    title: "Prescription",
+    text: "Metformin 500mg - Take 1 tablet twice daily with meals for Type 2 diabetes management. Continue for 3 months then review. Avoid alcohol consumption.",
+    type: "prescription",
   },
   {
-    id: 'lab_result',
-    title: 'Lab Result', 
-    text: 'Complete Blood Count: WBC: 12,500/μL (High - Normal: 4,000-11,000), RBC: 4.2 million/μL (Normal), Hemoglobin: 10.5 g/dL (Low - Normal: 12-16), Platelets: 180,000/μL (Normal)',
-    type: 'lab_result'
+    id: "lab_result",
+    title: "Lab Result",
+    text: "Complete Blood Count: WBC: 12,500/μL (High - Normal: 4,000-11,000), RBC: 4.2 million/μL (Normal), Hemoglobin: 10.5 g/dL (Low - Normal: 12-16), Platelets: 180,000/μL (Normal)",
+    type: "lab_result",
   },
   {
-    id: 'scan_summary',
-    title: 'Scan Summary',
-    text: 'Abdominal Ultrasound: Liver appears normal in size and echogenicity. Gallbladder shows multiple small echogenic foci consistent with gallstones. No evidence of acute cholecystitis.',
-    type: 'scan_summary'
-  }
+    id: "scan_summary",
+    title: "Scan Summary",
+    text: "Abdominal Ultrasound: Liver appears normal in size and echogenicity. Gallbladder shows multiple small echogenic foci consistent with gallstones. No evidence of acute cholecystitis.",
+    type: "scan_summary",
+  },
 ];
 
 export default function MedicalInterpreter() {
   const [state, setState] = useState<InterpreterState>({
-    inputText: '',
-    selectedLanguage: 'english',
+    inputText: "",
+    selectedLanguage: "english",
     isLoading: false,
     result: null,
-    error: null
+    error: null,
   });
 
   const [copiedCard, setCopiedCard] = useState<string | null>(null);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const inputSectionRef = useRef<HTMLDivElement>(null);
   const resultsSectionRef = useRef<HTMLDivElement>(null);
@@ -56,24 +69,24 @@ export default function MedicalInterpreter() {
     const ctx = gsap.context(() => {
       // Sequential fade-in of form elements
       const elements = [
-        '.header-section',
-        '.language-selector',
-        '.text-input-section', 
-        '.submit-button',
-        '.examples-section'
+        ".header-section",
+        ".language-selector",
+        ".text-input-section",
+        ".submit-button",
+        ".examples-section",
       ];
-      
+
       elements.forEach((selector, index) => {
         gsap.fromTo(
           selector,
           { opacity: 0, y: 20 },
-          { 
-            opacity: 1, 
-            y: 0, 
+          {
+            opacity: 1,
+            y: 0,
             duration: 0.5,
             delay: index * 0.1,
-            ease: 'power2.out',
-            overwrite: true
+            ease: "power2.out",
+            overwrite: true,
           }
         );
       });
@@ -82,13 +95,13 @@ export default function MedicalInterpreter() {
       gsap.fromTo(
         resultsSectionRef.current,
         { opacity: 0, y: 30 },
-        { 
-          opacity: 1, 
-          y: 0, 
+        {
+          opacity: 1,
+          y: 0,
           duration: 0.5,
           delay: 0.2,
-          ease: 'power2.out',
-          overwrite: true
+          ease: "power2.out",
+          overwrite: true,
         }
       );
     }, containerRef);
@@ -101,23 +114,23 @@ export default function MedicalInterpreter() {
     if (state.result && resultsCardsRef.current.length > 0) {
       const ctx = gsap.context(() => {
         // Fade out placeholder first
-        gsap.to('.placeholder-content', {
+        gsap.to(".placeholder-content", {
           opacity: 0,
           scale: 0.95,
           duration: 0.3,
-          ease: 'power2.out'
+          ease: "power2.out",
         });
 
         // Progressive reveal of result sections
         gsap.fromTo(
-          '.results-header',
+          ".results-header",
           { opacity: 0, y: 20 },
           {
             opacity: 1,
             y: 0,
             duration: 0.5,
-            ease: 'power2.out',
-            delay: 0.2
+            ease: "power2.out",
+            delay: 0.2,
           }
         );
 
@@ -129,9 +142,9 @@ export default function MedicalInterpreter() {
             y: 0,
             scale: 1,
             duration: 0.6,
-            ease: 'back.out(1.7)',
+            ease: "back.out(1.7)",
             stagger: 0.15,
-            delay: 0.4
+            delay: 0.4,
           }
         );
       }, containerRef);
@@ -146,15 +159,15 @@ export default function MedicalInterpreter() {
       const ctx = gsap.context(() => {
         // Typing indicator animation
         gsap.fromTo(
-          '.typing-dots',
+          ".typing-dots",
           { opacity: 0.3 },
           {
             opacity: 1,
             duration: 0.8,
-            ease: 'power2.inOut',
+            ease: "power2.inOut",
             stagger: 0.2,
             repeat: -1,
-            yoyo: true
+            yoyo: true,
           }
         );
       }, loadingRef);
@@ -162,38 +175,42 @@ export default function MedicalInterpreter() {
       return () => ctx.revert();
     }
   }, [state.isLoading]);
-  
 
   const handleInputChange = (value: string) => {
-    setState(prev => ({ ...prev, inputText: value, error: null }));
+    setState((prev) => ({ ...prev, inputText: value, error: null }));
   };
 
-  const handleLanguageChange = (language: 'english' | 'pidgin') => {
-    setState(prev => ({ ...prev, selectedLanguage: language }));
+  const handleLanguageChange = (language: "english" | "pidgin") => {
+    setState((prev) => ({ ...prev, selectedLanguage: language }));
   };
 
-  const handleExampleClick = (snippet: ExampleSnippet) => {
-    setState(prev => ({ ...prev, inputText: snippet.text, error: null }));
-    
+  const handleExampleClick = (
+    snippet: ExampleSnippet,
+    event?: React.MouseEvent
+  ) => {
+    setState((prev) => ({ ...prev, inputText: snippet.text, error: null }));
+
     // Button click animation
-    gsap.to(event?.currentTarget, {
-      scale: 0.95,
-      duration: 0.1,
-      yoyo: true,
-      repeat: 1,
-      ease: 'power2.out'
-    });
+    if (event?.currentTarget) {
+      gsap.to(event.currentTarget, {
+        scale: 0.95,
+        duration: 0.1,
+        yoyo: true,
+        repeat: 1,
+        ease: "power2.out",
+      });
+    }
   };
 
   const validateInput = (text: string): string | null => {
     if (!text.trim()) {
-      return 'Please enter medical text to interpret';
+      return "Please enter medical text to interpret";
     }
     if (text.trim().length < 10) {
-      return 'Please provide more detailed medical information (at least 10 characters)';
+      return "Please provide more detailed medical information (at least 10 characters)";
     }
     if (text.length > 5000) {
-      return 'Text is too long. Please keep it under 5000 characters';
+      return "Text is too long. Please keep it under 5000 characters";
     }
     return null;
   };
@@ -204,35 +221,39 @@ export default function MedicalInterpreter() {
    */
   const parseApiResponse = (response: string): MedicalInterpretation => {
     // Initialize default values
-    let simpleExplanation = '';
+    let simpleExplanation = "";
     let recommendedActions: string[] = [];
     let medicalAttentionIndicators: string[] = [];
 
     try {
       // Split the response into sections based on emoji markers
       const sections = response.split(/(?=📘|💡|⚠️)/);
-      
-      sections.forEach(section => {
+
+      sections.forEach((section) => {
         const cleanSection = section.trim();
-        
-        if (cleanSection.startsWith('📘')) {
+
+        if (cleanSection.startsWith("📘")) {
           // Extract explanation section
-          const explanationMatch = cleanSection.match(/📘.*?:\s*([\s\S]*?)(?=💡|⚠️|$)/);
+          const explanationMatch = cleanSection.match(
+            /📘.*?:\s*([\s\S]*?)(?=💡|⚠️|$)/
+          );
           if (explanationMatch) {
             simpleExplanation = explanationMatch[1].trim();
           }
-        } else if (cleanSection.startsWith('💡')) {
+        } else if (cleanSection.startsWith("💡")) {
           // Extract recommended actions
-          const actionsMatch = cleanSection.match(/💡.*?:\s*([\s\S]*?)(?=⚠️|$)/);
+          const actionsMatch = cleanSection.match(
+            /💡.*?:\s*([\s\S]*?)(?=⚠️|$)/
+          );
           if (actionsMatch) {
             const actionsText = actionsMatch[1].trim();
             // Split by numbered items or bullet points
             recommendedActions = actionsText
               .split(/\n/)
-              .map(item => item.replace(/^[\d\-•\*\.]\s*/, '').trim())
-              .filter(item => item.length > 0);
+              .map((item) => item.replace(/^[\d\-•\*\.]\s*/, "").trim())
+              .filter((item) => item.length > 0);
           }
-        } else if (cleanSection.startsWith('⚠️')) {
+        } else if (cleanSection.startsWith("⚠️")) {
           // Extract medical attention indicators
           const indicatorsMatch = cleanSection.match(/⚠️.*?:\s*([\s\S]*)/);
           if (indicatorsMatch) {
@@ -240,76 +261,96 @@ export default function MedicalInterpreter() {
             // Split by numbered items or bullet points
             medicalAttentionIndicators = indicatorsText
               .split(/\n/)
-              .map(item => item.replace(/^[\d\-•\*\.]\s*/, '').trim())
-              .filter(item => item.length > 0);
+              .map((item) => item.replace(/^[\d\-•\*\.]\s*/, "").trim())
+              .filter((item) => item.length > 0);
           }
         }
       });
 
       // Fallback: if parsing fails, use the entire response as explanation
-      if (!simpleExplanation && !recommendedActions.length && !medicalAttentionIndicators.length) {
+      if (
+        !simpleExplanation &&
+        !recommendedActions.length &&
+        !medicalAttentionIndicators.length
+      ) {
         simpleExplanation = response.trim();
-        recommendedActions = ['Consult with your healthcare provider for detailed guidance'];
-        medicalAttentionIndicators = ['Seek immediate medical attention if you experience concerning symptoms'];
+        recommendedActions = [
+          "Consult with your healthcare provider for detailed guidance",
+        ];
+        medicalAttentionIndicators = [
+          "Seek immediate medical attention if you experience concerning symptoms",
+        ];
       }
-
     } catch (error) {
-      console.error('Error parsing API response:', error);
+      console.error("Error parsing API response:", error);
       // Fallback to safe defaults
-      simpleExplanation = 'Your medical information has been processed. Please consult with a healthcare professional for detailed interpretation.';
-      recommendedActions = ['Schedule an appointment with your healthcare provider', 'Bring this document to your next medical consultation'];
-      medicalAttentionIndicators = ['Contact your doctor if you have concerns', 'Seek immediate care for urgent symptoms'];
+      simpleExplanation =
+        "Your medical information has been processed. Please consult with a healthcare professional for detailed interpretation.";
+      recommendedActions = [
+        "Schedule an appointment with your healthcare provider",
+        "Bring this document to your next medical consultation",
+      ];
+      medicalAttentionIndicators = [
+        "Contact your doctor if you have concerns",
+        "Seek immediate care for urgent symptoms",
+      ];
     }
 
     return {
       simpleExplanation,
       recommendedActions,
-      medicalAttentionIndicators
+      medicalAttentionIndicators,
     };
   };
   /**
    * Call the AI API to interpret medical text
    * Handles the API request, response parsing, and error handling
    */
-  const callInterpretationApi = async (text: string, language: 'english' | 'pidgin'): Promise<MedicalInterpretation> => {
+  const callInterpretationApi = async (
+    text: string,
+    language: "english" | "pidgin"
+  ): Promise<MedicalInterpretation> => {
     try {
-      const response = await fetch('/api/ai', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json' 
+      const response = await fetch("/api/ai", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           input: text,
-          language: language === 'english' ? 'English' : 'Nigerian Pidgin'
+          language: language === "english" ? "English" : "Nigerian Pidgin",
         }),
       });
 
       // Check if the response is ok
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `API request failed with status ${response.status}`);
+        throw new Error(
+          errorData.error || `API request failed with status ${response.status}`
+        );
       }
 
       const data = await response.json();
-      
+
       // Validate the response structure
       if (!data.result) {
-        throw new Error('Invalid response format from API');
+        throw new Error("Invalid response format from API");
       }
 
       // Parse the formatted response into structured data
       return parseApiResponse(data.result);
-
     } catch (error) {
-      console.error('API call failed:', error);
-      
+      console.error("API call failed:", error);
+
       // Provide user-friendly error handling
       if (error instanceof TypeError) {
-        throw new Error('Network error. Please check your internet connection and try again.');
+        throw new Error(
+          "Network error. Please check your internet connection and try again."
+        );
       } else if (error instanceof Error) {
         throw new Error(error.message);
       } else {
-        throw new Error('An unexpected error occurred. Please try again.');
+        throw new Error("An unexpected error occurred. Please try again.");
       }
     }
   };
@@ -318,38 +359,47 @@ export default function MedicalInterpreter() {
     // Validate input before making API call
     const validationError = validateInput(state.inputText);
     if (validationError) {
-      setState(prev => ({ ...prev, error: validationError }));
+      setState((prev) => ({ ...prev, error: validationError }));
       return;
     }
 
     // Set loading state and clear previous results/errors
-    setState(prev => ({ ...prev, isLoading: true, error: null, result: null }));
+    setState((prev) => ({
+      ...prev,
+      isLoading: true,
+      error: null,
+      result: null,
+    }));
 
     try {
       // Call the real API instead of simulation
-      const interpretation = await callInterpretationApi(state.inputText, state.selectedLanguage);
-      
+      const interpretation = await callInterpretationApi(
+        state.inputText,
+        state.selectedLanguage
+      );
+
       // Update state with successful result
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         result: {
           interpretation,
           originalText: prev.inputText,
           language: prev.selectedLanguage,
-          timestamp: new Date()
-        }
+          timestamp: new Date(),
+        },
       }));
     } catch (error) {
       // Handle API errors gracefully
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to interpret medical text. Please try again.';
-      
-      setState(prev => ({
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to interpret medical text. Please try again.";
+
+      setState((prev) => ({
         ...prev,
         isLoading: false,
-        error: errorMessage
+        error: errorMessage,
       }));
     }
   };
@@ -358,22 +408,22 @@ export default function MedicalInterpreter() {
     try {
       await navigator.clipboard.writeText(text);
       setCopiedCard(cardId);
-      
+
       // Copy success animation
       gsap.fromTo(
         `[data-card="${cardId}"] .copy-button`,
         { scale: 1 },
-        { scale: 1.2, duration: 0.2, yoyo: true, repeat: 1, ease: 'power2.out' }
+        { scale: 1.2, duration: 0.2, yoyo: true, repeat: 1, ease: "power2.out" }
       );
-      
+
       setTimeout(() => setCopiedCard(null), 2000);
     } catch (error) {
-      console.error('Failed to copy text:', error);
+      console.error("Failed to copy text:", error);
     }
   };
 
   const formatActionItems = (items: string[]) => {
-    return items.map((item, index) => `${index + 1}. ${item}`).join('\n');
+    return items.map((item, index) => `${index + 1}. ${item}`).join("\n");
   };
 
   return (
@@ -381,33 +431,38 @@ export default function MedicalInterpreter() {
       <div className="max-w-7xl mx-auto">
         {/* Main Grid Layout - 2 columns on desktop, single column on mobile */}
         <div className="grid lg:grid-cols-5 gap-8">
-          
           {/* Input Section - 40% width on desktop */}
           <div ref={inputSectionRef} className="lg:col-span-2 space-y-6">
-            
             {/* Header */}
             <div className="header-section text-center lg:text-left">
               <h1 className="text-3xl md:text-4xl font-bold text-gray-700 mb-4">
                 AI Health Interpreter
               </h1>
               <p className="text-lg text-gray-600 leading-relaxed">
-                Paste your prescription, lab result or scan summary and get a clear explanation.
+                Paste your prescription, lab result or scan summary and get a
+                clear explanation.
               </p>
             </div>
 
             {/* Input Form Card */}
             <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 space-y-6">
-              
               {/* Language Selector */}
               <div className="language-selector space-y-2">
-                <label className="block text-sm font-semibold text-gray-700" htmlFor="language-select">
+                <label
+                  className="block text-sm font-semibold text-gray-700"
+                  htmlFor="language-select"
+                >
                   Select Your Preferred Language
                 </label>
                 <div className="relative">
                   <select
                     id="language-select"
                     value={state.selectedLanguage}
-                    onChange={(e) => handleLanguageChange(e.target.value as 'english' | 'pidgin')}
+                    onChange={(e) =>
+                      handleLanguageChange(
+                        e.target.value as "english" | "pidgin"
+                      )
+                    }
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none bg-white text-gray-700 font-medium"
                     aria-label="Select preferred language"
                   >
@@ -420,7 +475,10 @@ export default function MedicalInterpreter() {
 
               {/* Text Input Area */}
               <div className="text-input-section space-y-2">
-                <label className="block text-sm font-semibold text-gray-700" htmlFor="medical-text">
+                <label
+                  className="block text-sm font-semibold text-gray-700"
+                  htmlFor="medical-text"
+                >
                   Medical Text
                 </label>
                 <textarea
@@ -433,14 +491,21 @@ export default function MedicalInterpreter() {
                   maxLength={5000}
                   aria-describedby="char-counter error-message"
                 />
-                <div id="char-counter" className="text-right text-sm text-gray-500">
+                <div
+                  id="char-counter"
+                  className="text-right text-sm text-gray-500"
+                >
                   {state.inputText.length}/5000 characters
                 </div>
               </div>
 
               {/* Error Display */}
               {state.error && (
-                <div id="error-message" className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm" role="alert">
+                <div
+                  id="error-message"
+                  className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+                  role="alert"
+                >
                   {state.error}
                 </div>
               )}
@@ -451,7 +516,11 @@ export default function MedicalInterpreter() {
                   onClick={handleSubmit}
                   disabled={state.isLoading || !state.inputText.trim()}
                   className="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95"
-                  aria-label={state.isLoading ? 'Interpreting medical text' : 'Interpret medical text'}
+                  aria-label={
+                    state.isLoading
+                      ? "Interpreting medical text"
+                      : "Interpret medical text"
+                  }
                 >
                   {state.isLoading ? (
                     <>
@@ -470,12 +539,14 @@ export default function MedicalInterpreter() {
 
             {/* Example Buttons Section */}
             <div className="examples-section space-y-4">
-              <h3 className="text-lg font-semibold text-gray-700">Try These Examples</h3>
+              <h3 className="text-lg font-semibold text-gray-700">
+                Try These Examples
+              </h3>
               <div className="grid gap-3">
                 {exampleSnippets.map((snippet) => (
                   <button
                     key={snippet.id}
-                    onClick={() => handleExampleClick(snippet)}
+                    onClick={(event) => handleExampleClick(snippet, event)}
                     className="p-4 bg-white border border-gray-200 rounded-lg text-left hover:border-green-300 hover:bg-green-50 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] group"
                     disabled={state.isLoading}
                     aria-label={`Load ${snippet.title} example`}
@@ -497,19 +568,26 @@ export default function MedicalInterpreter() {
 
           {/* Results Section - 60% width on desktop */}
           <div ref={resultsSectionRef} className="lg:col-span-3">
-            
             {/* Loading State */}
             {state.isLoading && (
-              <div ref={loadingRef} className="flex items-center justify-center h-64 bg-white rounded-xl shadow-lg border border-gray-200">
+              <div
+                ref={loadingRef}
+                className="flex items-center justify-center h-64 bg-white rounded-xl shadow-lg border border-gray-200"
+              >
                 <div className="text-center">
                   <div className="flex justify-center space-x-2 mb-4">
                     <div className="typing-dots w-3 h-3 bg-green-500 rounded-full"></div>
                     <div className="typing-dots w-3 h-3 bg-green-500 rounded-full"></div>
                     <div className="typing-dots w-3 h-3 bg-green-500 rounded-full"></div>
                   </div>
-                  <p className="text-lg font-semibold text-gray-700 mb-2">Analyzing your medical text...</p>
+                  <p className="text-lg font-semibold text-gray-700 mb-2">
+                    Analyzing your medical text...
+                  </p>
                   <div className="w-48 bg-gray-200 rounded-full h-2 mx-auto">
-                    <div className="bg-green-500 h-2 rounded-full animate-pulse" style={{width: '70%'}}></div>
+                    <div
+                      className="bg-green-500 h-2 rounded-full animate-pulse"
+                      style={{ width: "70%" }}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -518,20 +596,22 @@ export default function MedicalInterpreter() {
             {/* Results Display */}
             {state.result && (
               <div className="space-y-6">
-                
                 {/* Results Header */}
                 <div className="results-header text-center lg:text-left">
                   <h2 className="text-2xl font-bold text-gray-700 mb-2">
                     Medical Interpretation Results
                   </h2>
                   <p className="text-gray-600">
-                    Generated on {state.result.timestamp.toLocaleDateString()} • Language: {state.result.language === 'english' ? 'English' : 'Nigerian Pidgin'}
+                    Generated on {state.result.timestamp.toLocaleDateString()} •
+                    Language:{" "}
+                    {state.result.language === "english"
+                      ? "English"
+                      : "Nigerian Pidgin"}
                   </p>
                 </div>
 
                 {/* Results Cards */}
                 <div className="grid gap-6">
-                  
                   {/* Simple Explanation Card */}
                   <div
                     ref={(el) => {
@@ -545,15 +625,22 @@ export default function MedicalInterpreter() {
                         <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                           <BookOpen className="h-6 w-6 text-blue-600" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-700">📘 Simple Explanation</h3>
+                        <h3 className="text-xl font-bold text-gray-700">
+                          📘 Simple Explanation
+                        </h3>
                       </div>
                       <button
-                        onClick={() => handleCopyToClipboard(state.result!.interpretation.simpleExplanation, 'explanation')}
+                        onClick={() =>
+                          handleCopyToClipboard(
+                            state.result!.interpretation.simpleExplanation,
+                            "explanation"
+                          )
+                        }
                         className="copy-button p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
                         title="Copy to clipboard"
                         aria-label="Copy explanation to clipboard"
                       >
-                        {copiedCard === 'explanation' ? (
+                        {copiedCard === "explanation" ? (
                           <Check className="h-5 w-5 text-green-600" />
                         ) : (
                           <Copy className="h-5 w-5 text-gray-500" />
@@ -578,15 +665,24 @@ export default function MedicalInterpreter() {
                         <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
                           <Lightbulb className="h-6 w-6 text-yellow-600" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-700">💡 Recommended Actions</h3>
+                        <h3 className="text-xl font-bold text-gray-700">
+                          💡 Recommended Actions
+                        </h3>
                       </div>
                       <button
-                        onClick={() => handleCopyToClipboard(formatActionItems(state.result!.interpretation.recommendedActions), 'actions')}
+                        onClick={() =>
+                          handleCopyToClipboard(
+                            formatActionItems(
+                              state.result!.interpretation.recommendedActions
+                            ),
+                            "actions"
+                          )
+                        }
                         className="copy-button p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
                         title="Copy actions to clipboard"
                         aria-label="Copy recommended actions to clipboard"
                       >
-                        {copiedCard === 'actions' ? (
+                        {copiedCard === "actions" ? (
                           <Check className="h-5 w-5 text-green-600" />
                         ) : (
                           <Copy className="h-5 w-5 text-gray-500" />
@@ -594,14 +690,20 @@ export default function MedicalInterpreter() {
                       </button>
                     </div>
                     <ul className="space-y-3">
-                      {state.result.interpretation.recommendedActions.map((action, index) => (
-                        <li key={index} className="flex items-start gap-3">
-                          <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <span className="text-yellow-700 font-semibold text-sm">{index + 1}</span>
-                          </div>
-                          <span className="text-gray-700 leading-relaxed">{action}</span>
-                        </li>
-                      ))}
+                      {state.result.interpretation.recommendedActions.map(
+                        (action, index) => (
+                          <li key={index} className="flex items-start gap-3">
+                            <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <span className="text-yellow-700 font-semibold text-sm">
+                                {index + 1}
+                              </span>
+                            </div>
+                            <span className="text-gray-700 leading-relaxed">
+                              {action}
+                            </span>
+                          </li>
+                        )
+                      )}
                     </ul>
                   </div>
 
@@ -618,15 +720,24 @@ export default function MedicalInterpreter() {
                         <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
                           <AlertTriangle className="h-6 w-6 text-red-600" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-700">⚠️ Medical Attention Indicators</h3>
+                        <h3 className="text-xl font-bold text-gray-700">
+                          ⚠️ Medical Attention Indicators
+                        </h3>
                       </div>
                       <button
-                        onClick={() => handleCopyToClipboard(state.result!.interpretation.medicalAttentionIndicators.join('\n'), 'warnings')}
+                        onClick={() =>
+                          handleCopyToClipboard(
+                            state.result!.interpretation.medicalAttentionIndicators.join(
+                              "\n"
+                            ),
+                            "warnings"
+                          )
+                        }
                         className="copy-button p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
                         title="Copy warnings to clipboard"
                         aria-label="Copy medical attention indicators to clipboard"
                       >
-                        {copiedCard === 'warnings' ? (
+                        {copiedCard === "warnings" ? (
                           <Check className="h-5 w-5 text-green-600" />
                         ) : (
                           <Copy className="h-5 w-5 text-gray-500" />
@@ -634,12 +745,16 @@ export default function MedicalInterpreter() {
                       </button>
                     </div>
                     <ul className="space-y-3">
-                      {state.result.interpretation.medicalAttentionIndicators.map((indicator, index) => (
-                        <li key={index} className="flex items-start gap-3">
-                          <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" />
-                          <span className="text-gray-700 leading-relaxed">{indicator}</span>
-                        </li>
-                      ))}
+                      {state.result.interpretation.medicalAttentionIndicators.map(
+                        (indicator, index) => (
+                          <li key={index} className="flex items-start gap-3">
+                            <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" />
+                            <span className="text-gray-700 leading-relaxed">
+                              {indicator}
+                            </span>
+                          </li>
+                        )
+                      )}
                     </ul>
                   </div>
                 </div>
@@ -649,11 +764,16 @@ export default function MedicalInterpreter() {
                   <div className="flex items-start gap-3">
                     <AlertTriangle className="h-6 w-6 text-amber-600 flex-shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="font-semibold text-amber-800 mb-2">Important Medical Disclaimer</h4>
+                      <h4 className="font-semibold text-amber-800 mb-2">
+                        Important Medical Disclaimer
+                      </h4>
                       <p className="text-sm text-amber-700 leading-relaxed">
-                        This interpretation is for educational purposes only and should not replace professional medical advice. 
-                        Always consult with qualified healthcare providers for medical decisions, diagnosis, and treatment plans. 
-                        In case of medical emergencies, contact emergency services immediately.
+                        This interpretation is for educational purposes only and
+                        should not replace professional medical advice. Always
+                        consult with qualified healthcare providers for medical
+                        decisions, diagnosis, and treatment plans. In case of
+                        medical emergencies, contact emergency services
+                        immediately.
                       </p>
                     </div>
                   </div>
@@ -668,7 +788,9 @@ export default function MedicalInterpreter() {
                   <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <FileText className="h-8 w-8 text-green-600" />
                   </div>
-                  <p className="text-lg font-semibold text-gray-600 mb-2">Ready to interpret your medical text</p>
+                  <p className="text-lg font-semibold text-gray-600 mb-2">
+                    Ready to interpret your medical text
+                  </p>
                   <p className="text-sm text-gray-500">
                     Enter your medical information on the left to get started
                   </p>

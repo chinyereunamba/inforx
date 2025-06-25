@@ -1,43 +1,47 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { Brain, Shield, Zap, Users } from 'lucide-react';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import type { SolutionFeature } from '@/lib/types/about';
-import { gsap } from 'gsap';
+import { useEffect, useRef } from "react";
+import { Brain, Shield, Zap, Users } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import type { SolutionFeature } from "@/lib/types/about";
+import { gsap } from "gsap";
 
 const solutions: SolutionFeature[] = [
   {
-    id: 'ai-powered',
-    title: 'AI-Powered Insights',
-    description: 'Advanced machine learning algorithms translate complex medical data into clear, actionable insights',
-    benefit: 'Reduces interpretation time by 80%'
+    id: "ai-powered",
+    title: "AI-Powered Insights",
+    description:
+      "Advanced machine learning algorithms translate complex medical data into clear, actionable insights",
+    benefit: "Reduces interpretation time by 80%",
   },
   {
-    id: 'accessible',
-    title: 'Universal Access',
-    description: 'Cloud-based platform ensures healthcare guidance is available anywhere, anytime',
-    benefit: 'Available 24/7 across all devices'
+    id: "accessible",
+    title: "Universal Access",
+    description:
+      "Cloud-based platform ensures healthcare guidance is available anywhere, anytime",
+    benefit: "Available 24/7 across all devices",
   },
   {
-    id: 'instant',
-    title: 'Instant Analysis',
-    description: 'Real-time processing provides immediate medical guidance when you need it most',
-    benefit: 'Response time under 3 seconds'
+    id: "instant",
+    title: "Instant Analysis",
+    description:
+      "Real-time processing provides immediate medical guidance when you need it most",
+    benefit: "Response time under 3 seconds",
   },
   {
-    id: 'personalized',
-    title: 'Personalized Care',
-    description: 'Tailored recommendations based on individual health profiles and medical history',
-    benefit: 'Improves accuracy by 65%'
-  }
+    id: "personalized",
+    title: "Personalized Care",
+    description:
+      "Tailored recommendations based on individual health profiles and medical history",
+    benefit: "Improves accuracy by 65%",
+  },
 ];
 
 const iconComponents = {
-  'ai-powered': Brain,
+  "ai-powered": Brain,
   accessible: Shield,
   instant: Zap,
-  personalized: Users
+  personalized: Users,
 };
 
 export default function SolutionSection() {
@@ -45,21 +49,22 @@ export default function SolutionSection() {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
-  
-  const { fadeInAnimation, slideInFromLeft, slideInFromRight } = useScrollAnimation();
+
+  const { fadeInAnimation, slideInFromLeft, slideInFromRight } =
+    useScrollAnimation();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       if (titleRef.current) {
-        fadeInAnimation([titleRef.current], { overwrite: true });
+        fadeInAnimation([titleRef.current]);
       }
 
       if (contentRef.current) {
-        slideInFromLeft([contentRef.current], { overwrite: true });
+        slideInFromLeft([contentRef.current]);
       }
 
       if (imageRef.current) {
-        slideInFromRight([imageRef.current], { overwrite: true });
+        slideInFromRight([imageRef.current]);
       }
     }, sectionRef);
 
@@ -67,14 +72,14 @@ export default function SolutionSection() {
   }, [fadeInAnimation, slideInFromLeft, slideInFromRight]);
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="py-24 bg-gradient-to-br from-emerald-50 to-sky-50"
       aria-labelledby="solution-heading"
     >
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-20">
-          <h2 
+          <h2
             id="solution-heading"
             ref={titleRef}
             className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6"
@@ -82,7 +87,15 @@ export default function SolutionSection() {
             Our Solution
           </h2>
           <p className="text-xl text-slate-700 max-w-3xl mx-auto">
-            InfoRx transforms healthcare delivery through intelligent technology and human-centered design
+            InfoRx transforms healthcare delivery through intelligent technology
+            and human-centered design
+          </p>
+          <p className="text-lg text-slate-600 mb-6">
+            Our &ldquo;AI-First&rdquo; approach combines advanced artificial
+            intelligence with deep understanding of Nigerian healthcare
+            challenges. We&apos;re not just building technology &mdash;
+            we&apos;re building solutions that work for real people in real
+            communities.
           </p>
         </div>
 
@@ -90,14 +103,15 @@ export default function SolutionSection() {
           {/* Content Side */}
           <div ref={contentRef} className="space-y-8">
             {solutions.map((solution) => {
-              const IconComponent = iconComponents[solution.id as keyof typeof iconComponents];
-              
+              const IconComponent =
+                iconComponents[solution.id as keyof typeof iconComponents];
+
               return (
                 <div key={solution.id} className="flex items-start space-x-6">
                   <div className="flex-shrink-0 w-16 h-16 bg-emerald-100 rounded-xl flex items-center justify-center">
                     <IconComponent className="h-8 w-8 text-emerald-600" />
                   </div>
-                  
+
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-slate-900 mb-3">
                       {solution.title}
@@ -119,25 +133,35 @@ export default function SolutionSection() {
             <div className="bg-gradient-to-br from-emerald-400 to-sky-400 rounded-3xl p-12 shadow-2xl">
               <div className="bg-white rounded-2xl p-8 space-y-6">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-lg font-bold text-slate-900">AI Health Assistant</h4>
+                  <h4 className="text-lg font-bold text-slate-900">
+                    AI Health Assistant
+                  </h4>
                   <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <div className="bg-emerald-50 rounded-lg p-4">
                     <p className="text-sm text-slate-700">
-                      <strong>Patient:</strong> "I have a persistent headache and fatigue"
+                      <strong>Patient:</strong> "I have a persistent headache
+                      and fatigue"
                     </p>
                   </div>
-                  
+
                   <div className="bg-sky-50 rounded-lg p-4">
                     <p className="text-sm text-slate-700">
-                      <strong>InfoRx:</strong> "Based on your symptoms, I recommend..."
+                      <strong>InfoRx:</strong> "Based on your symptoms, I
+                      recommend..."
                     </p>
                     <div className="mt-2 space-y-1">
-                      <div className="text-xs text-slate-500">✓ Symptom analysis complete</div>
-                      <div className="text-xs text-slate-500">✓ Treatment options identified</div>
-                      <div className="text-xs text-slate-500">✓ Doctor consultation scheduled</div>
+                      <div className="text-xs text-slate-500">
+                        ✓ Symptom analysis complete
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        ✓ Treatment options identified
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        ✓ Doctor consultation scheduled
+                      </div>
                     </div>
                   </div>
                 </div>

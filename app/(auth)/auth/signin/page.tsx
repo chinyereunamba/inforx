@@ -1,42 +1,49 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/hooks/useAuth';
-import FormContainer from '@/components/auth/FormContainer';
-import FormInput from '@/components/auth/FormInput';
-import SubmitButton from '@/components/auth/SubmitButton';
-import OAuthButton from '@/components/auth/OAuthButton';
-import ErrorMessage from '@/components/auth/ErrorMessage';
-import { validateSignInForm } from '@/lib/utils/validation';
-import type { SignInData } from '@/lib/types/auth';
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
+import FormContainer from "@/components/auth/FormContainer";
+import FormInput from "@/components/auth/FormInput";
+import SubmitButton from "@/components/auth/SubmitButton";
+import OAuthButton from "@/components/auth/OAuthButton";
+import ErrorMessage from "@/components/auth/ErrorMessage";
+import { validateSignInForm } from "@/lib/utils/validation";
+import type { SignInData } from "@/lib/types/auth";
+import { createClient } from "@/utils/supabase/client";
 
 export default function SignInPage() {
   const router = useRouter();
-  const { signIn, signInWithGoogle, loading, error } = useAuth();
-  
+  const searchParams = useSearchParams();
+  const { signIn } = useAuth();
+
   const [formData, setFormData] = useState<SignInData>({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
     remember: false,
   });
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<null | string>();
 
-  const handleInputChange = (field: keyof SignInData, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+  const handleInputChange = (
+    field: keyof SignInData,
+    value: string | boolean
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // Clear field error when user starts typing
     if (formErrors[field as string]) {
-      setFormErrors(prev => ({ ...prev, [field as string]: '' }));
+      setFormErrors((prev) => ({ ...prev, [field as string]: "" }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate form
     const validation = validateSignInForm(formData);
     if (!validation.isValid) {
@@ -49,19 +56,32 @@ export default function SignInPage() {
 
     try {
       await signIn(formData);
-      router.push('/dashboard');
+      const redirectTo = searchParams.get("redirectTo") || "/dashboard";
+      router.push(redirectTo);
     } catch (error) {
-      console.error('Sign in failed:', error);
+      console.error("Sign in failed:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
+    const supabase = createClient();
+    setLoading(true);
+    setError(null);
+
     try {
-      await signInWithGoogle();
-    } catch (error) {
-      console.error('Google sign in failed:', error);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/dashboard`,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "An error occurred");
+      setLoading(false);
     }
   };
 
@@ -72,9 +92,7 @@ export default function SignInPage() {
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Global error */}
-        {error && (
-          <ErrorMessage message={error} type="error" />
-        )}
+        {error && <ErrorMessage message={error} type="error" />}
 
         {/* Email */}
         <FormInput
@@ -82,7 +100,7 @@ export default function SignInPage() {
           type="email"
           placeholder="Enter your email"
           value={formData.email}
-          onChange={(value) => handleInputChange('email', value)}
+          onChange={(value) => handleInputChange("email", value)}
           error={formErrors.email}
           required
           autoComplete="email"
@@ -94,7 +112,7 @@ export default function SignInPage() {
           type="password"
           placeholder="Enter your password"
           value={formData.password}
-          onChange={(value) => handleInputChange('password', value)}
+          onChange={(value) => handleInputChange("password", value)}
           error={formErrors.password}
           required
           autoComplete="current-password"
@@ -106,12 +124,12 @@ export default function SignInPage() {
             <input
               type="checkbox"
               checked={formData.remember}
-              onChange={(e) => handleInputChange('remember', e.target.checked)}
+              onChange={(e) => handleInputChange("remember", e.target.checked)}
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
             />
             <span className="ml-2 text-sm text-slate-600">Remember me</span>
           </label>
-          
+
           <Link
             href="/auth/forgot-password"
             className="text-sm text-blue-600 hover:underline"
@@ -134,7 +152,9 @@ export default function SignInPage() {
             <div className="w-full border-t border-slate-300" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-slate-500">Or continue with</span>
+            <span className="px-2 bg-white text-slate-500">
+              Or continue with
+            </span>
           </div>
         </div>
 
@@ -162,12 +182,12 @@ export default function SignInPage() {
 
         {/* Sign Up Link */}
         <div className="text-center text-sm">
-          <span className="text-slate-600">Don't have an account? </span>
+          <span className="text-slate-600">Don&apos;t have an account? </span>
           <Link
             href="/auth/signup"
             className="text-blue-600 hover:underline font-medium"
           >
-            Sign up
+            Sign up here
           </Link>
         </div>
       </form>
