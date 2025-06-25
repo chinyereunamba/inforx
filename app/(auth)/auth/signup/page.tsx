@@ -224,40 +224,38 @@ export default function SignUpPage() {
         <SubmitButton loading={isSubmitting} disabled={isSubmitting}>
           Create Account
         </SubmitButton>
-
-        {/* Divider */}
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-300" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-slate-500">
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        {/* OAuth Button */}
-        <OAuthButton
-          provider="google"
-          onClick={handleGoogleSignUp}
-          loading={isSubmitting}
-          disabled={isSubmitting}
-        />
-
-        {/* Sign In Link */}
-        <div className="text-center text-sm">
-          <span className="text-slate-600">
-            Already have an account?{" "}
-            <Link
-              href="/auth/signin"
-              className="text-teal-600 hover:text-teal-700 font-medium"
-            >
-              Sign in here
-            </Link>
-          </span>
-        </div>
       </form>
+
+      {/* Divider */}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-slate-300" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-white text-slate-500">Or continue with</span>
+        </div>
+      </div>
+
+      {/* OAuth Button */}
+      <OAuthButton
+        provider="google"
+        onClick={handleGoogleSignUp}
+        loading={isSubmitting}
+        disabled={isSubmitting}
+      />
+
+      {/* Sign In Link */}
+      <div className="text-center text-sm">
+        <span className="text-slate-600">
+          Already have an account?{" "}
+          <Link
+            href="/auth/signin"
+            className="text-teal-600 hover:text-teal-700 font-medium"
+          >
+            Sign in here
+          </Link>
+        </span>
+      </div>
     </FormContainer>
   );
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mail, ArrowLeft } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { createClient } from "@/utils/supabase/client";
 import FormContainer from "@/components/auth/FormContainer";
 import FormInput from "@/components/auth/FormInput";
 import SubmitButton from "@/components/auth/SubmitButton";
@@ -13,12 +13,12 @@ import { validateEmail } from "@/lib/utils/validation";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
-  const { resetPassword, loading, error } = useAuth();
 
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleEmailChange = (value: string) => {
     setEmail(value);
@@ -39,12 +39,25 @@ export default function ForgotPasswordPage() {
 
     setIsSubmitting(true);
     setEmailError("");
+    setError(null);
 
     try {
-      await resetPassword(email);
-      setShowSuccess(true);
-    } catch (error) {
+      const supabase = createClient();
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+        email,
+        {
+          redirectTo: `${window.location.origin}/auth/reset-password`,
+        }
+      );
+
+      if (resetError) {
+        setError(resetError.message);
+      } else {
+        setShowSuccess(true);
+      }
+    } catch (error: any) {
       console.error("Password reset failed:", error);
+      setError(error?.message || "Password reset failed. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -102,10 +115,7 @@ export default function ForgotPasswordPage() {
         />
 
         {/* Submit Button */}
-        <SubmitButton
-          loading={isSubmitting || loading}
-          disabled={isSubmitting || loading}
-        >
+        <SubmitButton loading={isSubmitting} disabled={isSubmitting}>
           Send reset instructions
         </SubmitButton>
 

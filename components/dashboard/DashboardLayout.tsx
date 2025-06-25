@@ -57,10 +57,6 @@ export default function DashboardLayout({ user, children }: DashboardProps) {
     setState((prev) => ({ ...prev, sidebarOpen: !prev.sidebarOpen }));
   };
 
-  const setActiveTab = (tab: string) => {
-    setState((prev) => ({ ...prev, activeTab: tab }));
-  };
-
   const setResult = (result: InterpretationResult | null) => {
     setState((prev) => ({ ...prev, currentResult: result }));
   };
@@ -78,8 +74,6 @@ export default function DashboardLayout({ user, children }: DashboardProps) {
       {/* Navigation Sidebar */}
       <NavigationSidebar
         isOpen={state.sidebarOpen}
-        activeTab={state.activeTab}
-        onTabChange={setActiveTab}
         onClose={() => setState((prev) => ({ ...prev, sidebarOpen: false }))}
         user={user}
       />

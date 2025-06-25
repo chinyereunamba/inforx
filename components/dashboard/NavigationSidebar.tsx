@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Search,
   BarChart3,
@@ -11,39 +12,57 @@ import {
   User,
   LogOut,
   Plus,
+  FileText,
 } from "lucide-react";
 import { signOut } from "@/app/(auth)/auth/auth";
 import { User as UserType } from "@supabase/supabase-js";
 
 interface NavigationSidebarProps {
   isOpen: boolean;
-  activeTab: string;
-  onTabChange: (tab: string) => void;
   onClose: () => void;
   user: UserType;
 }
 
 const navigationItems = [
-  { id: "interpreter", label: "Interpreter", icon: Search, href: "/dashboard" },
+  {
+    id: "interpreter",
+    label: "Interpreter",
+    icon: Search,
+    href: "/dashboard",
+    description: "AI-powered medical document analysis",
+  },
   {
     id: "dashboard",
     label: "Dashboard",
     icon: BarChart3,
     href: "/dashboard?tab=dashboard",
+    description: "Overview and analytics",
+  },
+  {
+    id: "medical-records",
+    label: "Medical Records",
+    icon: FileText,
+    href: "/dashboard/records",
+    description: "Manage your medical documents",
   },
   {
     id: "settings",
     label: "Settings",
     icon: Settings,
     href: "/dashboard?tab=settings",
+    description: "Account and preferences",
   },
-  { id: "about", label: "About", icon: Info, href: "/about" },
+  {
+    id: "about",
+    label: "About",
+    icon: Info,
+    href: "/about",
+    description: "Learn more about InfoRx",
+  },
 ];
 
 export default function NavigationSidebar({
   isOpen,
-  activeTab,
-  onTabChange,
   onClose,
   user,
 }: NavigationSidebarProps) {
@@ -51,6 +70,7 @@ export default function NavigationSidebar({
   const logoRef = useRef<HTMLDivElement>(null);
   const navItemsRef = useRef<HTMLDivElement[]>([]);
   const userSectionRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   const handleSignOut = async () => {
     try {
@@ -59,6 +79,18 @@ export default function NavigationSidebar({
     } catch (error) {
       console.error("Sign out failed:", error);
     }
+  };
+
+  // Determine if a navigation item is active
+  const isActive = (href: string) => {
+    if (href === "/dashboard") {
+      return pathname === "/dashboard" && !pathname.includes("?tab=");
+    }
+    if (href.includes("?tab=")) {
+      const tab = href.split("=")[1];
+      return pathname === "/dashboard" && pathname.includes(`?tab=${tab}`);
+    }
+    return pathname === href;
   };
 
   useEffect(() => {
@@ -155,7 +187,7 @@ export default function NavigationSidebar({
           <nav className="flex-1 px-4 py-6 space-y-2" role="menubar">
             {navigationItems.map((item, index) => {
               const IconComponent = item.icon;
-              const isActive = activeTab === item.id;
+              const active = isActive(item.href);
 
               return (
                 <div
@@ -164,31 +196,37 @@ export default function NavigationSidebar({
                     if (el) navItemsRef.current[index] = el;
                   }}
                 >
-                  <button
+                  <Link
+                    href={item.href}
                     onClick={() => {
-                      onTabChange(item.id);
                       if (window.innerWidth < 1024) onClose();
                     }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200 group ${
-                      isActive
-                        ? "bg-blue-50 text-blue-700 border border-blue-200"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                    className={`group relative w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200 ${
+                      active
+                        ? "bg-blue-50 text-blue-700 border border-blue-200 shadow-sm"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-blue-600 hover:shadow-sm"
                     }`}
                     role="menuitem"
-                    aria-current={isActive ? "page" : undefined}
+                    aria-current={active ? "page" : undefined}
+                    title={item.description}
                   >
                     <IconComponent
                       className={`w-5 h-5 transition-colors duration-200 ${
-                        isActive
+                        active
                           ? "text-blue-600"
                           : "text-gray-500 group-hover:text-blue-500"
                       }`}
                     />
-                    <span className="font-medium">{item.label}</span>
-                    {isActive && (
-                      <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full" />
+                    <div className="flex-1 min-w-0">
+                      <span className="font-medium block">{item.label}</span>
+                      <span className="text-xs text-gray-500 truncate hidden group-hover:block">
+                        {item.description}
+                      </span>
+                    </div>
+                    {active && (
+                      <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
                     )}
-                  </button>
+                  </Link>
                 </div>
               );
             })}
@@ -198,10 +236,13 @@ export default function NavigationSidebar({
           <div ref={userSectionRef} className="p-4 border-t border-gray-100">
             {/* Quick Actions */}
             <div className="mb-4">
-              <button className="w-full flex items-center gap-3 px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors duration-200 group">
+              <Link
+                href="/dashboard"
+                className="w-full flex items-center gap-3 px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors duration-200 group"
+              >
                 <Plus className="w-5 h-5" />
                 <span className="font-medium">New Analysis</span>
-              </button>
+              </Link>
             </div>
 
             {/* User Profile */}
@@ -219,6 +260,7 @@ export default function NavigationSidebar({
                 onClick={handleSignOut}
                 className="p-1 rounded-md hover:bg-gray-200 transition-colors duration-200"
                 aria-label="Sign out"
+                title="Sign out"
               >
                 <LogOut className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
               </button>
