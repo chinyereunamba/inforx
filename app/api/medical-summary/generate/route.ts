@@ -159,86 +159,68 @@ async function generateAISummary(
 ): Promise<AIExtractionResult> {
   const prompt = `Summarize the following medical records into a health profile for a Nigerian patient.
 
-Return in structured JSON format with the following fields:
-- summary_text: A comprehensive summary of the patient's health status
-- conditions_identified: Array of medical conditions found
-- medications_mentioned: Array of medications mentioned
-- tests_performed: Array of medical tests performed
-- patterns_identified: Array of health patterns or trends identified
-- risk_factors: Array of health risk factors identified
-- recommendations: Array of health recommendations
+Return in **strict JSON format** with the following fields:
+- summary_text
+- conditions_identified
+- medications_mentioned
+- tests_performed
+- patterns_identified
+- risk_factors
+- recommendations
+
+Respond with only the JSON. Do not include any explanation.
 
 Medical Records:
-${combinedText}
-
-Please provide a detailed, professional medical summary that would be useful for healthcare providers.`;
+${combinedText}`;
 
   try {
-    // Use OpenRouter API for AI summarization
-    const response = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer":
-            process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-          "X-Title": "InfoRx Medical Summary",
-        },
-        body: JSON.stringify({
-          model: "anthropic/claude-3.5-sonnet",
-          messages: [
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-          temperature: 0.1,
-          max_tokens: 2000,
-        }),
-      }
-    );
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+        "X-Title": "InfoRx Medical Summary",
+      },
+      body: JSON.stringify({
+        model: "anthropic/claude-3.5-sonnet",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.1,
+        max_tokens: 2000,
+      }),
+    });
 
     if (!response.ok) {
       throw new Error(`AI API error: ${response.status}`);
     }
 
     const data = await response.json();
-    const aiResponse = data.choices[0]?.message?.content;
+    const aiResponse = data.choices?.[0]?.message?.content?.trim();
 
     if (!aiResponse) {
       throw new Error("No response from AI service");
     }
 
-    // Try to parse JSON from the response
-    try {
-      const parsed = JSON.parse(aiResponse);
-      return {
-        summary_text: parsed.summary_text || "Summary generated successfully",
-        conditions_identified: parsed.conditions_identified || [],
-        medications_mentioned: parsed.medications_mentioned || [],
-        tests_performed: parsed.tests_performed || [],
-        patterns_identified: parsed.patterns_identified || [],
-        risk_factors: parsed.risk_factors || [],
-        recommendations: parsed.recommendations || [],
-      };
-    } catch (parseError) {
-      // Fallback if JSON parsing fails
-      return {
-        summary_text: aiResponse,
-        conditions_identified: [],
-        medications_mentioned: [],
-        tests_performed: [],
-        patterns_identified: [],
-        risk_factors: [],
-        recommendations: [],
-      };
-    }
+    console.log("AI raw response:", aiResponse);
+
+    // Try to extract JSON from the response using regex
+    const match = aiResponse.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("No JSON object found in AI response");
+
+    const parsed = JSON.parse(match[0]);
+
+    return {
+      summary_text: parsed.summary_text || "Summary generated successfully",
+      conditions_identified: parsed.conditions_identified || [],
+      medications_mentioned: parsed.medications_mentioned || [],
+      tests_performed: parsed.tests_performed || [],
+      patterns_identified: parsed.patterns_identified || [],
+      risk_factors: parsed.risk_factors || [],
+      recommendations: parsed.recommendations || [],
+    };
   } catch (error) {
     console.error("AI summarization error:", error);
 
-    // Fallback summary
     return {
       summary_text:
         "Medical summary generated from uploaded records. Please review the extracted information carefully.",
