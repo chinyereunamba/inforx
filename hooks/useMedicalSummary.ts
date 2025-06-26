@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useSupabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 import {
   MedicalSummary,
   GenerateSummaryRequest,
 } from "@/lib/types/medical-summaries";
 
 export function useMedicalSummary() {
-  const { supabase } = useSupabase();
+  const supabase = createClient();
   const [summary, setSummary] = useState<MedicalSummary | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
