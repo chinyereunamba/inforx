@@ -117,7 +117,7 @@ export default function SignInPage() {
       </div>
 
       {/* OAuth Google login */}
-      <form action={signInWithGoogle} className="pb-4">
+      <form onSubmit={signInWithGoogle} className="pb-4">
         <OAuthButton provider="google" />
       </form>
 
