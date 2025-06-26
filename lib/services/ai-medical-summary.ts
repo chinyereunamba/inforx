@@ -97,7 +97,7 @@ export class AIMedicalSummaryService {
           Authorization: `Bearer ${this.apiKey}`,
           "Content-Type": "application/json",
           "HTTP-Referer":
-            process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+            process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
           "X-Title": "InfoRx Medical Summary",
         },
         body: JSON.stringify({
