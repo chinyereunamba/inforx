@@ -2,6 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { MedicalRecord } from "@/lib/types/medical-records";
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/medical-records/stats - Get medical records statistics
 export async function GET(request: NextRequest) {
   try {
