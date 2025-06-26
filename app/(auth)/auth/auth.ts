@@ -22,7 +22,7 @@ export async function signInWithEmail(formData: {
 }
 
 export async function signInWithGoogle() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const origin = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
