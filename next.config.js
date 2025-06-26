@@ -8,6 +8,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  experimental: {
+  optimizeFonts: false, // disables automatic font fetching
+},
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
