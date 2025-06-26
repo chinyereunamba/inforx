@@ -12,6 +12,39 @@ export interface ExtractedText {
   error?: string;
 }
 
+export class TextExtractor {
+  static async extractText(file: File): Promise<ExtractedText> {
+    try {
+      const fileName = file.name;
+      const fileExtension = fileName.split(".").pop()?.toLowerCase();
+
+      switch (fileExtension) {
+        case "pdf":
+          return await _extractTextFromPDF(file, fileName);
+        case "txt":
+          return await _extractTextFromText(file, fileName);
+        case "docx":
+          return await _extractTextFromDocx(file, fileName);
+        default:
+          return {
+            text: `[File content for ${fileName} - format not supported for text extraction]`,
+            fileName,
+            success: true,
+          };
+      }
+    } catch (error) {
+      return {
+        text: "",
+        fileName: file.name,
+        success: false,
+        error: `Extraction failed: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      };
+    }
+  }
+}
+
 export async function extractTextFromFile(
   fileUrl: string,
   fileName: string
@@ -50,11 +83,11 @@ export async function extractTextFromFile(
 
     switch (fileExtension) {
       case "pdf":
-        return await extractTextFromPDF(data, fileName);
+        return await _extractTextFromPDF(data, fileName);
       case "txt":
-        return await extractTextFromText(data, fileName);
+        return await _extractTextFromText(data, fileName);
       case "docx":
-        return await extractTextFromDocx(data, fileName);
+        return await _extractTextFromDocx(data, fileName);
       default:
         return {
           text: `[File content for ${fileName} - format not supported for text extraction]`,
@@ -74,7 +107,7 @@ export async function extractTextFromFile(
   }
 }
 
-async function extractTextFromPDF(
+async function _extractTextFromPDF(
   file: Blob,
   fileName: string
 ): Promise<ExtractedText> {
@@ -98,7 +131,7 @@ async function extractTextFromPDF(
   }
 }
 
-async function extractTextFromText(
+async function _extractTextFromText(
   file: Blob,
   fileName: string
 ): Promise<ExtractedText> {
@@ -121,7 +154,7 @@ async function extractTextFromText(
   }
 }
 
-async function extractTextFromDocx(
+async function _extractTextFromDocx(
   file: Blob,
   fileName: string
 ): Promise<ExtractedText> {
