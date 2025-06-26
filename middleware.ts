@@ -41,9 +41,9 @@ export async function middleware(request: NextRequest) {
   const { data: { session } } = await supabase.auth.getSession();
 
   // Define protected routes
-  const protectedRoutes = ['/dashboard'];
+  const protectedRoutes = ['/dashboard', '/profile', '/records'];
   const authRoutes = ['/auth/signin', '/auth/signup'];
-  const publicRoutes = ['/', '/about', '/demo', '/interpreter', '/contact'];
+  const publicRoutes = ['/', '/about', '/demo', '/interpreter', '/contact', '/auth/callback', '/auth/error'];
 
   const isProtectedRoute = protectedRoutes.some(route => 
     request.nextUrl.pathname.startsWith(route)
@@ -55,6 +55,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect unauthenticated users from protected routes
   if (isProtectedRoute && !session) {
+    console.log("Redirecting unauthenticated user from:", request.nextUrl.pathname); // Debug log
     const redirectUrl = new URL('/auth/signin', request.url);
     redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);
@@ -62,6 +63,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect authenticated users from auth routes
   if (isAuthRoute && session) {
+    console.log("Redirecting authenticated user from auth route to dashboard"); // Debug log
     const redirectTo = request.nextUrl.searchParams.get('redirectTo') || '/dashboard';
     return NextResponse.redirect(new URL(redirectTo, request.url));
   }

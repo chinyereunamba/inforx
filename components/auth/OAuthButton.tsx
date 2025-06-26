@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 interface OAuthButtonProps {
   provider: "google";
   onClick?: () => void;
+  onClick?: () => void;
   loading?: boolean;
   disabled?: boolean;
   className?: string;
@@ -47,6 +48,7 @@ const providerConfig = {
 export default function OAuthButton({
   provider,
   onClick,
+  onClick,
   loading = false,
   disabled = false,
   className,
@@ -60,7 +62,7 @@ export default function OAuthButton({
   return (
     <button
       type={type}
-      onClick={onClick}
+      onClick={onClick || (() => {})}
       disabled={disabled || loading}
       aria-disabled={disabled || loading}
       aria-label={`Sign in with ${config.name}`}

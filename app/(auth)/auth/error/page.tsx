@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ error: string }>;
+  searchParams: Promise<{ error?: string; message?: string }>;
 }) {
   const params = await searchParams;
 
@@ -18,15 +18,31 @@ export default async function Page({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {params?.error ? (
+              {params?.error || params?.message ? (
                 <p className="text-sm text-muted-foreground">
-                  Code error: {params.error}
+                  {params.error ? `Error: ${params.error}` : params.message}
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground">
                   An unspecified error occurred.
                 </p>
               )}
+              
+              <div className="mt-4 space-y-2">
+                <a 
+                  href="/auth/signin" 
+                  className="inline-block text-sm text-blue-600 hover:underline"
+                >
+                  Try signing in again
+                </a>
+                <br />
+                <a 
+                  href="/auth/signup" 
+                  className="inline-block text-sm text-blue-600 hover:underline"
+                >
+                  Create a new account
+                </a>
+              </div>
             </CardContent>
           </Card>
         </div>

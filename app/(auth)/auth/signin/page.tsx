@@ -33,7 +33,10 @@ export default function SignInPage() {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    console.log("Sign in form submitted with:", { email: formData.email }); // Debug log
     setError(null);
+    
     try {
       const result = await signInWithEmail(formData);
       
@@ -43,10 +46,28 @@ export default function SignInPage() {
       }
       
       if (result.user) {
+        console.log("Redirecting to dashboard..."); // Debug log
         router.push("/dashboard");
       }
     } catch (err: any) {
+      console.error("Sign in form error:", err); // Debug log
       setError(err.message || "An unexpected error occurred. Please try again.");
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    console.log("Google sign in clicked"); // Debug log
+    setError(null);
+    
+    try {
+      const result = await signInWithGoogle();
+      if (result.error) {
+        setError(result.error);
+      }
+      // If successful, the user will be redirected to Google
+    } catch (err: any) {
+      console.error("Google sign in error:", err);
+      setError(err.message || "Google sign in failed. Please try again.");
     }
   };
 
@@ -117,9 +138,9 @@ export default function SignInPage() {
       </div>
 
       {/* OAuth Google login */}
-      <form onSubmit={signInWithGoogle} className="pb-4">
-        <OAuthButton provider="google" />
-      </form>
+      <div className="pb-4">
+        <OAuthButton provider="google" onClick={handleGoogleSignIn} />
+      </div>
 
       {/* Demo link */}
       <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-3">

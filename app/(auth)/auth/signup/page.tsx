@@ -45,6 +45,12 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log("Sign up form submitted with:", { 
+      email: formData.email, 
+      role: formData.role, 
+      fullName: formData.fullName 
+    }); // Debug log
+
     // Validate form
     const validation = validateSignUpForm(formData);
     if (!validation.isValid) {
@@ -67,6 +73,7 @@ export default function SignUpPage() {
       const result = await signUp(formDataObj);
 
       if (result?.user) {
+        console.log("Sign up successful, user created:", result.user.id); // Debug log
         setShowSuccess(true);
         // Redirect to email verification page
         setTimeout(() => {
@@ -74,6 +81,7 @@ export default function SignUpPage() {
         }, 2000);
       }
     } catch (error: any) {
+      console.error("Sign up form error:", error); // Debug log
       console.error("Sign up failed:", error);
       setError(error?.message || "Sign up failed. Please try again.");
     } finally {
@@ -83,12 +91,16 @@ export default function SignUpPage() {
 
   const handleGoogleSignUp = async () => {
     try {
+      console.log("Google sign up clicked"); // Debug log
       setError(null);
       const result = await signInWithGoogle();
       if (result?.error) {
         setError(result.error);
+      } else {
+        console.log("Google sign up initiated"); // Debug log
       }
     } catch (error: any) {
+      console.error("Google sign up error:", error); // Debug log
       console.error("Google sign up failed:", error);
       setError(error?.message || "Google sign up failed. Please try again.");
     }

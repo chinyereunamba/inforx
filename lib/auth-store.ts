@@ -23,24 +23,33 @@ export const useAuthStore = create<AuthState>((set: any, get: any) => ({
   setInitialized: (initialized: boolean) => set({ initialized }),
 
   initialize: async () => {
+    console.log("Initializing auth store..."); // Debug log
     const supabase = createClient();
 
     // Get initial session
     const {
       data: { session },
     } = await supabase.auth.getSession();
+    
+    console.log("Initial session:", !!session?.user, session?.user?.id); // Debug log
     set({ user: session?.user || null, loading: false, initialized: true });
 
     // Listen for auth changes
     supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session?.user?.id);
+      console.log("Auth state changed:", event, !!session?.user, session?.user?.id); // Debug log
       set({ user: session?.user || null, loading: false });
     });
   },
 
   signOut: async () => {
+    console.log("Auth store signOut called..."); // Debug log
     const supabase = createClient();
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Auth store signOut error:", error);
+      throw error;
+    }
     set({ user: null });
+    console.log("Auth store signOut successful"); // Debug log
   },
 }));
