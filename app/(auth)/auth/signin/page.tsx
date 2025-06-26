@@ -113,7 +113,7 @@ export default function SignInPage() {
       </form>
 
       {/* Demo link */}
-      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-3">
         <h4 className="font-medium text-emerald-800 mb-2">Try InfoRx Demo</h4>
         <p className="text-sm text-emerald-700 mb-3">
           Experience our AI healthcare interpreter without creating an account
