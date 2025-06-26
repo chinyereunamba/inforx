@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
 
     // Build query
-    let query = await supabase
+    let query = supabase
       .from("medical_records")
       .select("*")
       .eq("user_id", user.id)

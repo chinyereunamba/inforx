@@ -98,3 +98,29 @@ export interface SummaryGenerationStatus {
   error?: string;
   result?: MedicalSummary;
 }
+
+export interface GenerateSummaryRequest {
+  recordIds: string[];
+}
+
+export interface GenerateSummaryResponse {
+  success: boolean;
+  summary?: MedicalSummary;
+  error?: string;
+}
+
+export interface LatestSummaryResponse {
+  success: boolean;
+  summary?: MedicalSummary;
+  error?: string;
+}
+
+export interface AIExtractionResult {
+  summary_text: string;
+  conditions_identified: string[];
+  medications_mentioned: string[];
+  tests_performed: string[];
+  patterns_identified: string[];
+  risk_factors: string[];
+  recommendations: string[];
+}

@@ -13,10 +13,13 @@ import {
   Hospital,
   FileText,
   BarChart3,
+  Brain,
 } from "lucide-react";
 import MedicalRecordUpload from "@/components/medical-records/MedicalRecordUpload";
 import MedicalRecordsList from "@/components/medical-records/MedicalRecordsList";
+import { MedicalSummary } from "@/components/medical-records/MedicalSummary";
 import { MedicalRecord } from "@/lib/types/medical-records";
+import { MedicalSummary as MedicalSummaryType } from "@/lib/types/medical-summaries";
 import {
   medicalRecordsService,
   MedicalRecordsFilters,
@@ -32,6 +35,8 @@ export default function MedicalRecordsPage() {
   const [filterType, setFilterType] = useState<string>("all");
   const [filterHospital, setFilterHospital] = useState<string>("all");
   const [error, setError] = useState<string | null>(null);
+  const [selectedRecordIds, setSelectedRecordIds] = useState<string[]>([]);
+  const [showSummary, setShowSummary] = useState(false);
 
   // Fetch user's medical records
   const fetchRecords = async (filters?: MedicalRecordsFilters) => {
@@ -76,12 +81,30 @@ export default function MedicalRecordsPage() {
     try {
       await medicalRecordsService.deleteRecord(recordId);
       setRecords((prev) => prev.filter((record) => record.id !== recordId));
+      // Remove from selected records if it was selected
+      setSelectedRecordIds((prev) => prev.filter((id) => id !== recordId));
       // Refresh stats when record is deleted
       fetchStats();
     } catch (error: any) {
       console.error("Error deleting record:", error);
       setError(error.message || "Failed to delete record");
     }
+  };
+
+  // Handle record selection
+  const handleRecordSelection = (recordId: string, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedRecordIds((prev) => [...prev, recordId]);
+    } else {
+      setSelectedRecordIds((prev) => prev.filter((id) => id !== recordId));
+    }
+  };
+
+  // Handle summary generation
+  const handleSummaryGenerated = (summary: MedicalSummaryType) => {
+    setShowSummary(true);
+    // You could add a toast notification here
+    console.log("Summary generated successfully:", summary);
   };
 
   // Handle search and filter changes
@@ -153,6 +176,15 @@ export default function MedicalRecordsPage() {
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+            {selectedRecordIds.length > 0 && (
+              <button
+                onClick={() => setShowSummary(!showSummary)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Brain className="h-4 w-4" />
+                {showSummary ? "Hide Summary" : "Show Summary"}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -243,6 +275,16 @@ export default function MedicalRecordsPage() {
               }}
             />
           </div>
+
+          {/* AI Summary Section */}
+          {showSummary && (
+            <div className="mt-6">
+              <MedicalSummary
+                selectedRecordIds={selectedRecordIds}
+                onSummaryGenerated={handleSummaryGenerated}
+              />
+            </div>
+          )}
         </div>
 
         {/* Right Column - Records List */}
@@ -286,6 +328,12 @@ export default function MedicalRecordsPage() {
                 <span className="text-sm text-gray-500">
                   {records.length} records found
                 </span>
+
+                {selectedRecordIds.length > 0 && (
+                  <span className="text-sm text-blue-600 font-medium">
+                    {selectedRecordIds.length} selected
+                  </span>
+                )}
               </div>
             </div>
 
@@ -298,6 +346,8 @@ export default function MedicalRecordsPage() {
                 fetchRecords();
                 fetchStats();
               }}
+              selectedRecordIds={selectedRecordIds}
+              onRecordSelection={handleRecordSelection}
             />
           </div>
         </div>
