@@ -45,7 +45,7 @@ ${input}
       headers: {
         'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://inforx.org, // replace with your actual domain
+        'HTTP-Referer': 'https://inforx.org',
         'X-Title': 'InfoRx'
       },
       body: JSON.stringify({
