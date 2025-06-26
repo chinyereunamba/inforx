@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 interface OAuthButtonProps {
   provider: "google";
   onClick?: () => void;
-  onClick?: () => void;
   loading?: boolean;
   disabled?: boolean;
   className?: string;
@@ -47,7 +46,6 @@ const providerConfig = {
 
 export default function OAuthButton({
   provider,
-  onClick,
   onClick,
   loading = false,
   disabled = false,
