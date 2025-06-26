@@ -101,7 +101,7 @@ export class AIMedicalSummaryService {
           "X-Title": "InfoRx Medical Summary",
         },
         body: JSON.stringify({
-          model: "anthropic/claude-3.5-sonnet", // or 'openai/gpt-4'
+          model: "anthropic/claude-3-h",
           messages: [
             {
               role: "system",
