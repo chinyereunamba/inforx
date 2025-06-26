@@ -33,11 +33,20 @@ export default function SignInPage() {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     try {
-      await signInWithEmail(formData);
-      router.push("/dashboard");
+      const result = await signInWithEmail(formData);
+      
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      
+      if (result.user) {
+        router.push("/dashboard");
+      }
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "An unexpected error occurred. Please try again.");
     }
   };
 
