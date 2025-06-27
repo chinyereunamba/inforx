@@ -1,6 +1,6 @@
+import Badge from "@/components/Badge";
 import "./globals.css";
 import type { Metadata } from "next";
-
 
 export const metadata: Metadata = {
   title: "InfoRx - Revolutionary Healthcare for Nigeria",
@@ -39,7 +39,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" >
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -48,8 +48,9 @@ export default async function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className={` antialiased`}>
+      <body className={`antialiased`}>
         {children}
+        <Badge />
       </body>
     </html>
   );

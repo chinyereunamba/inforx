@@ -124,7 +124,7 @@ const config: Config = {
         'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter','Noto Sans', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         '4xl': ['2.5rem', { lineHeight: '1.2' }],
