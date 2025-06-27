@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
-import DashboardLayoutComponent from "@/components/dashboard/DashboardLayout";
+import ModernDashboardLayout from "@/components/dashboard/ModernDashboardLayout";
 
 type DashboardProps = {
   children: React.ReactNode;
@@ -46,6 +46,6 @@ export default function DashboardLayout({ children }: DashboardProps) {
   }
 
   return (
-    <DashboardLayoutComponent user={user}>{children}</DashboardLayoutComponent>
+    <ModernDashboardLayout user={user}>{children}</ModernDashboardLayout>
   );
 }
