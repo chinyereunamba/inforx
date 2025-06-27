@@ -112,7 +112,7 @@ export default function FinalCTA() {
             </span>
           </h2>
 
-          <p className="text-xl md:text-2xl text-blue-100 leading-relaxed max-w-4xl mx-auto mb-12 font-noto">
+          <p className="text-xl md:text-2xl text-blue-100 leading-relaxed max-w-4xl mx-auto mb-12">
             Join thousands of Nigerians using InfoRx for smarter health
             guidance. Transform complex medical information into clear,
             actionable insights.
@@ -190,7 +190,7 @@ export default function FinalCTA() {
             </div>
           </div>
 
-          <p className="text-blue-100 text-sm font-noto">
+          <p className="text-blue-100 text-sm">
             No disclaimer needed here - InfoRx is designed to complement, not
             replace, professional medical care.
           </p>

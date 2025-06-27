@@ -190,7 +190,8 @@ export default function SolutionFeatures() {
           <h2
             id="solutions-heading"
             ref={titleRef}
-            className="text-3xl md:text-4xl font-bold text-slate-900 mb-6 font-noto"
+            className="text-3xl md:text-4xl font-bold text-slate-900 mb-6"
+            style={{ fontFamily: "Inter, system-ui, sans-serif" }}
           >
             How InfoRx Solves This
           </h2>

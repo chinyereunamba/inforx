@@ -41,9 +41,7 @@ export default function FormContainer({
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-xl flex items-center justify-center">
               <Heart className="h-6 w-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-slate-900 font-noto">
-              InfoRx
-            </span>
+            <span className="text-2xl font-bold text-slate-900">InfoRx</span>
           </Link>
 
           <h1 className="text-2xl font-bold font-noto text-slate-900 mb-2">
