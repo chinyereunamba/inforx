@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_NG',
-    url: 'https://inforx.ng',
+    url: 'https://info-rx.org',
     title: 'InfoRx - Simplifying Healthcare Through Intelligent Innovation',
     description: 'AI-powered insights for lab results, prescriptions, and symptoms. Transform your healthcare experience with intelligent technology.',
     siteName: 'InfoRx',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'InfoRx - Simplifying Healthcare Through Intelligent Innovation',
     description: 'AI-powered insights for lab results, prescriptions, and symptoms.',
-    creator: '@inforx_ng',
+    creator: '@chinyere_un',
   },
   viewport: 'width=device-width, initial-scale=1',
   themeColor: '#0ea5e9',
