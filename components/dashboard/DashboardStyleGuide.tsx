@@ -242,7 +242,7 @@ export default function DashboardStyleGuide() {
     </div>
   );
 
-  const renderResponsive = () => (
+  const renderResponsive = () => {
     <div className="space-y-8">
       <div>
         <h3 className="text-lg font-semibold mb-4">Responsive Design</h3>
@@ -291,7 +291,7 @@ export default function DashboardStyleGuide() {
         </div>
       </div>
     </div>
-  );
+    };
 
   return (
     <div className="max-w-7xl mx-auto p-6">
