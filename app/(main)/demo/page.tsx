@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_NG',
-    url: 'https://inforx.ng/demo',
+    url: 'https://info-rx.org/demo',
     title: 'Demo - See InfoRx in Action',
     description: 'Experience how InfoRx\'s AI-powered platform transforms complex medical information into clear, actionable insights.',
     siteName: 'InfoRx',
