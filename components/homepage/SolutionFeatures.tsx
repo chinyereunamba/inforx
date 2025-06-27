@@ -209,7 +209,7 @@ export default function SolutionFeatures() {
               return (
                 <div
                   key={feature.id}
-                  className={`bg-gradient-to-br ${feature.bgColor} rounded-2xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-white cursor-pointer group transform hover:scale-105`}
+                  className={`bg-gradient-to-br ${feature.bgColor} rounded-2xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border cursor-pointer group transform hover:scale-105`}
                 >
                   <div className="flex items-start gap-4">
                     <div className={`flex-shrink-0 w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm ${feature.color}`}>
