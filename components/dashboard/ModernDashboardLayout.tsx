@@ -3,13 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { User } from "@supabase/supabase-js";
-import { 
-  Menu, 
-  X, 
-  Search, 
-  Bell, 
-  Settings, 
-  Moon, 
+import {
+  Menu,
+  X,
+  Search,
+  Bell,
+  Settings,
+  Moon,
   Sun,
   ChevronDown,
   Home,
@@ -17,7 +17,7 @@ import {
   Upload,
   BarChart3,
   Heart,
-  Activity
+  Activity,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -43,14 +43,14 @@ const navigationItems: NavigationItem[] = [
     label: "Dashboard",
     href: "/dashboard",
     icon: Home,
-    description: "Overview and insights"
+    description: "Overview and insights",
   },
   {
     id: "interpreter",
     label: "AI Interpreter",
     href: "/dashboard/interpreter",
     icon: Heart,
-    description: "Medical document analysis"
+    description: "Medical document analysis",
   },
   {
     id: "records",
@@ -58,37 +58,40 @@ const navigationItems: NavigationItem[] = [
     href: "/dashboard/records",
     icon: FileText,
     badge: 3,
-    description: "Manage your health records"
+    description: "Manage your health records",
   },
   {
     id: "upload",
     label: "Upload",
     href: "/dashboard/upload",
     icon: Upload,
-    description: "Add new documents"
+    description: "Add new documents",
   },
   {
     id: "analytics",
     label: "Health Analytics",
     href: "/dashboard/analytics",
     icon: BarChart3,
-    description: "Health trends and insights"
+    description: "Health trends and insights",
   },
   {
     id: "activity",
     label: "Recent Activity",
     href: "/dashboard/activity",
     icon: Activity,
-    description: "Track your health journey"
-  }
+    description: "Track your health journey",
+  },
 ];
 
-export default function ModernDashboardLayout({ children, user }: DashboardLayoutProps) {
+export default function ModernDashboardLayout({
+  children,
+  user,
+}: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [notifications, setNotifications] = useState(2);
-  
+
   const sidebarRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -96,7 +99,10 @@ export default function ModernDashboardLayout({ children, user }: DashboardLayou
   // Initialize theme
   useEffect(() => {
     const savedTheme = localStorage.getItem("inforx-theme");
-    if (savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+    if (
+      savedTheme === "dark" ||
+      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)
+    ) {
       setDarkMode(true);
       document.documentElement.classList.add("dark");
     }
@@ -121,7 +127,7 @@ export default function ModernDashboardLayout({ children, user }: DashboardLayou
   const toggleTheme = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
-    
+
     if (newDarkMode) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("inforx-theme", "dark");
@@ -144,14 +150,18 @@ export default function ModernDashboardLayout({ children, user }: DashboardLayou
         x: "-100%",
         duration: 0.3,
         ease: "power2.out",
-        onComplete: () => setSidebarOpen(false)
+        onComplete: () => setSidebarOpen(false),
       });
       gsap.to(overlayRef.current, { opacity: 0, duration: 0.3 });
     }
   };
 
   return (
-    <div className={`min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 ${darkMode ? 'dark' : ''}`}>
+    <div
+      className={`min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 ${
+        darkMode ? "dark" : ""
+      }`}
+    >
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
@@ -164,7 +174,7 @@ export default function ModernDashboardLayout({ children, user }: DashboardLayou
       {/* Sidebar */}
       <aside
         ref={sidebarRef}
-        className={`fixed top-0 left-0 z-50 w-72 h-full bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 shadow-xl lg:shadow-none transition-all duration-300 ${
+        className={`fixed top-0 left-0 z-50 w-72 h-full flex flex-col justify-between bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 shadow-xl lg:shadow-none transition-all duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
@@ -176,8 +186,12 @@ export default function ModernDashboardLayout({ children, user }: DashboardLayou
                 <Heart className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold font-noto text-slate-900 dark:text-white">InfoRx</h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Healthcare AI</p>
+                <h1 className="text-xl font-bold font-noto text-slate-900 dark:text-white">
+                  InfoRx
+                </h1>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Healthcare AI
+                </p>
               </div>
             </div>
             <Button
@@ -211,31 +225,44 @@ export default function ModernDashboardLayout({ children, user }: DashboardLayou
             {navigationItems.map((item) => {
               const IconComponent = item.icon;
               const isActive = isActiveRoute(item.href);
-              
+
               return (
                 <Link
                   key={item.id}
                   href={item.href}
-                  onClick={() => window.innerWidth < 1024 && handleSidebarClose()}
-                  className={`group flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
+                  onClick={() =>
+                    window.innerWidth < 1024 && handleSidebarClose()
+                  }
+                  className={`group flex items-center gap-3 px-3 py-3 text-slate-700 rounded-xl transition-all duration-200 ${
                     isActive
-                      ? "bg-gradient-to-r from-sky-500 to-emerald-500 text-white shadow-lg"
-                      : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                      ? "border-teal-600 border-2 shadow-lg"
+                      : " dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                   }`}
                 >
-                  <IconComponent className={`h-5 w-5 ${isActive ? "text-white" : "text-slate-500 dark:text-slate-400 group-hover:text-sky-500"}`} />
+                  <IconComponent
+                    className={`h-5 w-5 ${
+                      isActive
+                        ? "text-white"
+                        : "text-slate-500 dark:text-slate-400 group-hover:text-sky-500"
+                    }`}
+                  />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <span className="font-medium truncate">{item.label}</span>
                       {item.badge && (
-                        <span className={`ml-2 px-2 py-1 text-xs font-medium rounded-full ${
-                          isActive ? "bg-white/20 text-white" : "bg-sky-100 text-sky-600 dark:bg-sky-900/50 dark:text-sky-400"
-                        }`}>
+                        <span
+                          className={`ml-2 px-2 py-1 text-xs font-medium rounded-full bg-sky-100 text-sky-600 dark:bg-sky-900/50 dark:text-sky-400
+                        }`}
+                        >
                           {item.badge}
                         </span>
                       )}
                     </div>
-                    <p className={`text-xs truncate ${isActive ? "text-white/80" : "text-slate-500 dark:text-slate-400"}`}>
+                    <p
+                      className={`text-xs truncate 
+                          text-slate-500 dark:text-slate-400
+                      }`}
+                    >
                       {item.description}
                     </p>
                   </div>
@@ -250,7 +277,8 @@ export default function ModernDashboardLayout({ children, user }: DashboardLayou
           <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer">
             <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-sky-500 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">
-                {user?.user_metadata?.full_name?.[0] || user?.email?.[0]?.toUpperCase()}
+                {user?.user_metadata?.full_name?.[0] ||
+                  user?.email?.[0]?.toUpperCase()}
               </span>
             </div>
             <div className="flex-1 min-w-0">
@@ -284,7 +312,8 @@ export default function ModernDashboardLayout({ children, user }: DashboardLayou
             {/* Page Title - Hide on mobile */}
             <div className="hidden lg:block">
               <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
-                {navigationItems.find(item => isActiveRoute(item.href))?.label || "Dashboard"}
+                {navigationItems.find((item) => isActiveRoute(item.href))
+                  ?.label || "Dashboard"}
               </h2>
             </div>
 
@@ -297,7 +326,11 @@ export default function ModernDashboardLayout({ children, user }: DashboardLayou
                 onClick={toggleTheme}
                 className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
               >
-                {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                {darkMode ? (
+                  <Sun className="h-5 w-5" />
+                ) : (
+                  <Moon className="h-5 w-5" />
+                )}
               </Button>
 
               {/* Notifications */}
@@ -330,9 +363,7 @@ export default function ModernDashboardLayout({ children, user }: DashboardLayou
         </header>
 
         {/* Page Content */}
-        <main className="p-6">
-          {children}
-        </main>
+        <main className="p-6">{children}</main>
       </div>
     </div>
   );

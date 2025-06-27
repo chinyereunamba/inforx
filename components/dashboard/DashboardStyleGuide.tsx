@@ -94,7 +94,7 @@ export default function DashboardStyleGuide() {
           <h4 className="font-medium text-slate-900 dark:text-white">
             {palette.name}
           </h4>
-          <div className="grid grid-cols-5 gap-3">
+          <div className="max-w-7xl grid grid-cols-5 gap-3">
             {palette.colors.map((color) => (
               <div key={color.name} className="text-center">
                 <div
@@ -167,6 +167,7 @@ export default function DashboardStyleGuide() {
           Typography Rules
         </h4>
         <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+          <li>• Noto Sans font family for heading elements</li>
           <li>• Inter font family for all text elements</li>
           <li>• 150% line height for body text, 120% for headings</li>
           <li>• Maximum 3 font weights per design</li>
@@ -333,7 +334,7 @@ export default function DashboardStyleGuide() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold font-noto text-slate-900 dark:text-white mb-2">
           InfoRx Design System

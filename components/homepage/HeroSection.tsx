@@ -155,7 +155,7 @@ export default function HeroSection() {
               asChild
             >
               <Link href="/dashboard">
-                Visit Dashboard
+                Get Started
                 <ArrowRight className="ml-2 h-6 w-6" />
               </Link>
             </Button>
