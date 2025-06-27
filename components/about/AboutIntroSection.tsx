@@ -122,11 +122,15 @@ export default function AboutIntroSection() {
         <div className="text-center max-w-4xl mx-auto">
           <h1
             ref={titleRef}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-8 leading-tight"
-            style={{ fontFamily: "Inter, system-ui, sans-serif" }}
+            className="text-4xl md:text-5xl lg:text-6xl font-bold font-noto text-slate-900 mb-8 leading-tight"
           >
             Our Mission at
-            <span className="text-blue-500 block">InfoRx</span>
+            <span
+              className="text-blue-500 block"
+              style={{ fontFamily: "Noto Sans, system-ui, sans-serif" }}
+            >
+              InfoRx
+            </span>
           </h1>
 
           <p
@@ -145,7 +149,7 @@ export default function AboutIntroSection() {
             className="bg-gradient-to-r from-blue-500 to-emerald-500 text-white rounded-2xl p-8 shadow-xl mb-16"
           >
             <h2 className="text-2xl md:text-3xl font-bold mb-4">Our Vision</h2>
-            <p className="text-xl md:text-2xl font-semibold leading-relaxed">
+            <p className="text-xl md:text-2xl font-normal leading-relaxed">
               "Accessible, understandable healthcare for all Nigerians."
             </p>
           </div>

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { Heart, Shield } from 'lucide-react';
-import Link from 'next/link';
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { Heart, Shield } from "lucide-react";
+import Link from "next/link";
 
 interface FormContainerProps {
   children: React.ReactNode;
@@ -12,11 +12,11 @@ interface FormContainerProps {
   showTrustIndicators?: boolean;
 }
 
-export default function FormContainer({ 
-  children, 
-  title, 
-  subtitle, 
-  showTrustIndicators = true 
+export default function FormContainer({
+  children,
+  title,
+  subtitle,
+  showTrustIndicators = true,
 }: FormContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -25,7 +25,7 @@ export default function FormContainer({
       gsap.fromTo(
         containerRef.current,
         { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
+        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
       );
     }, containerRef);
 
@@ -34,25 +34,22 @@ export default function FormContainer({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 flex items-center justify-center p-4">
-      <div 
-        ref={containerRef}
-        className="w-full max-w-md"
-      >
+      <div ref={containerRef} className="w-full max-w-md">
         {/* Logo and Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-xl flex items-center justify-center">
               <Heart className="h-6 w-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-slate-900">InfoRx</span>
+            <span className="text-2xl font-bold text-slate-900 font-noto">
+              InfoRx
+            </span>
           </Link>
-          
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">
+
+          <h1 className="text-2xl font-bold font-noto text-slate-900 mb-2">
             {title}
           </h1>
-          <p className="text-slate-600">
-            {subtitle}
-          </p>
+          <p className="text-slate-600">{subtitle}</p>
         </div>
 
         {/* Form Card */}
@@ -77,11 +74,11 @@ export default function FormContainer({
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-slate-500">
           <p>
-            By continuing, you agree to our{' '}
+            By continuing, you agree to our{" "}
             <Link href="/terms" className="text-blue-600 hover:underline">
               Terms of Service
-            </Link>{' '}
-            and{' '}
+            </Link>{" "}
+            and{" "}
             <Link href="/privacy" className="text-blue-600 hover:underline">
               Privacy Policy
             </Link>

@@ -91,7 +91,10 @@ export default function Navbar() {
               className="flex items-center space-x-3 group"
               aria-label="InfoRx homepage"
             >
-              <span className="text-2xl font-bold text-slate-900 group-hover:text-teal-600 transition-colors duration-200">
+              <span
+                className="text-2xl font-bold text-slate-900 group-hover:text-teal-600 transition-colors duration-200"
+                style={{ fontFamily: "Noto Sans, system-ui, sans-serif" }}
+              >
                 InfoRx
               </span>
             </Link>
@@ -114,12 +117,12 @@ export default function Navbar() {
 
           {/* Right Side - Contact Button and Language Selector */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Button
+            {/* <Button
               asChild
               className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
             >
               <Link href="/contact">Contact us</Link>
-            </Button>
+            </Button> */}
 
             {/* Language Selector */}
             <div className="flex items-center space-x-2 text-slate-700 hover:text-teal-600 cursor-pointer transition-colors duration-200">

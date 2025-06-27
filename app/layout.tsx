@@ -1,6 +1,7 @@
 import Badge from "@/components/Badge";
 import "./globals.css";
 import type { Metadata } from "next";
+import { Inter, Noto_Sans } from "next/font/google";
 
 export const metadata: Metadata = {
   title: "InfoRx - Revolutionary Healthcare for Nigeria",
@@ -33,6 +34,16 @@ export const metadata: Metadata = {
   themeColor: "#0A9396",
 };
 
+const inter = Inter({
+  weight: ['400',"500", "600", "700"],
+  subsets: ["latin"],
+});
+const noto = Noto_Sans({
+  weight: ['400',"500", "600", "700", "800"],
+  subsets: ["latin", "latin-ext"],
+});
+
+
 export default async function RootLayout({
   children,
 }: {
@@ -48,7 +59,7 @@ export default async function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className={`antialiased`}>
+      <body className={`${inter.className} ${noto.className} antialiased`}>
         {children}
         <Badge />
       </body>

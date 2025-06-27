@@ -278,7 +278,7 @@ This interpretation is for educational purposes only and should not replace prof
         <div className="results-header mb-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Analysis Results</h1>
+              <h1 className="text-2xl font-bold font-noto text-gray-900">Analysis Results</h1>
               <p className="text-gray-600">
                 Generated on {result.timestamp.toLocaleDateString()} • {result.language.charAt(0).toUpperCase() + result.language.slice(1)}
               </p>

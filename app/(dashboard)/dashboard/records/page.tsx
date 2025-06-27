@@ -158,7 +158,7 @@ export default function MedicalRecordsPage() {
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">
+            <h1 className="text-2xl font-semibold font-noto text-gray-900">
               Medical Records
             </h1>
             <p className="text-sm text-gray-600 mt-1">

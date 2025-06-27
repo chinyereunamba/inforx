@@ -143,8 +143,7 @@ export default function HeroSection() {
         <div className="max-w-4xl mx-auto">
           <h1
             ref={titleRef}
-            className="text-4xl md:text-5xl lg:text-7xl font-bold text-gray-800 mb-6 leading-tight"
-            style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+            className="text-4xl md:text-5xl lg:text-7xl font-bold font-noto text-gray-800 mb-6 leading-tight"
           >
             See InfoRx in
             <span className="text-emerald-600 block">Action</span>

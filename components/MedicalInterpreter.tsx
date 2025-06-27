@@ -435,7 +435,7 @@ export default function MedicalInterpreter() {
           <div ref={inputSectionRef} className="lg:col-span-2 space-y-6">
             {/* Header */}
             <div className="header-section text-center lg:text-left">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-700 mb-4">
+              <h1 className="text-3xl font-noto md:text-4xl font-bold text-gray-700 mb-4">
                 AI Health Interpreter
               </h1>
               <p className="text-lg text-gray-600 leading-relaxed">

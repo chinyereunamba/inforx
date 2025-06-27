@@ -75,8 +75,8 @@ export default function RoadmapHeader() {
         <div className="text-center max-w-4xl mx-auto">
           <h1 
             ref={titleRef}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight"
-            style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+            className="text-4xl md:text-5xl lg:text-6xl font-bold font-noto text-slate-900 mb-6 leading-tight"
+            
           >
             InfoRx Development
             <span className="text-sky-500 block">Roadmap</span>

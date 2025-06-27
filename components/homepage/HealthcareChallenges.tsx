@@ -216,7 +216,7 @@ export default function HealthcareChallenges() {
                 ref={(el) => {
                   if (el) cardsRef.current[index] = el;
                 }}
-                className="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-100 group cursor-pointer"
+                className="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-8 hover:shadow-xl transition-all duration-300 border border-slate-100 group cursor-pointer"
               >
                 <div className="challenge-icon flex items-center justify-center w-16 h-16 bg-red-100 rounded-2xl mb-6 group-hover:bg-red-200 transition-colors duration-300">
                   <IconComponent className="h-8 w-8 text-red-600" />

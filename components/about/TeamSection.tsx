@@ -173,12 +173,11 @@ export default function TeamSection() {
           <h2
             id="team-heading"
             ref={titleRef}
-            className="text-3xl md:text-4xl font-bold text-slate-900 mb-6"
-            style={{ fontFamily: "Inter, system-ui, sans-serif" }}
+            className="text-3xl md:text-4xl font-bold text-slate-900 mb-6 font-noto"
           >
             Meet the Team Behind InfoRx
           </h2>
-          <p className="text-lg text-slate-600 mb-8">
+          <p className="text-lg text-slate-600 mb-8 font-noto">
             Meet the passionate team behind InfoRx. We&apos;re a diverse group
             of healthcare professionals, technologists, and community advocates
             united by a common mission: making quality healthcare accessible to
@@ -193,52 +192,77 @@ export default function TeamSection() {
               ref={(el) => {
                 if (el) teamCardsRef.current[index] = el;
               }}
-              className="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-6 shadow-lg border border-slate-100 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+              className="flip-card bg-gradient-to-br from-slate-50 to-white rounded-2xl p-0 shadow-lg border border-slate-100 hover:shadow-xl transition-all duration-300 cursor-pointer group"
               onMouseEnter={() => setHoveredCard(member.id)}
               onMouseLeave={() => setHoveredCard(null)}
+              style={{ perspective: "1200px" }}
             >
-              {/* Avatar */}
-              <div className="text-center mb-6">
+              <div
+                className={`flip-card-inner rounded-2xl transition-transform duration-700 ease-in-out ${
+                  hoveredCard === member.id ? "flipped" : ""
+                }`}
+                style={{ transformStyle: "preserve-3d", minHeight: 300 }}
+              >
+                {/* Front Face */}
                 <div
-                  className={`team-avatar w-20 h-20 bg-gradient-to-br ${member.color} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}
+                  className="flip-card-front rounded-2xl p-6"
+                  style={{
+                    backfaceVisibility: "hidden",
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                  }}
                 >
-                  <span className="text-2xl font-bold text-white">
-                    {member.image}
-                  </span>
+                  <div className="text-center mb-6">
+                    <div
+                      className={`team-avatar w-20 h-20 bg-gradient-to-br ${member.color} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}
+                    >
+                      <span className="text-2xl font-bold text-white">
+                        {member.image}
+                      </span>
+                    </div>
+
+                    <h3 className="text-xl font-bold text-slate-900 mb-1">
+                      {member.name}
+                    </h3>
+
+                    <p className="text-emerald-600 font-semibold mb-3">
+                      {member.role}
+                    </p>
+
+                    {/* Quote */}
+                    <blockquote className="text-sm text-slate-600 italic mb-4">
+                      "{member.quote}"
+                    </blockquote>
+                  </div>
                 </div>
-
-                <h3 className="text-xl font-bold text-slate-900 mb-1">
-                  {member.name}
-                </h3>
-
-                <p className="text-emerald-600 font-semibold mb-3">
-                  {member.role}
-                </p>
-
-                {/* Quote */}
-                <blockquote className="text-sm text-slate-600 italic mb-4">
-                  "{member.quote}"
-                </blockquote>
-              </div>
-
-              {/* Bio (Hidden by default, shown on hover) */}
-              <div className="team-content">
-                <div className="team-bio opacity-0 h-0 overflow-hidden transition-all duration-300">
-                  <p className="text-sm text-slate-600 leading-relaxed mb-4">
-                    {member.bio}
-                  </p>
-
-                  {/* Social Links */}
-                  <div className="flex justify-center gap-3">
-                    <button className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors duration-200">
-                      <Linkedin className="h-4 w-4 text-slate-600" />
-                    </button>
-                    <button className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors duration-200">
-                      <Twitter className="h-4 w-4 text-slate-600" />
-                    </button>
-                    <button className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors duration-200">
-                      <Github className="h-4 w-4 text-slate-600" />
-                    </button>
+                {/* Back Face */}
+                <div
+                  className="flip-card-back rounded-2xl p-6 flex flex-col justify-center items-center"
+                  style={{
+                    backfaceVisibility: "hidden",
+                    transform: "rotateY(180deg)",
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                  }}
+                >
+                  <div className="team-bio opacity-100 h-auto overflow-visible transition-none">
+                    <p className="text-sm text-slate-600 leading-relaxed mb-4 text-center">
+                      {member.bio}
+                    </p>
+                    {/* Social Links */}
+                    <div className="flex justify-center gap-3">
+                      <button className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors duration-200">
+                        <Linkedin className="h-4 w-4 text-slate-600" />
+                      </button>
+                      <button className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors duration-200">
+                        <Twitter className="h-4 w-4 text-slate-600" />
+                      </button>
+                      <button className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors duration-200">
+                        <Github className="h-4 w-4 text-slate-600" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -258,6 +282,29 @@ export default function TeamSection() {
           </div>
         </div>
       </div>
+      <style jsx>{`
+        .flip-card {
+          position: relative;
+          min-height: 280px;
+        }
+        .flip-card-inner {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          transform-style: preserve-3d;
+        }
+        .flip-card-front,
+        .flip-card-back {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+        }
+        .flip-card-inner.flipped {
+          transform: rotateY(180deg);
+        }
+      `}</style>
     </section>
   );
 }

@@ -178,7 +178,7 @@ export default function NavigationSidebar({
           >
             <MedicalCrossIcon />
             <div>
-              <h1 className="text-xl font-bold text-gray-900">InfoRx</h1>
+              <h1 className="text-xl font-bold font-noto text-gray-900">InfoRx</h1>
               <p className="text-sm text-gray-500">Healthcare AI</p>
             </div>
           </div>

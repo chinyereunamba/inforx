@@ -1,17 +1,16 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { ExternalLink } from 'lucide-react';
+import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 
 export default function Footer() {
   return (
     <footer className="bg-gray-100 border-t border-gray-200 py-6 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-4 lg:space-y-0">
-          
           {/* Primary Footer Content */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0 text-center sm:text-left">
-            <div className="text-sm text-gray-600 font-medium">
+            <div className="text-sm text-gray-600 font-medium font-noto">
               InfoRx © 2025
             </div>
             <div className="text-sm text-gray-600">
@@ -25,13 +24,13 @@ export default function Footer() {
           {/* Secondary Footer Links */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0 text-center sm:text-left">
             <Link
-              href="/contact"
+              href="mailto:cunamba2@gmail.com"
               className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors duration-200"
             >
               Contact
             </Link>
             <a
-              href="https://github.com/chinyereunamba/inforx-app"
+              href="https://github.com/chinyereunamba/inforx"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors duration-200 inline-flex items-center gap-1"

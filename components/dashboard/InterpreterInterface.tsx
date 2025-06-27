@@ -211,7 +211,7 @@ export default function InterpreterInterface({ onResult, onLoading, onError, isL
       <div className="mb-8">
         <h1 
           ref={headerRef}
-          className="text-2xl font-bold text-gray-900 mb-2"
+          className="text-2xl font-bold font-noto text-gray-900 mb-2"
         >
           Medical Document Interpreter
         </h1>

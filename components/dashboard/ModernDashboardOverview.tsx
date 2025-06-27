@@ -299,7 +299,7 @@ export default function ModernDashboardOverview() {
     <div ref={containerRef} className="space-y-6">
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-sky-500 to-emerald-500 rounded-2xl p-6 text-white">
-        <h1 className="text-2xl font-bold mb-2">Welcome back! 👋</h1>
+        <h1 className="text-2xl font-bold font-noto mb-2">Welcome back! 👋</h1>
         <p className="text-sky-100">
           You have 2 new health insights and 1 upcoming appointment. 
           <span className="font-medium"> Your health journey is on track!</span>

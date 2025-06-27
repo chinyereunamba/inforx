@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, Play, Heart, Users, Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ArrowRight, Play, Heart, Users, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 // Register ScrollTrigger plugin
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
@@ -21,20 +21,20 @@ export default function FinalCTA() {
 
   useEffect(() => {
     if (hasAnimated) return;
-    
+
     const ctx = gsap.context(() => {
       // Background parallax effect
       if (backgroundRef.current) {
         gsap.to(backgroundRef.current, {
           yPercent: -10,
-          ease: 'none',
+          ease: "none",
           overwrite: true,
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true
-          }
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
         });
       }
 
@@ -46,16 +46,16 @@ export default function FinalCTA() {
           opacity: 1,
           y: 0,
           duration: 0.8,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: contentRef.current,
-            start: 'top 85%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
+            start: "top 85%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
             once: true,
-            onEnter: () => setHasAnimated(true)
-          }
+            onEnter: () => setHasAnimated(true),
+          },
         }
       );
 
@@ -68,15 +68,15 @@ export default function FinalCTA() {
           scale: 1,
           y: 0,
           duration: 0.6,
-          ease: 'back.out(1.7)',
+          ease: "back.out(1.7)",
           overwrite: true,
           scrollTrigger: {
             trigger: ctaButtonsRef.current,
-            start: 'top 85%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
-            once: true
-          }
+            start: "top 85%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
+            once: true,
+          },
         }
       );
     }, sectionRef);
@@ -90,15 +90,12 @@ export default function FinalCTA() {
       className="py-24 bg-gradient-to-br from-blue-600 via-emerald-600 to-blue-700 relative overflow-hidden"
     >
       {/* Nigerian-themed background pattern */}
-      <div 
-        ref={backgroundRef}
-        className="absolute inset-0 opacity-10"
-      >
+      <div ref={backgroundRef} className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full -translate-x-32 -translate-y-32" />
         <div className="absolute top-20 right-0 w-48 h-48 bg-white rounded-full translate-x-24 -translate-y-24" />
         <div className="absolute bottom-0 left-1/4 w-36 h-36 bg-white rounded-full translate-y-18" />
         <div className="absolute bottom-20 right-1/4 w-52 h-52 bg-white rounded-full translate-x-26 translate-y-26" />
-        
+
         {/* Nigerian flag inspired elements */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <div className="w-2 h-40 bg-white opacity-5 transform rotate-45" />
@@ -110,12 +107,15 @@ export default function FinalCTA() {
         <div ref={contentRef}>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 leading-tight">
             Ready to improve your
-            <span className="block text-emerald-200 mt-2">healthcare experience?</span>
+            <span className="block text-emerald-200 mt-2">
+              healthcare experience?
+            </span>
           </h2>
-          
-          <p className="text-xl md:text-2xl text-blue-100 leading-relaxed max-w-4xl mx-auto mb-12">
-            Join thousands of Nigerians using InfoRx for smarter health guidance. 
-            Transform complex medical information into clear, actionable insights.
+
+          <p className="text-xl md:text-2xl text-blue-100 leading-relaxed max-w-4xl mx-auto mb-12 font-noto">
+            Join thousands of Nigerians using InfoRx for smarter health
+            guidance. Transform complex medical information into clear,
+            actionable insights.
           </p>
 
           {/* Social proof indicators */}
@@ -135,7 +135,10 @@ export default function FinalCTA() {
           </div>
         </div>
 
-        <div ref={ctaButtonsRef} className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+        <div
+          ref={ctaButtonsRef}
+          className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16"
+        >
           <Button
             size="lg"
             className="bg-white text-blue-700 hover:bg-blue-50 px-10 py-5 text-xl font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 min-w-[240px]"
@@ -146,7 +149,7 @@ export default function FinalCTA() {
               Start Free
             </Link>
           </Button>
-          
+
           <Button
             variant="outline"
             size="lg"
@@ -165,24 +168,31 @@ export default function FinalCTA() {
           <h3 className="text-xl font-bold text-white mb-6">
             Trusted by Leading Nigerian Healthcare Institutions
           </h3>
-          
+
           <div className="grid md:grid-cols-3 gap-6 text-blue-100 mb-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-white mb-1">Lagos State</div>
+              <div className="text-2xl font-bold text-white mb-1">
+                Lagos State
+              </div>
               <div className="text-sm">Health Ministry Partnership</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white mb-1">Nigerian Medical</div>
+              <div className="text-2xl font-bold text-white mb-1">
+                Nigerian Medical
+              </div>
               <div className="text-sm">Association Certified</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white mb-1">Federal Ministry</div>
+              <div className="text-2xl font-bold text-white mb-1">
+                Federal Ministry
+              </div>
               <div className="text-sm">of Health Recognized</div>
             </div>
           </div>
 
-          <p className="text-blue-100 text-sm">
-            No disclaimer needed here - InfoRx is designed to complement, not replace, professional medical care.
+          <p className="text-blue-100 text-sm font-noto">
+            No disclaimer needed here - InfoRx is designed to complement, not
+            replace, professional medical care.
           </p>
         </div>
       </div>

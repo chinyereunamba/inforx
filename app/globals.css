@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import '../styles/accessibility.css';
+@import "../styles/accessibility.css";
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -18,9 +18,24 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
-*, html, body{
-font-family:'Noto Sans', system-ui, sans-serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label {
+  font-family: "Noto Sans", system-ui, sans-serif;
 }
+
+*,
+p,
+i,
+input {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -89,93 +104,93 @@ font-family:'Noto Sans', system-ui, sans-serif;
 /* Custom MediGuide Color Palette */
 @layer utilities {
   .text-teal-600 {
-    color: #0A9396;
+    color: #0a9396;
   }
-  
+
   .text-teal-700 {
     color: #005f5f;
   }
-  
+
   .bg-teal-50 {
     background-color: #f0fdfa;
   }
-  
+
   .bg-teal-100 {
     background-color: #ccfbf1;
   }
-  
+
   .bg-teal-200 {
     background-color: #99f6e4;
   }
-  
+
   .bg-teal-400 {
     background-color: #2dd4da;
   }
-  
+
   .bg-teal-600 {
-    background-color: #0A9396;
+    background-color: #0a9396;
   }
-  
+
   .bg-teal-700 {
     background-color: #005f5f;
   }
-  
+
   .bg-teal-800 {
     background-color: #003333;
   }
-  
+
   .bg-sage-50 {
     background-color: #f8fffe;
   }
-  
+
   .bg-sage-200 {
-    background-color: #94D2BD;
+    background-color: #94d2bd;
   }
-  
+
   .bg-sage-400 {
     background-color: #6b9080;
   }
-  
+
   .border-teal-200 {
     border-color: #99f6e4;
   }
-  
+
   .border-teal-600 {
-    border-color: #0A9396;
+    border-color: #0a9396;
   }
-  
+
   .hover\:bg-teal-50:hover {
     background-color: #f0fdfa;
   }
-  
+
   .hover\:bg-teal-200:hover {
     background-color: #99f6e4;
   }
-  
+
   .hover\:bg-teal-700:hover {
     background-color: #005f5f;
   }
-  
+
   .hover\:border-teal-200:hover {
     border-color: #99f6e4;
   }
-  
+
   .hover\:text-teal-700:hover {
     color: #005f5f;
   }
-  
+
   .text-teal-100 {
     color: #ccfbf1;
   }
-  
+
   .text-teal-200 {
     color: #99f6e4;
   }
-  
+
   .text-teal-300 {
     color: #5eead4;
   }
-  
+
   .border-teal-500 {
     border-color: #14b8a6;
   }
@@ -217,10 +232,10 @@ html {
 
 /* Focus styles for accessibility */
 .focus\:ring-teal-500:focus {
-  --tw-ring-color: #0A9396;
+  --tw-ring-color: #0a9396;
 }
 
 .focus\:border-teal-500:focus {
   --tw-border-opacity: 1;
-  border-color: #0A9396;
+  border-color: #0a9396;
 }

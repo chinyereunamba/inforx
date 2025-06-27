@@ -205,7 +205,7 @@ Best regards,
                 </h4>
               </div>
               <p className="text-slate-700 leading-relaxed">
-                Victoria Island, Lagos, Nigeria
+                Port Harcourt, Rivers, Nigeria
                 <br />
                 <span className="text-slate-600 text-sm">
                   Serving healthcare across all 36 states

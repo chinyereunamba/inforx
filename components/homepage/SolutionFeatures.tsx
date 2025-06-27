@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Bot, Smartphone, MessageSquare, Brain } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Bot, Smartphone, MessageSquare, Brain } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 // Register ScrollTrigger plugin
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
@@ -23,37 +23,41 @@ interface SolutionFeature {
 
 const solutionFeatures: SolutionFeature[] = [
   {
-    id: 'ai-explanations',
+    id: "ai-explanations",
     icon: Bot,
-    title: 'AI-Powered Explanations',
-    description: 'Transform complex medical jargon into clear, understandable language instantly',
-    color: 'text-blue-600',
-    bgColor: 'from-blue-50 to-blue-100'
+    title: "AI-Powered Explanations",
+    description:
+      "Transform complex medical jargon into clear, understandable language instantly",
+    color: "text-blue-600",
+    bgColor: "from-blue-50 to-blue-100",
   },
   {
-    id: 'any-device',
+    id: "any-device",
     icon: Smartphone,
-    title: 'Available on Any Device',
-    description: 'Access healthcare insights from smartphones, tablets, or computers anywhere',
-    color: 'text-emerald-600',
-    bgColor: 'from-emerald-50 to-emerald-100'
+    title: "Available on Any Device",
+    description:
+      "Access healthcare insights from smartphones, tablets, or computers anywhere",
+    color: "text-emerald-600",
+    bgColor: "from-emerald-50 to-emerald-100",
   },
   {
-    id: 'local-language',
+    id: "local-language",
     icon: MessageSquare,
-    title: 'Local Language Support',
-    description: 'Get medical explanations in English, Pidgin, and other Nigerian languages',
-    color: 'text-blue-600',
-    bgColor: 'from-blue-50 to-blue-100'
+    title: "Local Language Support",
+    description:
+      "Get medical explanations in English, Pidgin, and other Nigerian languages",
+    color: "text-blue-600",
+    bgColor: "from-blue-50 to-blue-100",
   },
   {
-    id: 'personalized',
+    id: "personalized",
     icon: Brain,
-    title: 'Personalized Suggestions',
-    description: 'Receive tailored health recommendations based on your specific conditions',
-    color: 'text-emerald-600',
-    bgColor: 'from-emerald-50 to-emerald-100'
-  }
+    title: "Personalized Suggestions",
+    description:
+      "Receive tailored health recommendations based on your specific conditions",
+    color: "text-emerald-600",
+    bgColor: "from-emerald-50 to-emerald-100",
+  },
 ];
 
 export default function SolutionFeatures() {
@@ -67,7 +71,7 @@ export default function SolutionFeatures() {
 
   useEffect(() => {
     if (hasAnimated) return;
-    
+
     const ctx = gsap.context(() => {
       // Title animation
       gsap.fromTo(
@@ -77,16 +81,16 @@ export default function SolutionFeatures() {
           opacity: 1,
           y: 0,
           duration: 0.6,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: titleRef.current,
-            start: 'top 85%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
+            start: "top 85%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
             once: true,
-            onEnter: () => setHasAnimated(true)
-          }
+            onEnter: () => setHasAnimated(true),
+          },
         }
       );
 
@@ -98,15 +102,15 @@ export default function SolutionFeatures() {
           opacity: 1,
           y: 0,
           duration: 0.5,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: subtitleRef.current,
-            start: 'top 85%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
-            once: true
-          }
+            start: "top 85%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
+            once: true,
+          },
         }
       );
 
@@ -118,15 +122,15 @@ export default function SolutionFeatures() {
           opacity: 1,
           x: 0,
           duration: 0.8,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: leftContentRef.current,
-            start: 'top 80%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
-            once: true
-          }
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
+            once: true,
+          },
         }
       );
 
@@ -138,15 +142,15 @@ export default function SolutionFeatures() {
           opacity: 1,
           x: 0,
           duration: 0.8,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: rightContentRef.current,
-            start: 'top 80%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
-            once: true
-          }
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
+            once: true,
+          },
         }
       );
 
@@ -159,15 +163,15 @@ export default function SolutionFeatures() {
           scale: 1,
           y: 0,
           duration: 0.6,
-          ease: 'back.out(1.7)',
+          ease: "back.out(1.7)",
           overwrite: true,
           scrollTrigger: {
             trigger: ctaRef.current,
-            start: 'top 85%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
-            once: true
-          }
+            start: "top 85%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
+            once: true,
+          },
         }
       );
     }, sectionRef);
@@ -186,8 +190,7 @@ export default function SolutionFeatures() {
           <h2
             id="solutions-heading"
             ref={titleRef}
-            className="text-3xl md:text-4xl font-bold text-slate-900 mb-6"
-            style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+            className="text-3xl md:text-4xl font-bold text-slate-900 mb-6 font-noto"
           >
             How InfoRx Solves This
           </h2>
@@ -195,8 +198,8 @@ export default function SolutionFeatures() {
             ref={subtitleRef}
             className="text-xl text-slate-600 max-w-3xl mx-auto"
           >
-            Our AI-powered platform addresses each healthcare challenge with innovative 
-            solutions designed specifically for Nigerian communities.
+            Our AI-powered platform addresses each healthcare challenge with
+            innovative solutions designed specifically for Nigerian communities.
           </p>
         </div>
 
@@ -205,22 +208,26 @@ export default function SolutionFeatures() {
           <div ref={leftContentRef} className="grid gap-6">
             {solutionFeatures.map((feature) => {
               const IconComponent = feature.icon;
-              
+
               return (
                 <div
                   key={feature.id}
-                  className={`bg-gradient-to-br ${feature.bgColor} rounded-2xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border cursor-pointer group transform hover:scale-105`}
+                  className={`bg-gradient-to-br ${feature.bgColor} rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border cursor-pointer group transform hover:scale-105`}
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`flex-shrink-0 w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm ${feature.color}`}>
+                    <div
+                      className={`flex-shrink-0 w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm ${feature.color}`}
+                    >
                       <IconComponent className="h-6 w-6" />
                     </div>
-                    
+
                     <div className="flex-1">
-                      <h3 className={`text-lg font-bold text-slate-900 mb-2 group-hover:${feature.color} transition-colors duration-300`}>
+                      <h3
+                        className={`text-lg font-bold text-slate-900 mb-2 group-hover:${feature.color} transition-colors duration-300`}
+                      >
                         {feature.title}
                       </h3>
-                      
+
                       <p className="text-slate-700 leading-relaxed">
                         {feature.description}
                       </p>
@@ -233,41 +240,39 @@ export default function SolutionFeatures() {
 
           {/* Right Column - CTA Section */}
           <div ref={rightContentRef} className="text-center lg:text-left">
-            <div className="bg-white rounded-2xl p-8 shadow-xl border border-slate-200">
+            <div className="bg-white rounded-2xl p-8 border border-slate-200">
               <h3 className="text-2xl font-bold text-slate-900 mb-4">
                 Experience the difference AI makes
               </h3>
               <p className="text-lg text-slate-600 mb-6 leading-relaxed">
-                See how these powerful features work together to provide 
+                See how these powerful features work together to provide
                 comprehensive healthcare solutions for every Nigerian.
               </p>
-              
+
               <div ref={ctaRef} className="space-y-4">
                 <Button
                   size="lg"
-                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform"
                   asChild
                 >
-                  <Link href="/demo">
-                    See How It Works
-                  </Link>
+                  <Link href="/demo">See How It Works</Link>
                 </Button>
-                
+
                 <Button
                   variant="outline"
                   size="lg"
                   className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50 hover:text-blue-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"
                   asChild
                 >
-                  <Link href="/interpreter">
-                    Explore Features
-                  </Link>
+                  <Link href="/interpreter">Explore Features</Link>
                 </Button>
               </div>
 
               {/* Trust indicator */}
               <div className="mt-6 pt-6 border-t border-slate-200">
-                <p className="text-sm text-slate-600 mb-2">Trusted by healthcare professionals across Nigeria</p>
+                <p className="text-sm text-slate-600 mb-2">
+                  Trusted by healthcare professionals across Nigeria
+                </p>
                 <div className="flex flex-wrap justify-center gap-4 text-xs text-slate-500">
                   <span>Lagos State Health Ministry</span>
                   <span>Nigerian Medical Association</span>

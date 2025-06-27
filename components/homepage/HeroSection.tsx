@@ -101,7 +101,7 @@ export default function HeroSection() {
     <section
       ref={heroRef}
       className="relative min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 flex items-center justify-center px-4 py-20 overflow-hidden"
-      role="banner"
+      aria-label="banner"
     >
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -115,23 +115,28 @@ export default function HeroSection() {
         <div className="space-y-8 text-center lg:text-left">
           <h1
             ref={titleRef}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight"
-            style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+            className="text-4xl md:text-5xl lg:text-6xl font-bold font-noto text-slate-900 leading-tight"
           >
             Simplifying Healthcare Through
-            <span className="text-blue-500 block mt-2">Intelligent Innovation</span>
+            <span className="text-blue-500 block mt-2 font-noto">
+              Intelligent Innovation
+            </span>
           </h1>
 
           <p
             ref={subtitleRef}
             className="text-xl md:text-2xl text-slate-600 leading-relaxed max-w-2xl lg:max-w-none"
-            style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+            style={{ fontFamily: "Inter, system-ui, sans-serif" }}
           >
-            AI-powered insights for lab results, prescriptions, and symptoms. 
-            Transform your healthcare experience with technology designed for Nigerian communities.
+            AI-powered insights for lab results, prescriptions, and symptoms.
+            Transform your healthcare experience with technology designed for
+            Nigerian communities.
           </p>
 
-          <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          <div
+            ref={ctaRef}
+            className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+          >
             <Button
               size="lg"
               className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
@@ -142,7 +147,7 @@ export default function HeroSection() {
                 Try Demo
               </Link>
             </Button>
-            
+
             <Button
               variant="outline"
               size="lg"
@@ -165,9 +170,8 @@ export default function HeroSection() {
           <div className="relative w-full max-w-lg">
             {/* Main AI Interface Circle */}
             <div className="w-80 h-80 md:w-96 md:h-96 bg-gradient-to-br from-blue-400 via-emerald-400 to-blue-500 rounded-full relative mx-auto shadow-2xl">
-              
               {/* Floating UI elements around the main circle */}
-              <div 
+              <div
                 ref={(el) => {
                   if (el) floatingElementsRef.current[0] = el;
                 }}
@@ -175,11 +179,13 @@ export default function HeroSection() {
               >
                 <div className="text-center">
                   <Bot className="w-8 h-8 text-blue-600 mx-auto mb-1" />
-                  <div className="text-xs font-bold text-slate-700">AI Powered</div>
+                  <div className="text-xs font-bold text-slate-700">
+                    AI Powered
+                  </div>
                 </div>
               </div>
-              
-              <div 
+
+              <div
                 ref={(el) => {
                   if (el) floatingElementsRef.current[1] = el;
                 }}
@@ -190,8 +196,8 @@ export default function HeroSection() {
                   <div className="text-xs text-emerald-100">Response</div>
                 </div>
               </div>
-              
-              <div 
+
+              <div
                 ref={(el) => {
                   if (el) floatingElementsRef.current[2] = el;
                 }}
@@ -202,7 +208,7 @@ export default function HeroSection() {
                   <div className="text-xs text-slate-600">Patients</div>
                 </div>
               </div>
-              
+
               {/* Center content representing health AI */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center text-white">
@@ -216,7 +222,7 @@ export default function HeroSection() {
             </div>
 
             {/* Additional floating health elements */}
-            <div 
+            <div
               ref={(el) => {
                 if (el) floatingElementsRef.current[3] = el;
               }}
