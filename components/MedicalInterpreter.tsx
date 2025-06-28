@@ -655,6 +655,20 @@ export default function MedicalInterpreter() {
                           <Copy className="h-5 w-5 text-gray-500" />
                         )}
                       </button>
+                      <button
+                        onClick={() =>
+                          playAudio(state.result.interpretation.simpleExplanation)
+                        }
+                        className="copy-button p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                        title="Copy to clipboard"
+                        aria-label="Copy explanation to clipboard"
+                      >
+                        {copiedCard === "explanation" ? (
+                          <Check className="h-5 w-5 text-green-600" />
+                        ) : (
+                          <Copy className="h-5 w-5 text-gray-500" />
+                        )}
+                      </button>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
                       {state.result.interpretation.simpleExplanation}
