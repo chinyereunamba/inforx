@@ -3,7 +3,7 @@
  */
 export async function textToSpeech(text: string): Promise<Blob> {
   // Use environment variable for API key
-  const apiKey = process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY;
+  const apiKey = process.env.ELEVENLABS_API_KEY;
   
   if (!apiKey) {
     throw new Error('ElevenLabs API key not found. Please set NEXT_PUBLIC_ELEVENLABS_API_KEY environment variable.');
