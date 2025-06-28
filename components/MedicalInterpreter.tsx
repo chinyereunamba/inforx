@@ -20,7 +20,7 @@ import type {
   ExampleSnippet,
   MedicalInterpretation,
 } from "@/lib/types/medical-interpreter";
-import textToSpeech from '@/lib/elevenlabs'
+import {textToSpeech} from '@/lib/elevenlabs'
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
