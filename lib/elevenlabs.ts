@@ -34,8 +34,7 @@ export async function textToSpeech(text: string): Promise<Blob> {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(`ElevenLabs API error: ${response.status} - ${errorData?.detail || response.statusText}`);
-      }
-    })
+    }
 
     const audioBlob = await response.blob();
     return audioBlob;
