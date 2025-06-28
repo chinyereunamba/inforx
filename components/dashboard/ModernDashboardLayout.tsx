@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { User } from "@supabase/supabase-js";
+import { LoggingService } from "@/lib/services/logging-service";
 import {
   Menu,
   X,
@@ -86,7 +87,7 @@ const navigationItems: NavigationItem[] = [
 export default function ModernDashboardLayout({
   children,
   user,
-}: DashboardLayoutProps) {
+}: DashboardLayoutProps) {  
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -99,12 +100,20 @@ export default function ModernDashboardLayout({
   // Initialize theme
   useEffect(() => {
     const savedTheme = localStorage.getItem("inforx-theme");
-    if (
-      savedTheme === "dark" ||
-      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
+    const prefersDark = savedTheme === "dark" || 
+      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      
+    if (prefersDark) {
       setDarkMode(true);
       document.documentElement.classList.add("dark");
+    }
+    
+    // Log user login event if user just arrived
+    if (user) {
+      LoggingService.logAction(user, LoggingService.actions.LOGIN, {
+        theme: prefersDark ? 'dark' : 'light',
+        device: window.innerWidth < 768 ? 'mobile' : 'desktop'
+      });
     }
   }, []);
 
@@ -136,12 +145,30 @@ export default function ModernDashboardLayout({
       localStorage.setItem("inforx-theme", "light");
     }
   };
+  
+  const handleSignOut = async () => {
+    if (user) {
+      // Log sign out action before signing out
+      await LoggingService.logAction(user, LoggingService.actions.LOGOUT, {
+        theme: darkMode ? 'dark' : 'light',
+        session_duration: Math.floor((new Date().getTime() - new Date(user.last_sign_in_at || 0).getTime()) / 1000)
+      });
+    }
+  };
 
   const isActiveRoute = (href: string) => {
     if (href === "/dashboard") {
       return pathname === "/dashboard";
     }
     return pathname.startsWith(href);
+  };
+  
+  const handleNavigationClick = (route: string) => {
+    if (user) {
+      LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
+        page: route.replace("/dashboard/", "").replace("/", "")
+      });
+    }
   };
 
   const handleSidebarClose = () => {
@@ -230,9 +257,10 @@ export default function ModernDashboardLayout({
                 <Link
                   key={item.id}
                   href={item.href}
-                  onClick={() =>
-                    window.innerWidth < 1024 && handleSidebarClose()
-                  }
+                  onClick={() => {
+                    if (window.innerWidth < 1024) handleSidebarClose();
+                    handleNavigationClick(item.href);
+                  }}
                   className={`group flex items-center gap-3 px-3 py-3 text-slate-700 rounded-xl transition-all duration-200 ${
                     isActive
                       ? "border-teal-600 border-2 shadow-lg"
