@@ -3,23 +3,25 @@
 import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import {
-  BookOpen,
-  Lightbulb,
-  AlertTriangle,
-  Copy,
-  ChevronDown,
-  Loader2,
-  Send,
-  FileText,
-  Check,
-} from "lucide-react";
+import { 
+  BookOpen, 
+  Lightbulb, 
+  AlertTriangle, 
+  Copy, 
+  ChevronDown, 
+  Loader2, 
+  Send, 
+  FileText, 
+  Check, 
+  Volume2 
+} from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import type {
   InterpreterState,
   ExampleSnippet,
   MedicalInterpretation,
 } from "@/lib/types/medical-interpreter";
+import { textToSpeech } from '@/lib/elevenlabs';
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
@@ -57,10 +59,12 @@ export default function MedicalInterpreter() {
   });
 
   const [copiedCard, setCopiedCard] = useState<string | null>(null);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [audioError, setAudioError] = useState<string | null>(null);
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
-  const [audioError, setAudioError] = useState<string | null>(null);
   const inputSectionRef = useRef<HTMLDivElement>(null);
   const resultsSectionRef = useRef<HTMLDivElement>(null);
   const resultsCardsRef = useRef<HTMLDivElement[]>([]);
@@ -428,42 +432,70 @@ export default function MedicalInterpreter() {
     return items.map((item, index) => `${index + 1}. ${item}`).join("\n");
   };
 
+  // Clean up audio on unmount
+  useEffect(() => {
+    return () => {
+      if (audioElement) {
+        audioElement.pause();
+        URL.revokeObjectURL(audioElement.src);
+      }
+    };
+  }, [audioElement]);
+
   const playAudio = async (text: string) => {
-    if (isSpeaking) {
-      window.speechSynthesis.cancel();
+    // If audio is already playing, stop it
+    if (isSpeaking && audioElement) {
+      audioElement.pause();
+      audioElement.currentTime = 0;
       setIsSpeaking(false);
       return;
     }
 
+    // Reset state and start loading
     setIsLoadingAudio(true);
     setAudioError(null);
-    
+
     try {
-      const utterance = new SpeechSynthesisUtterance(text);
+      // Get audio blob from ElevenLabs API
+      const audioBlob = await textToSpeech(text);
       
-      // Set up event handlers
-      utterance.onstart = () => {
+      // Create a URL for the blob
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      // Create a new audio element
+      const audio = new Audio(audioUrl);
+      
+      // Set event handlers
+      audio.onplay = () => {
         setIsSpeaking(true);
         setIsLoadingAudio(false);
       };
       
-      utterance.onend = () => {
+      audio.onended = () => {
         setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+        setAudioElement(null);
       };
       
-      utterance.onerror = (event) => {
-        console.error('Speech synthesis error:', event);
+      audio.onerror = (e) => {
+        console.error('Audio playback error:', e);
         setIsSpeaking(false);
         setIsLoadingAudio(false);
         setAudioError('Failed to play audio. Please try again.');
+        URL.revokeObjectURL(audioUrl);
+        setAudioElement(null);
       };
       
-      // Start speaking
-      window.speechSynthesis.speak(utterance);
+      // Store the audio element for later reference
+      setAudioElement(audio);
+      
+      // Play the audio
+      audio.play();
+      
     } catch (error) {
-      console.error('Text-to-speech error:', error);
+      console.error('ElevenLabs API error:', error);
       setIsLoadingAudio(false);
-      setAudioError('Text-to-speech is not supported in your browser.');
+      setAudioError(error instanceof Error ? error.message : 'Failed to generate speech. Please try again.');
     }
   };
 
@@ -664,7 +696,7 @@ export default function MedicalInterpreter() {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <BookOpen className="h-6 w-6 text-blue-600" />
+                          <BookOpen className="h-5 w-5 text-blue-600" />
                         </div>
                         <h3 className="text-xl font-bold text-gray-700">
                           📘 Simple Explanation
@@ -695,19 +727,11 @@ export default function MedicalInterpreter() {
                         disabled={isLoadingAudio}
                       >
                         {isLoadingAudio ? (
-                          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
+                          <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
                         ) : isSpeaking ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
-                          </svg>
+                          <Volume2 className="h-5 w-5 text-blue-600" />
                         ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 1.414m2.828-9.9a9 9 0 012.828-2.828" />
-                          </svg>
+                          <Volume2 className="h-5 w-5 text-gray-500" />
                         )}
                       </button>
                     </div>
