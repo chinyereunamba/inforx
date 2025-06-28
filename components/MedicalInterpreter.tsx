@@ -20,7 +20,6 @@ import type {
   ExampleSnippet,
   MedicalInterpretation,
 } from "@/lib/types/medical-interpreter";
-import {textToSpeech} from '@/lib/elevenlabs'
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
@@ -60,6 +59,8 @@ export default function MedicalInterpreter() {
   const [copiedCard, setCopiedCard] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const [audioError, setAudioError] = useState<string | null>(null);
   const inputSectionRef = useRef<HTMLDivElement>(null);
   const resultsSectionRef = useRef<HTMLDivElement>(null);
   const resultsCardsRef = useRef<HTMLDivElement[]>([]);
@@ -427,13 +428,44 @@ export default function MedicalInterpreter() {
     return items.map((item, index) => `${index + 1}. ${item}`).join("\n");
   };
 
-  const playAudio = async (summary: string) => {
-  const blob = await textToSpeech(summary);
-  const url = URL.createObjectURL(blob);
-  const audio = new Audio(url);
-  audio.play();
-};
+  const playAudio = async (text: string) => {
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
 
+    setIsLoadingAudio(true);
+    setAudioError(null);
+    
+    try {
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      // Set up event handlers
+      utterance.onstart = () => {
+        setIsSpeaking(true);
+        setIsLoadingAudio(false);
+      };
+      
+      utterance.onend = () => {
+        setIsSpeaking(false);
+      };
+      
+      utterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event);
+        setIsSpeaking(false);
+        setIsLoadingAudio(false);
+        setAudioError('Failed to play audio. Please try again.');
+      };
+      
+      // Start speaking
+      window.speechSynthesis.speak(utterance);
+    } catch (error) {
+      console.error('Text-to-speech error:', error);
+      setIsLoadingAudio(false);
+      setAudioError('Text-to-speech is not supported in your browser.');
+    }
+  };
 
   return (
     <div ref={containerRef} className="min-h-screen bg-gray-50 py-8 px-4">
@@ -656,21 +688,35 @@ export default function MedicalInterpreter() {
                         )}
                       </button>
                       <button
-                        onClick={() =>
-                          playAudio(state.result.interpretation.simpleExplanation)
-                        }
-                        className="copy-button p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                        title="Copy to clipboard"
-                        aria-label="Copy explanation to clipboard"
+                        onClick={() => playAudio(state.result.interpretation.simpleExplanation)}
+                        className="audio-button p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                        title={isSpeaking ? "Stop speaking" : "Listen to explanation"}
+                        aria-label={isSpeaking ? "Stop speaking" : "Listen to explanation"}
+                        disabled={isLoadingAudio}
                       >
-                        {copiedCard === "explanation" ? (
-                          <Check className="h-5 w-5 text-green-600" />
+                        {isLoadingAudio ? (
+                          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        ) : isSpeaking ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                          </svg>
                         ) : (
-                          <Copy className="h-5 w-5 text-gray-500" />
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 1.414m2.828-9.9a9 9 0 012.828-2.828" />
+                          </svg>
                         )}
                       </button>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
+                      {audioError && (
+                        <div className="mb-4 text-sm text-red-600 bg-red-50 p-2 rounded-lg">
+                          {audioError}
+                        </div>
+                      )}
                       {state.result.interpretation.simpleExplanation}
                     </p>
                   </div>
@@ -714,11 +760,11 @@ export default function MedicalInterpreter() {
                     </div>
                     <ul className="space-y-3">
                       {state.result.interpretation.recommendedActions.map(
-                        (action, index) => (
-                          <li key={index} className="flex items-start gap-3">
+                        (action, actionIndex) => (
+                          <li key={actionIndex} className="flex items-start gap-3">
                             <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                               <span className="text-yellow-700 font-semibold text-sm">
-                                {index + 1}
+                                {actionIndex + 1}
                               </span>
                             </div>
                             <span className="text-gray-700 leading-relaxed">
@@ -769,8 +815,8 @@ export default function MedicalInterpreter() {
                     </div>
                     <ul className="space-y-3">
                       {state.result.interpretation.medicalAttentionIndicators.map(
-                        (indicator, index) => (
-                          <li key={index} className="flex items-start gap-3">
+                        (indicator, indicatorIndex) => (
+                          <li key={indicatorIndex} className="flex items-start gap-3">
                             <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" />
                             <span className="text-gray-700 leading-relaxed">
                               {indicator}
@@ -816,6 +862,9 @@ export default function MedicalInterpreter() {
                   </p>
                   <p className="text-sm text-gray-500">
                     Enter your medical information on the left to get started
+                  </p>
+                  <p className="text-gray-500 text-xs mt-2">
+                    You'll be able to read and listen to an AI-generated explanation
                   </p>
                 </div>
               </div>
