@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
-import { FileText, UploadCloud, FileX, Check, Image, File, CheckCircle, AlertCircle, AlertTriangle, Activity, Copy } from 'lucide-react';
+import { FileText, UploadCloud, FileX, Check, Image, File, CheckCircle, AlertCircle, AlertTriangle, Activity, Copy, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
