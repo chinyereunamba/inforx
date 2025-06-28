@@ -2,6 +2,8 @@ import {
   AIAnalysisResult,
   MedicalSummary,
 } from "@/lib/types/medical-summaries";
+import { createClient } from "@/utils/supabase/client";
+import { LoggingService } from "./logging-service";
 
 /**
  * AI Medical Summary Service
@@ -36,6 +38,22 @@ export class AIMedicalSummaryService {
 
       // Generate AI analysis
       const analysis = await this.analyzeWithAI(combinedText);
+
+      // Log the action
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          LoggingService.logAction(user, LoggingService.actions.GENERATE_SUMMARY, {
+            records_count: recordMetadata.length,
+            content_length: combinedText.length,
+            types: recordMetadata.map(r => r.type),
+          });
+        }
+      } catch (error) {
+        console.error("Failed to log summary generation:", error);
+        // Continue without failing the summary generation
+      }
 
       return analysis;
     } catch (error) {

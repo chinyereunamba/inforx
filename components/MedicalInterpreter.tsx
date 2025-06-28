@@ -22,6 +22,8 @@ import type {
   MedicalInterpretation,
 } from "@/lib/types/medical-interpreter";
 import { textToSpeech } from '@/lib/elevenlabs';
+import { createClient } from "@/utils/supabase/client";
+import { LoggingService } from "@/lib/services/logging-service";
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
@@ -378,6 +380,22 @@ export default function MedicalInterpreter() {
       error: null,
       result: null,
     }));
+    
+    // Log the action
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        LoggingService.logAction(user, LoggingService.actions.AI_INTERPRET, {
+          language: state.selectedLanguage,
+          text_length: state.inputText.length,
+          type: state.inputText.length > 100 ? 'long_text' : 'short_text'
+        });
+      }
+    } catch (error) {
+      console.error("Failed to log interpreter usage:", error);
+      // Continue without failing the interpretation
+    }
 
     try {
       // Call the real API instead of simulation

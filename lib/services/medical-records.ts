@@ -2,6 +2,8 @@ import {
   MedicalRecord,
   MedicalRecordFormData,
 } from "@/lib/types/medical-records";
+import { createClient } from "@/utils/supabase/client";
+import { LoggingService } from "./logging-service";
 
 export interface MedicalRecordsFilters {
   type?: string;
@@ -111,6 +113,20 @@ class MedicalRecordsService {
     }
 
     const result = await response.json();
+    
+    // Log the action
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      LoggingService.logAction(user, LoggingService.actions.UPLOAD_FILE, {
+        record_id: result.record.id,
+        title: formData.title,
+        type: formData.type,
+        has_file: !!file,
+        file_name: file?.name,
+      });
+    }
+    
     return result.record;
   }
 
@@ -131,6 +147,16 @@ class MedicalRecordsService {
       const error = await response.json();
       throw new Error(error.error || "Failed to update medical record");
     }
+    
+    // Log the action
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      LoggingService.logAction(user, LoggingService.actions.UPDATE_RECORD, {
+        record_id: id,
+        updates: Object.keys(updates),
+      });
+    }
 
     const data = await response.json();
     return data.record;
@@ -148,6 +174,15 @@ class MedicalRecordsService {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.error || "Failed to delete medical record");
+    }
+    
+    // Log the action
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      LoggingService.logAction(user, LoggingService.actions.DELETE_FILE, {
+        record_id: id,
+      });
     }
   }
 
