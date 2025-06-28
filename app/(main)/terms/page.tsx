@@ -138,7 +138,9 @@ export default function TermsOfServicePage() {
           {/* Section 2: Account Registration */}
           <section 
             ref={(el) => {
-              if (el) sectionsRef.current[2] = el;
+              if (el) {
+                sectionsRef.current[2] = el
+              };
             }}
             className="mb-8"
           >
