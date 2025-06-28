@@ -49,7 +49,7 @@ ${input}
         'X-Title': 'InfoRx'
       },
       body: JSON.stringify({
-        model: "minimax/minimax-m1",
+        model: "anthropic/claude-3-haiku",
         messages: [{ role: 'user', content: prompt }]
       })
     });
