@@ -217,7 +217,7 @@ export default function PrivacyPolicyPage() {
 
             <p className="text-slate-700">
               To exercise any of these rights, contact us at{' '}
-              <a href="mailto:privacy@inforx.ng" className="text-blue-600 hover:underline">
+              <a href="mailto:privacy@info-rx.org" className="text-blue-600 hover:underline">
                 privacy@inforx.ng
               </a>{' '}
               or through your account settings.
@@ -255,8 +255,8 @@ export default function PrivacyPolicyPage() {
             <p className="text-slate-700">
               InfoRx is not intended for children under 18. We do not knowingly collect personal information from children. 
               If you believe a child has provided us with personal information, please contact us immediately at{' '}
-              <a href="mailto:privacy@inforx.ng" className="text-blue-600 hover:underline">
-                privacy@inforx.ng
+              <a href="mailto:privacy@info-rx.org" className="text-blue-600 hover:underline">
+                privacy@info-rx.org
               </a>.
             </p>
           </section>
