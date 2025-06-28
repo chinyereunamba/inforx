@@ -435,9 +435,14 @@ export default function MedicalInterpreter() {
   };
 const playAudio = async (text: string) => {
   // If audio is already playing, stop it
-  if (isSpeaking && audioRef.current) {
-    audioRef.current.pause();
-    audioRef.current.currentTime = 0;
+  if (isSpeaking) {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      if (audioRef.current.src) {
+        URL.revokeObjectURL(audioRef.current.src);
+      }
+      audioRef.current = null;
+    }
     setIsSpeaking(false);
     return;
   }
@@ -446,46 +451,53 @@ const playAudio = async (text: string) => {
   setAudioError(null);
 
   try {
+    // Call the server-side API to get audio blob
     const audioBlob = await textToSpeech(text);
     const audioUrl = URL.createObjectURL(audioBlob);
     const audio = new Audio(audioUrl);
 
-    audio.onplay = () => {
+    // Setup event handlers
+    audio.addEventListener('play', () => {
       setIsSpeaking(true);
       setIsLoadingAudio(false);
-    };
+    });
 
-    audio.onended = () => {
+    audio.addEventListener('ended', () => {
       setIsSpeaking(false);
       URL.revokeObjectURL(audioUrl);
       audioRef.current = null;
-    };
+    });
 
-    audio.onerror = (e) => {
-      console.error('Audio playback error:', e);
+    audio.addEventListener('error', (event) => {
+      console.error('Audio playback error:', event);
       setIsSpeaking(false);
       setIsLoadingAudio(false);
-      setAudioError('Failed to play audio. Please try again.');
+      setAudioError('Failed to play audio. Please try again later.');
       URL.revokeObjectURL(audioUrl);
       audioRef.current = null;
-    };
+    });
 
     audioRef.current = audio;
     audio.play();
 
   } catch (error) {
-    console.error('ElevenLabs API error:', error);
+    console.error('Text-to-speech error:', error);
     setIsLoadingAudio(false);
-    setAudioError(error instanceof Error ? error.message : 'Failed to generate speech. Please try again.');
+    setAudioError(error instanceof Error 
+      ? error.message 
+      : 'Failed to generate speech. Please try again later.');
   }
 };
 
   // Clean up audio on unmount
   useEffect(() => {
     return () => {
-      if (audioElement) {
-        audioElement.pause();
-        URL.revokeObjectURL(audioElement.src);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        if (audioRef.current.src) {
+          URL.revokeObjectURL(audioRef.current.src);
+        }
+        audioRef.current = null;
       }
     };
   }, []);
