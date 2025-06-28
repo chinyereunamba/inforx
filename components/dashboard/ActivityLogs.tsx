@@ -9,25 +9,7 @@ import {
   CardDescription 
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Activity,
-  Search,
-  Filter,
-  RefreshCw,
-  FileText,
-  User,
-  Brain,
-  LogIn,
-  LogOut,
-  Upload,
-  Trash,
-  Calendar,
-  BarChart2,
-  Loader2,
-  Eye,
-  LucideIcon,
-  Pencil
-} from "lucide-react";
+import { Activity, Search, Filter, RefreshCw, FileText, User, Brain, LogIn, LogOut, Upload, Trash, Calendar, BarChart2, Loader2, Eye, DivideIcon as LucideIcon, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/lib/auth-store";
 
