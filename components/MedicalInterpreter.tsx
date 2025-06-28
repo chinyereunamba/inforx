@@ -20,6 +20,7 @@ import type {
   ExampleSnippet,
   MedicalInterpretation,
 } from "@/lib/types/medical-interpreter";
+import textToSpeech from '@/lib/elevenlabs'
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
@@ -425,6 +426,14 @@ export default function MedicalInterpreter() {
   const formatActionItems = (items: string[]) => {
     return items.map((item, index) => `${index + 1}. ${item}`).join("\n");
   };
+
+  const playAudio = async (summary: string) => {
+  const blob = await textToSpeech(summary);
+  const url = URL.createObjectURL(blob);
+  const audio = new Audio(url);
+  audio.play();
+};
+
 
   return (
     <div ref={containerRef} className="min-h-screen bg-gray-50 py-8 px-4">
