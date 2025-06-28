@@ -1,7 +1,7 @@
 // /lib/elevenlabs.ts
 export async function textToSpeech(summary: string): Promise<Blob> {
   const apiKey = process.env.ELEVENLABS_API_KEY!;
-  const voiceId = "21m00Tcm4TlvDq8ikWAM"; // Rachel
+  const voiceId = "nw6EIXCsQ89uJMjytYb8";
 
   const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
     method: "POST",
