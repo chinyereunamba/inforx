@@ -197,7 +197,10 @@ export default function HeroSection({ onStartDemo }: HeroSectionProps) {
                 size="lg"
                 className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 style={{ borderRadius: '12px' }}
-                onClick={showDemoPreview}
+                onClick={() => {
+                  showDemoPreview();
+                  setTimeout(() => onStartDemo(), 400); 
+                }}
                 aria-label="Start interactive demo"
               >
                 <Play className="mr-2 h-6 w-6" />
