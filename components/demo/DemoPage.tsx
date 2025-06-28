@@ -72,7 +72,7 @@ export default function DemoPage() {
       
       return () => ctx.revert();
     }
-  }, []);
+  }, [isDemoMode]);
 
   const startInteractiveDemo = () => {
     setIsDemoMode(true);
