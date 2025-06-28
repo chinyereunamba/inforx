@@ -63,6 +63,8 @@ export default function MedicalInterpreter() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [audioError, setAudioError] = useState<string | null>(null);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
 
   const containerRef = useRef<HTMLDivElement>(null);
   const inputSectionRef = useRef<HTMLDivElement>(null);
@@ -431,6 +433,52 @@ export default function MedicalInterpreter() {
   const formatActionItems = (items: string[]) => {
     return items.map((item, index) => `${index + 1}. ${item}`).join("\n");
   };
+const playAudio = async (text: string) => {
+  // If audio is already playing, stop it
+  if (isSpeaking && audioRef.current) {
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+    setIsSpeaking(false);
+    return;
+  }
+
+  setIsLoadingAudio(true);
+  setAudioError(null);
+
+  try {
+    const audioBlob = await textToSpeech(text);
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
+
+    audio.onplay = () => {
+      setIsSpeaking(true);
+      setIsLoadingAudio(false);
+    };
+
+    audio.onended = () => {
+      setIsSpeaking(false);
+      URL.revokeObjectURL(audioUrl);
+      audioRef.current = null;
+    };
+
+    audio.onerror = (e) => {
+      console.error('Audio playback error:', e);
+      setIsSpeaking(false);
+      setIsLoadingAudio(false);
+      setAudioError('Failed to play audio. Please try again.');
+      URL.revokeObjectURL(audioUrl);
+      audioRef.current = null;
+    };
+
+    audioRef.current = audio;
+    audio.play();
+
+  } catch (error) {
+    console.error('ElevenLabs API error:', error);
+    setIsLoadingAudio(false);
+    setAudioError(error instanceof Error ? error.message : 'Failed to generate speech. Please try again.');
+  }
+};
 
   // Clean up audio on unmount
   useEffect(() => {
@@ -440,65 +488,9 @@ export default function MedicalInterpreter() {
         URL.revokeObjectURL(audioElement.src);
       }
     };
-  }, [audioElement]);
+  }, []);
 
-  const playAudio = async (text: string) => {
-    // If audio is already playing, stop it
-    if (isSpeaking && audioElement) {
-      audioElement.pause();
-      audioElement.currentTime = 0;
-      setIsSpeaking(false);
-      return;
-    }
-
-    // Reset state and start loading
-    setIsLoadingAudio(true);
-    setAudioError(null);
-
-    try {
-      // Get audio blob from ElevenLabs API
-      const audioBlob = await textToSpeech(text);
-      
-      // Create a URL for the blob
-      const audioUrl = URL.createObjectURL(audioBlob);
-      
-      // Create a new audio element
-      const audio = new Audio(audioUrl);
-      
-      // Set event handlers
-      audio.onplay = () => {
-        setIsSpeaking(true);
-        setIsLoadingAudio(false);
-      };
-      
-      audio.onended = () => {
-        setIsSpeaking(false);
-        URL.revokeObjectURL(audioUrl);
-        setAudioElement(null);
-      };
-      
-      audio.onerror = (e) => {
-        console.error('Audio playback error:', e);
-        setIsSpeaking(false);
-        setIsLoadingAudio(false);
-        setAudioError('Failed to play audio. Please try again.');
-        URL.revokeObjectURL(audioUrl);
-        setAudioElement(null);
-      };
-      
-      // Store the audio element for later reference
-      setAudioElement(audio);
-      
-      // Play the audio
-      audio.play();
-      
-    } catch (error) {
-      console.error('ElevenLabs API error:', error);
-      setIsLoadingAudio(false);
-      setAudioError(error instanceof Error ? error.message : 'Failed to generate speech. Please try again.');
-    }
-  };
-
+  
   return (
     <div ref={containerRef} className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
