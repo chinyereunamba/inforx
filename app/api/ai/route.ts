@@ -56,7 +56,7 @@ ${input}
 
     const data = await response.json();
     const result = data.choices?.[0]?.message?.content || 'Sorry, I couldn’t understand that.';
-    console.log(result)
+
 
     return NextResponse.json({ result });
   } catch (error) {
