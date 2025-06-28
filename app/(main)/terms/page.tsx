@@ -11,11 +11,6 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-export const metadata: Metadata = {
-  title: 'Terms of Service - InfoRx',
-  description: 'Legal terms and conditions for using the InfoRx healthcare platform.',
-  robots: 'index, follow',
-};
 
 export default function TermsOfServicePage() {
   const pageRef = useRef<HTMLDivElement>(null);
