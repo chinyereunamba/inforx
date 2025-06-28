@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
+import { LoggingService } from "@/lib/services/logging-service";
 
 /**
  * API route for text-to-speech using ElevenLabs
@@ -24,6 +26,10 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
+    
+    // Get authenticated user for logging
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
     
     // Nigerian voice ID - using a premium female voice
     const voiceId = "nw6EIXCsQ89uJMjytYb8";
@@ -52,6 +58,18 @@ export async function POST(req: NextRequest) {
         { error: `ElevenLabs API error: ${response.status} - ${errorData?.detail || response.statusText}` }, 
         { status: response.status }
       );
+    }
+    
+    // Log this action
+    if (user) {
+      await supabase.from('logs').insert([{
+        user_id: user.id,
+        action: 'text_to_speech',
+        metadata: {
+          text_length: text.length,
+          success: true
+        }
+      }]);
     }
     
     // Get audio content as array buffer

@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import ActivityLogs from "@/components/dashboard/ActivityLogs";
-import { createClient } from "@/utils/supabase/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
 

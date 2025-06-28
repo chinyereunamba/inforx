@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuthStore } from "@/lib/auth-store";
+import { LoggingService } from "@/lib/services/logging-service";
 import {
   FilePlus,
   Search,
@@ -39,7 +40,7 @@ export default function MedicalRecordsPage() {
   const [showSummary, setShowSummary] = useState(false);
 
   // Fetch user's medical records
-  const fetchRecords = async (filters?: MedicalRecordsFilters) => {
+  const fetchRecords = useCallback(async (filters?: MedicalRecordsFilters) => {
     if (!user) return;
 
     try {
@@ -54,7 +55,7 @@ export default function MedicalRecordsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   // Fetch statistics
   const fetchStats = async () => {
@@ -72,8 +73,17 @@ export default function MedicalRecordsPage() {
   // Add new record to the list
   const addRecord = (newRecord: MedicalRecord) => {
     setRecords((prev) => [newRecord, ...prev]);
-    // Refresh stats when new record is added
-    fetchStats();
+    
+    fetchStats(); // Refresh stats when new record is added
+    
+    // Log the record was added
+    if (user) {
+      LoggingService.logAction(user, LoggingService.actions.UPLOAD_FILE, {
+        record_id: newRecord.id,
+        title: newRecord.title,
+        type: newRecord.type,
+      });
+    }
   };
 
   // Delete record from the list
@@ -81,10 +91,16 @@ export default function MedicalRecordsPage() {
     try {
       await medicalRecordsService.deleteRecord(recordId);
       setRecords((prev) => prev.filter((record) => record.id !== recordId));
-      // Remove from selected records if it was selected
-      setSelectedRecordIds((prev) => prev.filter((id) => id !== recordId));
-      // Refresh stats when record is deleted
-      fetchStats();
+      
+      setSelectedRecordIds((prev) => prev.filter((id) => id !== recordId)); // Remove from selected records
+      fetchStats(); // Refresh stats when record is deleted
+      
+      // Log record deletion
+      if (user) {
+        LoggingService.logAction(user, LoggingService.actions.DELETE_FILE, {
+          record_id: recordId
+        });
+      }
     } catch (error: any) {
       console.error("Error deleting record:", error);
       setError(error.message || "Failed to delete record");
@@ -103,8 +119,14 @@ export default function MedicalRecordsPage() {
   // Handle summary generation
   const handleSummaryGenerated = (summary: MedicalSummaryType) => {
     setShowSummary(true);
-    // You could add a toast notification here
-    console.log("Summary generated successfully:", summary);
+    
+    // Log summary generation
+    if (user) {
+      LoggingService.logAction(user, LoggingService.actions.VIEW_SUMMARY, {
+        summary_id: summary.id,
+        record_count: summary.record_count
+      });
+    }
   };
 
   // Handle search and filter changes
@@ -131,8 +153,13 @@ export default function MedicalRecordsPage() {
     if (user) {
       fetchRecords();
       fetchStats();
+      
+      // Log page view
+      LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
+        page: "medical_records"
+      });
     }
-  }, [user]);
+  }, [user, fetchRecords]);
 
   if (!user) {
     return (
