@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { TextExtractor } from "@/lib/utils/text-extraction";
 
 // GET /api/medical-records - Fetch user's medical records
 export async function GET(request: NextRequest) {
@@ -177,6 +178,8 @@ export async function POST(request: NextRequest) {
         file_name: fileName,
         file_size: fileSize,
         file_type: fileType,
+        text_content: null,
+        processing_status: file ? "processing" : "complete",
       })
       .select()
       .single();
@@ -187,6 +190,51 @@ export async function POST(request: NextRequest) {
         { error: "Failed to create medical record" },
         { status: 500 }
       );
+    }
+
+    // If there's a file, extract text from it
+    if (file && record) {
+      try {
+        // Extract text from the file
+        const extractionResult = await TextExtractor.extractText(file);
+        
+        // Update record with extracted text
+        const { data: updatedRecord, error: updateError } = await supabase
+          .from("medical_records")
+          .update({
+            text_content: extractionResult.success ? extractionResult.text : null,
+            processing_status: extractionResult.success ? "complete" : "failed",
+            processed_at: new Date().toISOString(),
+            processing_error: extractionResult.success ? null : (extractionResult.error || "Text extraction failed"),
+          })
+          .eq("id", record.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error("Error updating record with extracted text:", updateError);
+        } else if (updatedRecord) {
+          record = updatedRecord;
+        }
+      } catch (extractionError) {
+        console.error("Text extraction error:", extractionError);
+        
+        // Update record with error status
+        const { error: updateError } = await supabase
+          .from("medical_records")
+          .update({
+            processing_status: "failed",
+            processed_at: new Date().toISOString(),
+            processing_error: extractionError instanceof Error 
+              ? extractionError.message 
+              : "Unknown text extraction error",
+          })
+          .eq("id", record.id);
+
+        if (updateError) {
+          console.error("Error updating record with extraction error:", updateError);
+        }
+      }
     }
 
     return NextResponse.json(

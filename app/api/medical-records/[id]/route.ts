@@ -24,6 +24,7 @@ export async function GET(
     const { id } = params;
 
     // Fetch the specific record
+    // Include text_content in the record
     const { data: record, error } = await supabase
       .from("medical_records")
       .select("*")
@@ -206,7 +207,6 @@ export async function DELETE(
         // Don't fail the request if file deletion fails
       }
     }
-
     return NextResponse.json({
       message: "Medical record deleted successfully",
     });

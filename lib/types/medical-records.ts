@@ -14,6 +14,10 @@ export interface MedicalRecord {
   file_size?: number;
   file_type?: string;
   notes?: string;
+  text_content?: string;
+  processing_status?: "idle" | "processing" | "complete" | "failed";
+  processed_at?: string;
+  processing_error?: string;
   created_at: string;
   updated_at: string;
 }
@@ -24,7 +28,6 @@ export interface MedicalRecordFormData {
   hospital_name: string;
   visit_date: string;
   notes?: string;
-  file?: File;
 }
 
 export interface UploadProgress {
