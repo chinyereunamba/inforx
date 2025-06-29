@@ -7,7 +7,6 @@ import Link from "next/link";
 import { User } from "@supabase/supabase-js";
 import { gsap } from "gsap";
 import { LoggingService } from "@/lib/services/logging-service";
-import { signOut } from "@/app/(auth)/auth/auth";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import {
@@ -111,7 +110,7 @@ export default function EnhancedDashboardLayout({
   const sidebarRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  const { user } = useAuthStore();
+  const { user, signOut } = useAuthStore();
 
   // Handle dark mode
   useEffect(() => {
