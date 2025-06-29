@@ -20,12 +20,12 @@ const navigationLinks: NavLink[] = [
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const pathName = usePathname().split('/')[1]
+  const pathName = usePathname().split('/')[1];
 
   const handleNavigationClick = (route: string) => {
     // You can add analytics tracking or other functionality here
     // This function is called when a navigation link is clicked
-  }
+  };
 
   // Track scroll position to show/hide shadow
   useEffect(() => {
