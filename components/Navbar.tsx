@@ -202,9 +202,8 @@ export default function Navbar() {
             ))}
           </div>
 
-            className={`lg:hidden transition-all duration-300 ease-in-out z-50 fixed inset-x-0 top-20 ${
           <div className="border-t border-gray-100 px-4 py-4 space-y-3">
-                ? "max-h-[calc(100vh-5rem)] opacity-100 visible"
+            {/* <Button
                 asChild
                 className="w-full bg-green-500 hover:bg-green-600 text-white text-center py-3 px-4 rounded-lg font-medium transition-colors duration-200"
               >
