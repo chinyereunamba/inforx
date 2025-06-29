@@ -111,7 +111,7 @@ Best regards,
       icon: Mail,
       title: "Email Us",
       description: "General inquiries and partnerships",
-      contact: "hello@inforx.ng",
+      contact: "hello@info-rx.org",
       action: "Send Email",
     },
     {
