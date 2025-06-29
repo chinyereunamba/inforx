@@ -6,6 +6,31 @@
 @import "../styles/accessibility.css";
 
 :root {
+  /* Base colors */
+  --teal-50: #f0fdfa;
+  --teal-100: #ccfbf1;
+  --teal-200: #99f6e4;
+  --teal-300: #5eead4;
+  --teal-400: #2dd4db;
+  --teal-500: #14b8a6;
+  --teal-600: #0A9396;
+  --teal-700: #0e7490;
+  --teal-800: #155e75;
+  --teal-900: #134e4a;
+
+  --sage-50: #f8fffe;
+  --sage-100: #e9f5f2;
+  --sage-200: #94D2BD;
+  --sage-300: #6bb39d;
+  --sage-400: #6b9080;
+  --sage-500: #5c8071;
+  --sage-600: #4b6b5e;
+  --sage-700: #3d574c;
+  --sage-800: #2f443a;
+  --sage-900: #1f2d27;
+}
+
+:root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
