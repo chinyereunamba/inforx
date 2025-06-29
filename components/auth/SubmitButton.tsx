@@ -26,9 +26,9 @@ export default function SubmitButton({
   const baseClasses = 'w-full font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed transform active:scale-[0.98]';
   
   const variantClasses = {
-    primary: 'bg-gradient-to-r from-blue-500 to-emerald-500 text-white hover:from-blue-600 hover:to-emerald-600 focus:ring-blue-200 disabled:opacity-50',
+    primary: 'bg-gradient-to-r from-sky-500 to-emerald-500 text-white hover:from-sky-600 hover:to-emerald-600 focus:ring-sky-200 disabled:opacity-50',
     secondary: 'bg-slate-100 text-slate-900 hover:bg-slate-200 focus:ring-slate-200 disabled:bg-slate-50 disabled:text-slate-400',
-    outline: 'border-2 border-blue-500 text-blue-600 hover:bg-blue-50 focus:ring-blue-200 disabled:border-slate-300 disabled:text-slate-400'
+    outline: 'border-2 border-sky-500 text-sky-600 hover:bg-sky-50 focus:ring-sky-200 disabled:border-slate-300 disabled:text-slate-400'
   };
 
   const sizeClasses = {

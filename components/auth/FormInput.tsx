@@ -49,7 +49,7 @@ export default function FormInput({
         <input
           name={name}
           type={inputType}
-          value={value}
+          value={value} 
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
@@ -61,15 +61,15 @@ export default function FormInput({
           className={cn(
             "w-full px-4 py-3 border rounded-lg transition-all duration-200",
             "focus:outline-none focus:ring-2 focus:ring-offset-1",
-            "placeholder:text-slate-400",
+            "placeholder:text-slate-400", 
             "disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed",
             hasError
-              ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+              ? "border-red-300 focus:border-red-500 focus:ring-red-200" 
               : focused
-              ? "border-blue-400 focus:border-blue-500 focus:ring-blue-200"
+              ? "border-sky-400 focus:border-sky-500 focus:ring-sky-200"
               : hasValue
               ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-200"
-              : "border-slate-300 focus:border-blue-500 focus:ring-blue-200"
+              : "border-slate-300 focus:border-sky-500 focus:ring-sky-200"
           )}
         />
 

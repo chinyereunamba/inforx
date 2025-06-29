@@ -749,7 +749,7 @@ export default function EnhancedMedicalRecordUpload({
         {/* Submit Button */}
         <Button
           type="submit"
-          className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+          className="w-full bg-sky-600 text-white hover:bg-sky-700 transition-colors"
           disabled={
             uploadState.status === "uploading" ||
             uploadState.status === "processing"
@@ -773,7 +773,7 @@ export default function EnhancedMedicalRecordUpload({
       </form>
 
       {/* Tips for better results */}
-      <div className="bg-blue-50 rounded-lg p-4 text-sm text-blue-700 border border-blue-200">
+      <div className="bg-sky-50 rounded-lg p-4 text-sm text-sky-700 border border-sky-200">
         <h4 className="font-medium flex items-center mb-2">
           <FileCheck className="h-4 w-4 mr-2" />
           Tips for best results

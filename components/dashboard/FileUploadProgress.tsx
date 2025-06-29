@@ -108,8 +108,8 @@ export function FileUploadProgress({
   const getStatusBadge = () => {
     switch (status) {
       case "uploading":
-        return (
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+        return ( 
+          <Badge variant="outline" className="bg-sky-50 text-sky-700 border-sky-200">
             Uploading
           </Badge>
         );
@@ -127,7 +127,7 @@ export function FileUploadProgress({
         );
       case "success":
         return (
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
             Complete
           </Badge>
         );
