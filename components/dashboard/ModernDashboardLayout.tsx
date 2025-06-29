@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
 import { gsap } from "gsap";
 import { User } from "@supabase/supabase-js";
 import { LoggingService } from "@/lib/services/logging-service";
@@ -210,24 +209,6 @@ export default function ModernDashboardLayout({
     }
   };
 
-  // Render the overlay using createPortal to ensure proper z-index behavior
-  const renderOverlay = () => {
-    if (typeof window === "undefined") return null;
-
-    return (
-      sidebarOpen &&
-      createPortal(
-        <div
-          ref={overlayRef}
-          className="fixed inset-0 bg-slate-900/50 dark:bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
-          onClick={handleSidebarClose}
-          aria-hidden="true"
-        />,
-        document.body
-      )
-    );
-  };
-
   return (
     <div
       className={cn(
@@ -236,7 +217,15 @@ export default function ModernDashboardLayout({
         "dark:bg-slate-900 dark:text-white"
       )}
     >
-      {renderOverlay()}
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          ref={overlayRef}
+          className="fixed inset-0 bg-slate-900/50 dark:bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+          onClick={handleSidebarClose}
+          aria-hidden="true"
+        />
+      )}
 
       {/* Sidebar */}
       <aside
