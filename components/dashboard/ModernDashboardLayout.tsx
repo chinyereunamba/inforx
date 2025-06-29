@@ -72,12 +72,11 @@ const navigationItems: NavigationItem[] = [
   },
   {
     id: "upload",
-    label: "Upload",
+    label: "Medical Vault",
     href: "/dashboard/medical-vault",
     icon: Upload,
-    description: "Add new documents",
-    subTitle:
-      "Upload your prescriptions, lab results, or medical reports for AI-powered analysis and interpretation.",
+    description: "Securely store medical files",
+    subTitle: "Upload and manage your prescriptions, lab results, or medical reports.",
   },
   {
     id: "analytics",
@@ -85,7 +84,7 @@ const navigationItems: NavigationItem[] = [
     href: "/dashboard/analytics",
     icon: BarChart3,
     description: "Health trends and insights",
-    subTitle: "",
+    subTitle: "View your health trends and insights based on your medical records.",
   },
   {
     id: "activity",
@@ -95,6 +94,14 @@ const navigationItems: NavigationItem[] = [
     description: "Track your health journey",
     subTitle:
       "Track your recent activity and interactions with InfoRx. This helps you monitor your healthcare journey and security.",
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    href: "/dashboard/settings",
+    icon: Settings,
+    description: "Customize your experience",
+    subTitle: "Personalize your InfoRx experience with themes, notifications, and security settings.",
   },
 ];
 
