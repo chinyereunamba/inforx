@@ -1,4 +1,3 @@
-"use client"
 import type { Metadata } from "next";
 import { useEffect } from "react";
 import { useAuthStore } from "@/lib/auth-store";
@@ -26,18 +25,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function InterpreterPage() {
-  const { user } = useAuthStore();
-  
-  // Log page view
-  useEffect(() => {
-    if (user) {
-      LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
-        page: "ai_interpreter"
-      });
-    }
-  }, [user]);
-  
+export default function InterpreterPage() {  
   return (
     <main className="min-h-screen">
       <Interpreter />
