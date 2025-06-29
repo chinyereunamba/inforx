@@ -124,7 +124,7 @@ export default function MedicalRecordsList({
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = record.file_name || "medical-record";
+      a.download = record.file_name || "vault";
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
