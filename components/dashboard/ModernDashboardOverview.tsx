@@ -146,7 +146,7 @@ const HealthProgress = () => {
             </div>
             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
               <div
-                {...metric}
+                className={`h-2 rounded-full transition-all duration-1000 ease-out ${metric.color}`}
                 style={{ width: `${metric.value}%` }}
               />
             </div>

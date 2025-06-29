@@ -205,7 +205,7 @@ export default function DashboardStyleGuide() {
         <div className="space-y-3">
           <h4 className="font-medium text-slate-900 dark:text-white">Cards</h4>
           <div className="grid md:grid-cols-2 gap-4">
-            <Card className="border border-slate-200 dark:border-slate-700">
+            <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Heart className="h-5 w-5 text-red-500" />
@@ -220,7 +220,7 @@ export default function DashboardStyleGuide() {
               </CardContent>
             </Card>
 
-            <Card className="border border-slate-200 dark:border-slate-700">
+            <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="h-5 w-5 text-sky-500" />
