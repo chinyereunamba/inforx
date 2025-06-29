@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
       const filePath = `medical-records/${user.id}/${fileNameWithTimestamp}`;
 
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("medical-files")
+        .from("vault")
         .upload(filePath, file, {
           cacheControl: "3600",
           upsert: false,
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
 
       // Get public URL
       const { data: urlData } = supabase.storage
-        .from("medical-files")
+        .from("vault")
         .getPublicUrl(filePath);
 
       fileUrl = urlData.publicUrl;
