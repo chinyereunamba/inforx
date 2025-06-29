@@ -191,7 +191,7 @@ export async function DELETE(
       try {
         // Extract file path from URL
         const urlParts = record.file_url.split("/");
-        const filePath = urlParts.slice(-3).join("/"); // medical-records/userId/filename
+        const filePath = urlParts.slice(-3).join("/"); // vault/userId/filename
 
         const { error: storageError } = await supabase.storage
           .from("medical-files")
