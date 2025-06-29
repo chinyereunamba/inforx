@@ -605,10 +605,10 @@ export default function TermsOfServicePage() {
               </p>
               <div className="space-y-2 text-slate-700">
                 <p>
-                  <strong>Legal Inquiries:</strong> legal@inforx.ng
+                  <strong>Legal Inquiries:</strong> legal@info-rx.org
                 </p>
                 <p>
-                  <strong>General Questions:</strong> hello@inforx.ng
+                  <strong>General Questions:</strong> hello@info-rx.org
                 </p>
                 <p>
                   <strong>Address:</strong> InfoRx Healthcare Technology
