@@ -15,6 +15,7 @@ export interface MedicalRecord {
   file_type?: string;
   notes?: string;
   text_content?: string;
+ interpretation_text?: string;
   processing_status?: "idle" | "processing" | "complete" | "failed";
   processed_at?: string;
   processing_error?: string;
