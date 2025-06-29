@@ -20,6 +20,7 @@ import {
   Sun,
   Home,
   FileText,
+  Store,
   Upload,
   BarChart3,
   Heart,
@@ -69,19 +70,27 @@ const navigationItems: NavigationItem[] = [
     description: "Manage your health records",
   },
   {
+    id: "vault",
+    label: "Medical Vault",
+    href: "/dashboard/medical-vault",
+    icon: Store,
+    // badge: 3,
+    description: "Manage your health records",
+  },
+  {
     id: "upload",
     label: "Upload",
     href: "/dashboard/upload",
     icon: Upload,
     description: "Add new documents",
   },
-  {
-    id: "analytics",
-    label: "Health Analytics",
-    href: "/dashboard/analytics",
-    icon: BarChart3,
-    description: "Health trends and insights",
-  },
+  // {
+  //   id: "analytics",
+  //   label: "Health Analytics",
+  //   href: "/dashboard/analytics",
+  //   icon: BarChart3,
+  //   description: "Health trends and insights",
+  // },
   {
     id: "activity",
     label: "Activity",
@@ -379,7 +388,7 @@ export default function EnhancedDashboardLayout({
         {/* User Profile & Settings */}
         <div className="p-4 border-t border-slate-200 dark:border-slate-700 mt-auto">
           <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors cursor-pointer">
-            <div className="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-sky-100 to-emerald-100 rounded-full flex items-center justify-center">
               <span className="text-white font-medium">
                 {user?.user_metadata?.full_name?.[0] ||
                   user?.email?.[0]?.toUpperCase() ||
@@ -432,10 +441,10 @@ export default function EnhancedDashboardLayout({
 
             {/* Page Title - Desktop */}
             <div className="hidden lg:block">
-              <h2 className="text-xl font-medium text-slate-900 dark:text-white font-inter">
+              <h1 className="text-3xl font-bold text-slate-900 dark:text-white font-noto py-4">
                 {navigationItems.find((item) => isActiveRoute(item.href))
                   ?.label || "Dashboard"}
-              </h2>
+              </h1>
             </div>
 
             {/* Actions */}

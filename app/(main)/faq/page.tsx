@@ -230,10 +230,10 @@ export default function FAQPage() {
 
   return (
     <div ref={pageRef} className="min-h-screen bg-white py-12 px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div ref={headerRef} className="text-center mb-12">
-          <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-3 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-xl flex items-center justify-center">
               <MessageSquare className="h-6 w-6 text-white" />
             </div>

@@ -38,7 +38,7 @@ export default function InterpreterPage() {
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-noto text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold font-noto hidden max-lg:block text-gray-900 mb-2">
             AI Health Interpreter
           </h1>
           <p className="text-gray-600 max-w-3xl">

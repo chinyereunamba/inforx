@@ -29,7 +29,7 @@ export default function Footer() {
             >
               Contact
             </Link>
-            <a
+            <Link
               href="https://github.com/chinyereunamba/inforx"
               target="_blank"
               rel="noopener noreferrer"
@@ -37,7 +37,7 @@ export default function Footer() {
             >
               GitHub Repository
               <ExternalLink className="h-3 w-3" />
-            </a>
+            </Link>
             <Link
               href="/terms"
               className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors duration-200"
