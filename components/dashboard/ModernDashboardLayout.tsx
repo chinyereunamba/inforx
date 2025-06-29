@@ -28,6 +28,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import { signOut } from "@/app/(auth)/auth/auth";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -132,11 +133,6 @@ export default function ModernDashboardLayout({
     }
   }, [mounted, user]);
 
-  // Skip rendering until mounted to prevent hydration issues
-  if (!mounted) {
-    return null;
-  }
-
   // Sidebar animations
   useEffect(() => {
     if (sidebarOpen && sidebarRef.current && overlayRef.current) {
@@ -182,6 +178,7 @@ export default function ModernDashboardLayout({
             1000
         ),
       });
+      await signOut();
     }
   };
 
@@ -218,6 +215,9 @@ export default function ModernDashboardLayout({
       });
     }
   };
+  
+  // Skip rendering until mounted to prevent hydration issues
+  if (!mounted) return null;
 
   return (
     <div

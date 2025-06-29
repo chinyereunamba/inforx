@@ -168,7 +168,7 @@ export default function FileUploadInterface() {
 
     // Complete with mock result
     const mockResult: InterpretationResult = {
-      id: `result-${Date.now()}`,
+      id: `result-${file.name}-${fileIndex}`,
       simpleExplanation: `Analysis complete for ${file.name}. This appears to be a medical document with important health information.`,
       recommendedActions: [
         "Follow medication schedule as prescribed",
