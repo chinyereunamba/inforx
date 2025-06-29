@@ -207,7 +207,7 @@ export default function HeroSection({ onStartDemo }: HeroSectionProps) {
               <Button
                 variant="outline"
                 size="lg"
-                className="border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 bg-transparent"
+                className="border-2 border-blue-500 text-blue-500 hover:bg-blue-50 hover:text-blue-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 bg-transparent"
                 style={{ borderRadius: '12px' }}
                 asChild
               >
