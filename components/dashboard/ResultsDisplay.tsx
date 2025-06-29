@@ -336,7 +336,7 @@ This interpretation is for educational purposes only and should not replace prof
                   if (el) cardsRef.current[index] = el;
                 }}
                 data-section={section.id}
-                className={`bg-white rounded-xl shadow-md border-2 ${borderColor} overflow-hidden transition-all duration-300 hover:shadow-lg`}
+                className={`bg-white rounded-xl border-2 ${borderColor} overflow-hidden transition-all duration-300 hover:shadow-lg`}
               >
                 {/* Card Header */}
                 <div className={`${bgColor} p-4`}>
