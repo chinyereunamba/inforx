@@ -322,7 +322,7 @@ Best regards,
       </section>
 
       {/* Floating CTA for Desktop */}
-      <div ref={floatingCTARef} className="hidden lg:block">
+      {/* <div ref={floatingCTARef} className="hidden lg:block">
         {!isVisible && (
           <Button
             onClick={handleGetStarted}
@@ -334,8 +334,8 @@ Best regards,
             Get Started
           </Button>
         )}
-      </div>
-
+      </div> */}
+      {/*
       {/* Sticky CTA for Mobile */}
       <div className="lg:hidden fixed bottom-4 left-4 right-4 z-50">
         {!isVisible && (
@@ -349,7 +349,7 @@ Best regards,
             Get Started Now
           </Button>
         )}
-      </div>
+      </div> */}
 
       {/* Scroll to Top Button */}
       <button
