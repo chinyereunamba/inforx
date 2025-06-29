@@ -218,12 +218,12 @@ export default function HealthcareChallenges() {
                 }}
                 className="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-8 hover:shadow-xl transition-all duration-300 border border-slate-100 group cursor-pointer"
               >
-                <div className="challenge-icon flex items-center justify-center w-16 h-16 bg-red-100 rounded-2xl mb-6 group-hover:bg-red-200 transition-colors duration-300">
-                  <IconComponent className="h-8 w-8 text-red-600" />
+                <div className="challenge-icon flex items-center justify-center w-16 h-16 bg-sky-100 rounded-2xl mb-6 group-hover:bg-sky-200 transition-colors duration-300">
+                  <IconComponent className="h-8 w-8 text-sky-600" />
                 </div>
                 
                 <div className="challenge-content">
-                  <h3 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-red-700 transition-colors duration-300">
+                  <h3 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-sky-700 transition-colors duration-300">
                     {challenge.title}
                   </h3>
                   
@@ -233,7 +233,7 @@ export default function HealthcareChallenges() {
 
                   {/* Statistics */}
                   <div className="border-t border-slate-200 pt-4">
-                    <div className="text-2xl font-bold text-red-600 mb-1">
+                    <div className="text-2xl font-bold text-sky-600 mb-1">
                       {challenge.statistic}
                     </div>
                     <div className="text-sm text-slate-600">

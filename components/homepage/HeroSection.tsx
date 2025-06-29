@@ -141,7 +141,7 @@ export default function HeroSection() {
           >
             <Button
               size="lg"
-              className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              className="bg-sky-500 hover:bg-sky-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               asChild
             >
               <Link href="/demo">
@@ -153,7 +153,7 @@ export default function HeroSection() {
             <Button
               variant="outline"
               size="lg"
-              className="border-2 border-blue-500 text-blue-600 hover:bg-blue-50 hover:text-blue-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"
+              className="border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"
               asChild
             >
               <Link href="/dashboard">

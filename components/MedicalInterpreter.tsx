@@ -530,8 +530,8 @@ const playAudio = async (text: string) => {
       <div>
         {/* Main Grid Layout - 2 columns on desktop, single column on mobile */}
         <div className="grid lg:grid-cols-5 gap-8">
-          {/* Input Section - 40% width on desktop */}
-          <div ref={inputSectionRef} className="lg:col-span-2 space-y-6">
+          {/* Input Section */}
+          <div ref={inputSectionRef} className="lg:col-span-2 space-y-5">
             {/* Header */}
             <div className="header-section text-center lg:text-left">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
@@ -583,8 +583,8 @@ const playAudio = async (text: string) => {
                 <textarea
                   id="medical-text-area"
                   value={state.inputText}
-                  onChange={(e) => handleInputChange(e.target.value)}
-                  placeholder="Paste your medical document here (prescription, lab results, scan reports, etc.)"
+                  onChange={(e) => handleInputChange(e.target.value)} 
+                  placeholder="Paste your medical document here (prescription, lab results, scan reports, etc.)" 
                   className="w-full min-h-[200px] p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none text-gray-700 leading-relaxed"
                   disabled={state.isLoading}
                   maxLength={5000}
@@ -614,7 +614,7 @@ const playAudio = async (text: string) => {
                 <Button
                   onClick={handleSubmit}
                   disabled={state.isLoading || !state.inputText.trim()}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-sky-500 hover:bg-sky-600 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label={
                     state.isLoading
                       ? "Interpreting medical text"
@@ -647,13 +647,13 @@ const playAudio = async (text: string) => {
                   <button
                     key={snippet.id}
                     onClick={(event) => handleExampleClick(snippet, event)}
-                    className="p-4 bg-white border border-gray-200 rounded-lg text-left hover:border-emerald-300 hover:bg-emerald-50 transition-all duration-300 group"
+                    className="p-4 bg-white border border-gray-200 rounded-lg text-left hover:border-sky-300 hover:bg-sky-50 transition-all duration-300 group"
                     disabled={state.isLoading}
                     aria-label={`Load ${snippet.title} example`}
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <FileText className="h-5 w-5 text-emerald-600" />
-                      <span className="font-semibold text-gray-700 group-hover:text-emerald-700">
+                      <FileText className="h-5 w-5 text-sky-600" />
+                      <span className="font-semibold text-gray-700 group-hover:text-sky-700">
                         {snippet.title}
                       </span>
                     </div>
@@ -676,16 +676,16 @@ const playAudio = async (text: string) => {
               >
                 <CardContent className="text-center">
                   <div className="flex justify-center space-x-2 mb-4">
-                    <div className="typing-dots w-3 h-3 bg-emerald-500 rounded-full"></div>
-                    <div className="typing-dots w-3 h-3 bg-emerald-500 rounded-full"></div>
-                    <div className="typing-dots w-3 h-3 bg-emerald-500 rounded-full"></div>
+                    <div className="typing-dots w-3 h-3 bg-sky-500 rounded-full"></div>
+                    <div className="typing-dots w-3 h-3 bg-sky-500 rounded-full"></div>
+                    <div className="typing-dots w-3 h-3 bg-sky-500 rounded-full"></div>
                   </div>
                   <p className="text-lg font-semibold text-gray-700 mb-2">
                     Analyzing your medical text...
                   </p>
                   <div className="w-48 bg-gray-200 rounded-full h-2.5 mx-auto">
                     <div
-                      className="bg-emerald-500 h-2.5 rounded-full animate-pulse"
+                      className="bg-sky-500 h-2.5 rounded-full animate-pulse"
                       style={{ width: "70%" }}
                     ></div>
                   </div>
@@ -895,8 +895,8 @@ const playAudio = async (text: string) => {
             {!state.isLoading && !state.result && (
               <Card className="placeholder-content flex items-center justify-center h-80 border-2 border-dashed border-gray-300 shadow-sm">
                 <CardContent className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <FileText className="h-8 w-8 text-emerald-600" />
+                  <div className="w-16 h-16 bg-gradient-to-br from-sky-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FileText className="h-8 w-8 text-sky-600" />
                   </div>
                   <p className="text-xl font-semibold text-gray-700 mb-3">
                     Your AI medical assistant is ready

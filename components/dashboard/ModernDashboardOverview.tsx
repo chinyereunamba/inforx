@@ -337,7 +337,7 @@ const QuickActions = () => {
                 >
                   <action.icon className="h-6 w-6 text-white" />
                 </div>
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300"> 
                   {action.label}
                 </span>
               </a>
@@ -394,7 +394,7 @@ export default function ModernDashboardOverview() {
   return (
     <div ref={containerRef} className="space-y-6">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-sky-500 to-emerald-500 rounded-2xl p-6 text-white">
+      <div className="bg-gradient-to-r from-sky-500 to-emerald-500 rounded-2xl p-6 text-white"> 
         <h1 className="text-2xl font-bold font-noto mb-2">Welcome to InfoRx! 👋</h1>
         <p className="text-sky-100">
           Your health records and AI-powered summaries are now in one secure place.

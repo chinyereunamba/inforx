@@ -77,7 +77,7 @@ export default function DashboardSummaryStats() {
       {/* Total Records Card */}
       <Card className="rounded-xl border border-slate-200 hover:border-emerald-200 hover:shadow-md transition-all duration-200">
         <CardContent className="p-6">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-3 mb-2"> 
             <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
               <FileText className="h-6 w-6 text-emerald-600" />
             </div>
@@ -105,9 +105,9 @@ export default function DashboardSummaryStats() {
       {/* Hospitals Card */}
       <Card className="rounded-xl border border-slate-200 hover:border-blue-200 hover:shadow-md transition-all duration-200">
         <CardContent className="p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-              <Hospital className="h-6 w-6 text-blue-600" />
+          <div className="flex items-center gap-3 mb-2"> 
+            <div className="w-12 h-12 rounded-full bg-sky-100 flex items-center justify-center">
+              <Hospital className="h-6 w-6 text-sky-600" />
             </div>
             <div>
               <h3 className="text-2xl font-bold text-slate-900">
@@ -121,10 +121,10 @@ export default function DashboardSummaryStats() {
             <div className="mt-4 space-y-2">
               {stats.topHospitals.slice(0, 2).map(hospital => (
                 <div key={hospital.hospital} className="flex justify-between text-xs">
-                  <span className="text-slate-600 truncate max-w-[70%]" title={hospital.hospital}>
+                  <span className="text-slate-600 truncate max-w-[70%]" title={hospital.hospital}> 
                     {hospital.hospital}
                   </span>
-                  <span className="text-blue-600 font-medium">{hospital.count}</span>
+                  <span className="text-sky-600 font-medium">{hospital.count}</span>
                 </div>
               ))}
             </div>
@@ -135,7 +135,7 @@ export default function DashboardSummaryStats() {
       {/* AI Interpretations Card */}
       <Card className="rounded-xl border border-slate-200 hover:border-purple-200 hover:shadow-md transition-all duration-200">
         <CardContent className="p-6">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-3 mb-2"> 
             <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
               <Brain className="h-6 w-6 text-purple-600" />
             </div>
@@ -161,7 +161,7 @@ export default function DashboardSummaryStats() {
       {/* Storage Used Card */}
       <Card className="rounded-xl border border-slate-200 hover:border-orange-200 hover:shadow-md transition-all duration-200">
         <CardContent className="p-6">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-3 mb-2"> 
             <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
               <Upload className="h-6 w-6 text-orange-600" />
             </div>

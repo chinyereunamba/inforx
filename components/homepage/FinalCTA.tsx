@@ -87,7 +87,7 @@ export default function FinalCTA() {
   return (
     <section
       ref={sectionRef}
-      className="py-24 bg-gradient-to-br from-blue-600 via-emerald-600 to-blue-700 relative overflow-hidden"
+      className="py-24 bg-gradient-to-br from-sky-600 via-emerald-600 to-sky-700 relative overflow-hidden"
     >
       {/* Nigerian-themed background pattern */}
       <div ref={backgroundRef} className="absolute inset-0 opacity-10">

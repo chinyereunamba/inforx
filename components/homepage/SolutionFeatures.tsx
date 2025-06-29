@@ -253,7 +253,7 @@ export default function SolutionFeatures() {
               <div ref={ctaRef} className="space-y-4">
                 <Button
                   size="lg"
-                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform"
+                  className="w-full bg-sky-500 hover:bg-sky-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform"
                   asChild
                 >
                   <Link href="/demo">See How It Works</Link>
@@ -262,7 +262,7 @@ export default function SolutionFeatures() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50 hover:text-blue-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"
+                  className="w-full border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"
                   asChild
                 >
                   <Link href="/interpreter">Explore Features</Link>
