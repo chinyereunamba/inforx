@@ -19,14 +19,15 @@ import {
   BarChart3,
   Heart,
   Activity,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  user: User;
 }
 
 interface NavigationItem {
@@ -86,8 +87,7 @@ const navigationItems: NavigationItem[] = [
 
 export default function ModernDashboardLayout({
   children,
-  user,
-}: DashboardLayoutProps) {  
+}: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -96,23 +96,26 @@ export default function ModernDashboardLayout({
   const sidebarRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const { user } = useAuth();
 
   // Initialize theme
   useEffect(() => {
     const savedTheme = localStorage.getItem("inforx-theme");
-    const prefersDark = savedTheme === "dark" || 
-      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
-      
+    const prefersDark =
+      savedTheme === "dark" ||
+      (!savedTheme &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches);
+
     if (prefersDark) {
       setDarkMode(true);
       document.documentElement.classList.add("dark");
     }
-    
+
     // Log user login event if user just arrived
     if (user) {
       LoggingService.logAction(user, LoggingService.actions.LOGIN, {
-        theme: prefersDark ? 'dark' : 'light',
-        device: window.innerWidth < 768 ? 'mobile' : 'desktop'
+        theme: prefersDark ? "dark" : "light",
+        device: window.innerWidth < 768 ? "mobile" : "desktop",
       });
     }
   }, []);
@@ -145,13 +148,17 @@ export default function ModernDashboardLayout({
       localStorage.setItem("inforx-theme", "light");
     }
   };
-  
+
   const handleSignOut = async () => {
     if (user) {
       // Log sign out action before signing out
       await LoggingService.logAction(user, LoggingService.actions.LOGOUT, {
-        theme: darkMode ? 'dark' : 'light',
-        session_duration: Math.floor((new Date().getTime() - new Date(user.last_sign_in_at || 0).getTime()) / 1000)
+        theme: darkMode ? "dark" : "light",
+        session_duration: Math.floor(
+          (new Date().getTime() -
+            new Date(user.last_sign_in_at || 0).getTime()) /
+            1000
+        ),
       });
     }
   };
@@ -162,11 +169,11 @@ export default function ModernDashboardLayout({
     }
     return pathname.startsWith(href);
   };
-  
+
   const handleNavigationClick = (route: string) => {
     if (user) {
       LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
-        page: route.replace("/dashboard/", "").replace("/", "")
+        page: route.replace("/dashboard/", "").replace("/", ""),
       });
     }
   };
@@ -317,7 +324,10 @@ export default function ModernDashboardLayout({
                 {user?.email}
               </p>
             </div>
-            <ChevronDown className="h-4 w-4 text-slate-400" />
+            {/* <ChevronDown className="h-4 w-4 text-slate-400" /> */}
+            <span onClick={handleSignOut}>
+              <LogOut className="h-4 w-4 text-slate-400 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300" />
+            </span>
           </div>
         </div>
       </aside>
