@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
 import {
   FilePlus,
@@ -40,22 +40,25 @@ export default function MedicalRecordsPage() {
   const [showSummary, setShowSummary] = useState(false);
 
   // Fetch user's medical records
-  const fetchRecords = useCallback(async (filters?: MedicalRecordsFilters) => {
-    if (!user) return;
+  const fetchRecords = useCallback(
+    async (filters?: MedicalRecordsFilters) => {
+      if (!user) return;
 
-    try {
-      setLoading(true);
-      setError(null);
+      try {
+        setLoading(true);
+        setError(null);
 
-      const data = await medicalRecordsService.getRecords(filters);
-      setRecords(data);
-    } catch (error: any) {
-      console.error("Error fetching records:", error);
-      setError(error.message || "Failed to fetch medical records");
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
+        const data = await medicalRecordsService.getRecords(filters);
+        setRecords(data);
+      } catch (error: any) {
+        console.error("Error fetching records:", error);
+        setError(error.message || "Failed to fetch medical records");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user]
+  );
 
   // Fetch statistics
   const fetchStats = async () => {
@@ -73,9 +76,9 @@ export default function MedicalRecordsPage() {
   // Add new record to the list
   const addRecord = (newRecord: MedicalRecord) => {
     setRecords((prev) => [newRecord, ...prev]);
-    
+
     fetchStats(); // Refresh stats when new record is added
-    
+
     // Log the record was added
     if (user) {
       LoggingService.logAction(user, LoggingService.actions.UPLOAD_FILE, {
@@ -91,14 +94,14 @@ export default function MedicalRecordsPage() {
     try {
       await medicalRecordsService.deleteRecord(recordId);
       setRecords((prev) => prev.filter((record) => record.id !== recordId));
-      
+
       setSelectedRecordIds((prev) => prev.filter((id) => id !== recordId)); // Remove from selected records
       fetchStats(); // Refresh stats when record is deleted
-      
+
       // Log record deletion
       if (user) {
         LoggingService.logAction(user, LoggingService.actions.DELETE_FILE, {
-          record_id: recordId
+          record_id: recordId,
         });
       }
     } catch (error: any) {
@@ -119,12 +122,12 @@ export default function MedicalRecordsPage() {
   // Handle summary generation
   const handleSummaryGenerated = (summary: MedicalSummaryType) => {
     setShowSummary(true);
-    
+
     // Log summary generation
     if (user) {
       LoggingService.logAction(user, LoggingService.actions.VIEW_SUMMARY, {
         summary_id: summary.id,
-        record_count: summary.record_count
+        record_count: summary.record_count,
       });
     }
   };
@@ -153,10 +156,10 @@ export default function MedicalRecordsPage() {
     if (user) {
       fetchRecords();
       fetchStats();
-      
+
       // Log page view
       LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
-        page: "medical_records"
+        page: "medical_records",
       });
     }
   }, [user, fetchRecords]);

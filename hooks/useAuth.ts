@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthStore } from "@/lib/stores/auth-store";
 
 export function useAuth() {
   const { user, loading, initialized, signOut } = useAuthStore();

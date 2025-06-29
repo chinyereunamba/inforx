@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { InterpretationResult } from "@/lib/types/dashboard";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
 
 export default function InterpreterPage() {
@@ -47,9 +47,5 @@ export default function InterpreterPage() {
     }
   }, [user]);
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
-     
-    </div>
-  );
+  return <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full"></div>;
 }

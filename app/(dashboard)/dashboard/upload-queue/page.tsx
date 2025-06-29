@@ -21,7 +21,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { FileUploadProgress } from "@/components/dashboard/FileUploadProgress";
 import EnhancedMedicalRecordUpload from "@/components/medical-records/EnhancedMedicalRecordUpload";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
 import { MedicalRecord } from "@/lib/types/medical-records";
 import { FileUploadService } from "@/lib/services/file-upload-service";
@@ -56,7 +56,7 @@ export default function UploadQueuePage() {
 
   const handleRecordAdded = (record: MedicalRecord) => {
     setUploadedRecords((prev) => [record, ...prev]);
-    
+
     // Log the action
     if (user) {
       LoggingService.logAction(user, "record_created", {
@@ -87,7 +87,8 @@ export default function UploadQueuePage() {
           Upload Manager
         </h1>
         <p className="text-lg text-gray-600">
-          Securely upload and manage your medical documents with enhanced processing.
+          Securely upload and manage your medical documents with enhanced
+          processing.
         </p>
       </div>
 
@@ -96,7 +97,8 @@ export default function UploadQueuePage() {
         <Alert variant="destructive" className="mb-6">
           <CloudOff className="h-4 w-4" />
           <AlertDescription>
-            Storage service is currently unavailable. Uploads may not work properly.{" "}
+            Storage service is currently unavailable. Uploads may not work
+            properly.{" "}
             <Button
               variant="link"
               size="sm"

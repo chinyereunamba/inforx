@@ -1,24 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
-import { 
-  Upload, 
-  FileText, 
-  FolderOpen, 
-  Filter, 
-  Search, 
-  Pill, 
-  FileImage, 
-  FileCheck, 
+import {
+  Upload,
+  FileText,
+  FolderOpen,
+  Filter,
+  Search,
+  Pill,
+  FileImage,
+  FileCheck,
   X,
   Eye,
   Download,
   Calendar,
   Tag,
   Plus,
-  Clock
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,7 +40,7 @@ export default function MedicalVaultPage() {
   useEffect(() => {
     if (user) {
       fetchRecords();
-      
+
       // Log page view
       LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
         page: "medical_vault",
@@ -58,15 +58,19 @@ export default function MedicalVaultPage() {
       if (filterType !== "all") {
         Object.assign(filters, { type: filterType });
       }
-      
+
       const data = await medicalRecordsService.getRecords(filters);
       setRecords(data);
-      
+
       // Set most recent uploads
-      const recentFiles = [...data].sort((a, b) => {
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      }).slice(0, 3);
-      
+      const recentFiles = [...data]
+        .sort((a, b) => {
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+        })
+        .slice(0, 3);
+
       setRecentUploads(recentFiles);
     } catch (error) {
       console.error("Error fetching records:", error);
@@ -85,7 +89,9 @@ export default function MedicalVaultPage() {
     try {
       await medicalRecordsService.deleteRecord(recordId);
       setRecords((prev) => prev.filter((record) => record.id !== recordId));
-      setRecentUploads((prev) => prev.filter((record) => record.id !== recordId));
+      setRecentUploads((prev) =>
+        prev.filter((record) => record.id !== recordId)
+      );
     } catch (error) {
       console.error("Error deleting record:", error);
     }
@@ -141,12 +147,14 @@ export default function MedicalVaultPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <div className="mb-4 md:mb-0">
-            <h1 className="text-3xl font-bold text-gray-900 font-noto">My Medical Vault</h1>
+            <h1 className="text-3xl font-bold text-gray-900 font-noto">
+              My Medical Vault
+            </h1>
             <p className="text-gray-600">
               Securely store and organize all your important medical documents
             </p>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -163,7 +171,7 @@ export default function MedicalVaultPage() {
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-full"
               />
             </div>
-            <Button 
+            <Button
               onClick={toggleUploadSection}
               className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
@@ -211,7 +219,11 @@ export default function MedicalVaultPage() {
               variant={filterType === "all" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("all")}
-              className={filterType === "all" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+              className={
+                filterType === "all"
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : ""
+              }
             >
               All
             </Button>
@@ -219,7 +231,11 @@ export default function MedicalVaultPage() {
               variant={filterType === "prescription" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("prescription")}
-              className={filterType === "prescription" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+              className={
+                filterType === "prescription"
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : ""
+              }
             >
               <Pill className="h-4 w-4 mr-1" />
               Prescriptions
@@ -228,7 +244,11 @@ export default function MedicalVaultPage() {
               variant={filterType === "lab_result" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("lab_result")}
-              className={filterType === "lab_result" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+              className={
+                filterType === "lab_result"
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : ""
+              }
             >
               <FileCheck className="h-4 w-4 mr-1" />
               Lab Results
@@ -237,7 +257,11 @@ export default function MedicalVaultPage() {
               variant={filterType === "scan" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("scan")}
-              className={filterType === "scan" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+              className={
+                filterType === "scan"
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : ""
+              }
             >
               <FileImage className="h-4 w-4 mr-1" />
               Scans
@@ -246,7 +270,11 @@ export default function MedicalVaultPage() {
               variant={filterType === "other" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("other")}
-              className={filterType === "other" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+              className={
+                filterType === "other"
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : ""
+              }
             >
               <FileText className="h-4 w-4 mr-1" />
               Others
@@ -263,9 +291,9 @@ export default function MedicalVaultPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {recentUploads.map((record) => (
-                <RecentUploadCard 
-                  key={record.id} 
-                  record={record} 
+                <RecentUploadCard
+                  key={record.id}
+                  record={record}
                   formatDate={formatDate}
                   getTypeIcon={getTypeIcon}
                   getTypeLabel={getTypeLabel}
@@ -280,7 +308,9 @@ export default function MedicalVaultPage() {
           <div className="flex justify-center items-center py-20">
             <div className="text-center">
               <div className="w-16 h-16 border-t-4 border-b-4 border-emerald-500 rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-lg text-gray-600">Loading your medical records...</p>
+              <p className="text-lg text-gray-600">
+                Loading your medical records...
+              </p>
             </div>
           </div>
         ) : (
@@ -288,12 +318,15 @@ export default function MedicalVaultPage() {
             {records.length === 0 ? (
               <div className="bg-white rounded-lg shadow-md p-8 text-center">
                 <FolderOpen className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-xl font-medium text-gray-900 mb-2">No medical records found</h3>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  No medical records found
+                </h3>
                 <p className="text-gray-600 mb-6">
-                  Start by uploading your first medical document using the upload button above.
+                  Start by uploading your first medical document using the
+                  upload button above.
                 </p>
-                <Button 
-                  onClick={() => setIsUploadExpanded(true)} 
+                <Button
+                  onClick={() => setIsUploadExpanded(true)}
                   className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -304,8 +337,8 @@ export default function MedicalVaultPage() {
               <div className="space-y-8">
                 {/* Prescriptions Section */}
                 {filterType === "all" && prescriptions.length > 0 && (
-                  <RecordSection 
-                    title="Prescriptions" 
+                  <RecordSection
+                    title="Prescriptions"
                     icon={<Pill className="h-5 w-5 text-blue-500" />}
                     records={prescriptions}
                     formatDate={formatDate}
@@ -317,8 +350,8 @@ export default function MedicalVaultPage() {
 
                 {/* Lab Results Section */}
                 {filterType === "all" && labResults.length > 0 && (
-                  <RecordSection 
-                    title="Lab Results" 
+                  <RecordSection
+                    title="Lab Results"
                     icon={<FileCheck className="h-5 w-5 text-amber-500" />}
                     records={labResults}
                     formatDate={formatDate}
@@ -330,8 +363,8 @@ export default function MedicalVaultPage() {
 
                 {/* Scans Section */}
                 {filterType === "all" && scans.length > 0 && (
-                  <RecordSection 
-                    title="Scans" 
+                  <RecordSection
+                    title="Scans"
                     icon={<FileImage className="h-5 w-5 text-purple-500" />}
                     records={scans}
                     formatDate={formatDate}
@@ -343,8 +376,8 @@ export default function MedicalVaultPage() {
 
                 {/* Other Documents Section */}
                 {filterType === "all" && others.length > 0 && (
-                  <RecordSection 
-                    title="Other Documents" 
+                  <RecordSection
+                    title="Other Documents"
                     icon={<FileText className="h-5 w-5 text-gray-500" />}
                     records={others}
                     formatDate={formatDate}
@@ -356,8 +389,8 @@ export default function MedicalVaultPage() {
 
                 {/* When filtered, show all matching records */}
                 {filterType !== "all" && (
-                  <RecordSection 
-                    title={`${getTypeLabel(filterType)} Records`} 
+                  <RecordSection
+                    title={`${getTypeLabel(filterType)} Records`}
                     icon={getTypeIcon(filterType)}
                     records={records}
                     formatDate={formatDate}
@@ -384,12 +417,12 @@ interface RecentUploadCardProps {
   onDelete: () => void;
 }
 
-function RecentUploadCard({ 
-  record, 
-  formatDate, 
+function RecentUploadCard({
+  record,
+  formatDate,
   getTypeIcon,
   getTypeLabel,
-  onDelete 
+  onDelete,
 }: RecentUploadCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -446,7 +479,10 @@ function RecentUploadCard({
             </button>
           </div>
         </div>
-        <h3 className="font-medium text-gray-900 mb-1 truncate" title={record.title}>
+        <h3
+          className="font-medium text-gray-900 mb-1 truncate"
+          title={record.title}
+        >
           {record.title}
         </h3>
         <div className="flex items-center gap-2 text-xs text-gray-500">
@@ -473,14 +509,14 @@ interface RecordSectionProps {
   onDelete: (id: string) => void;
 }
 
-function RecordSection({ 
-  title, 
-  icon, 
-  records, 
+function RecordSection({
+  title,
+  icon,
+  records,
   formatDate,
   getTypeIcon,
   getTypeLabel,
-  onDelete 
+  onDelete,
 }: RecordSectionProps) {
   return (
     <div>
@@ -551,7 +587,10 @@ function RecordCard({
         <div className="flex justify-between items-start mb-2">
           <div className="flex items-center gap-2">
             {getTypeIcon(record.type)}
-            <h3 className="font-semibold text-gray-900 truncate max-w-[200px]" title={record.title}>
+            <h3
+              className="font-semibold text-gray-900 truncate max-w-[200px]"
+              title={record.title}
+            >
               {record.title}
             </h3>
           </div>
@@ -559,24 +598,26 @@ function RecordCard({
             {getTypeLabel(record.type)}
           </Badge>
         </div>
-        
+
         <div className="space-y-2 mb-3">
           <div className="flex items-center text-xs text-gray-500">
             <Calendar className="h-3.5 w-3.5 mr-1.5" />
             <span>{formatDate(record.visit_date)}</span>
           </div>
-          
+
           <div className="flex items-center text-xs text-gray-500">
             <Tag className="h-3.5 w-3.5 mr-1.5" />
             <span className="truncate">{record.hospital_name}</span>
           </div>
-          
+
           {record.file_name && (
             <div className="flex items-center text-xs text-gray-500">
               <FileText className="h-3.5 w-3.5 mr-1.5" />
               <span className="truncate">{record.file_name}</span>
               {record.file_size && (
-                <span className="ml-1">({formatFileSize(record.file_size)})</span>
+                <span className="ml-1">
+                  ({formatFileSize(record.file_size)})
+                </span>
               )}
             </div>
           )}
@@ -591,28 +632,18 @@ function RecordCard({
         <div className="flex justify-end gap-2">
           {record.file_url && (
             <>
-              <Button
-                variant="outline" 
-                size="sm"
-                className="h-8"
-                asChild
-              >
+              <Button variant="outline" size="sm" className="h-8" asChild>
                 <a
                   href={record.file_url}
-                  target="_blank" 
+                  target="_blank"
                   rel="noopener noreferrer"
                 >
                   <Eye className="h-3.5 w-3.5 mr-1" />
                   View
                 </a>
               </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8"
-                asChild
-              >
+
+              <Button variant="outline" size="sm" className="h-8" asChild>
                 <a
                   href={record.file_url}
                   download={record.file_name || record.title}
@@ -623,7 +654,7 @@ function RecordCard({
               </Button>
             </>
           )}
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -650,7 +681,7 @@ function RecordCard({
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-              
+
               <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-center min-h-[300px]">
                 {record.file_type?.includes("image") ? (
                   <img

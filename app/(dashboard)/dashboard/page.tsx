@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useMedicalSummary } from "@/hooks/useMedicalSummary";
 import { MedicalSummary as MedicalSummaryType } from "@/lib/types/medical-summaries";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
 import ModernDashboardOverview from "@/components/dashboard/ModernDashboardOverview";
 import DashboardSummaryStats from "@/components/dashboard/DashboardSummaryStats";
@@ -383,10 +383,10 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto py-6">
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-      
+
       {/* Summary Statistics */}
       <DashboardSummaryStats />
-      
+
       <ModernDashboardOverview />
       <MedicalSummary />
     </div>

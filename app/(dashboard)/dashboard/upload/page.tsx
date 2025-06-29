@@ -1,22 +1,22 @@
-"use client"
-import { useEffect } from 'react';
-import { useAuthStore } from '@/lib/auth-store';
-import { LoggingService } from '@/lib/services/logging-service';
-import FileUploadInterface from '@/components/dashboard/FileUploadInterface';
-import type { Metadata } from 'next';
+"use client";
+import { useEffect } from "react";
+import { useAuthStore } from "@/lib/stores/auth-store";
+import { LoggingService } from "@/lib/services/logging-service";
+import FileUploadInterface from "@/components/dashboard/FileUploadInterface";
+import type { Metadata } from "next";
 
 export default function UploadPage() {
   const { user } = useAuthStore();
-  
+
   // Log page view
   useEffect(() => {
     if (user) {
       LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
-        page: "upload_documents"
+        page: "upload_documents",
       });
     }
   }, [user]);
-  
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -28,7 +28,7 @@ export default function UploadPage() {
             Upload your prescriptions, lab results, or medical reports for AI-powered analysis and interpretation.
           </p>
         </div> */}
-        
+
         <FileUploadInterface />
       </div>
     </div>

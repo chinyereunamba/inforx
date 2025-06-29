@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { FileUploadService } from "@/lib/services/file-upload-service";
 import { TextExtractor } from "@/lib/utils/text-extraction";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";

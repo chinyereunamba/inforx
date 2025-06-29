@@ -32,7 +32,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { useAuthStore } from "@/lib/auth-store";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import { cn } from "@/lib/utils";
 
 interface Log {
@@ -239,8 +239,8 @@ export default function ActivityLogs() {
           ? dateRange.from
           : null;
       const toDate =
-        dateRange.to !== null && dateRange.to.trim() !== "" 
-          ? dateRange.to 
+        dateRange.to !== null && dateRange.to.trim() !== ""
+          ? dateRange.to
           : null;
       fetchLogs(pagination.page, actionFilter, fromDate, toDate);
     }
