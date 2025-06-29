@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import { MedicalRecord } from "@/lib/types/medical-records";
+import type { MedicalRecord } from "@/lib/types/medical-records";
 
 export const dynamic = 'force-dynamic';
 
@@ -42,7 +42,9 @@ export async function GET(request: NextRequest) {
       recordsByHospital: {} as Record<string, number>,
       totalFileSize: 0,
       recordsByMonth: {} as Record<string, number>,
-      recentRecords: recordsList.slice(0, 5), // Last 5 records
+      recentRecords: recordsList
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 5), // Last 5 records
     };
 
     // Process each record
@@ -75,12 +77,12 @@ export async function GET(request: NextRequest) {
     const topHospitals = Object.entries(stats.recordsByHospital)
       .sort(([, a], [, b]) => b - a)
       .slice(0, 5)
-      .map(([hospital, count]) => ({ hospital, count }));
+      .map(([hospital, count]) => ({ hospital, count: count as number }));
 
     // Get top record types (sorted by count)
     const topTypes = Object.entries(stats.recordsByType)
       .sort(([, a], [, b]) => b - a)
-      .map(([type, count]) => ({ type, count }));
+      .map(([type, count]) => ({ type, count: count as number }));
 
     // Format file size
     const formatFileSize = (bytes: number) => {

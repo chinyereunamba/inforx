@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -26,6 +25,7 @@ import { MedicalSummary as MedicalSummaryType } from "@/lib/types/medical-summar
 import { useAuthStore } from "@/lib/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
 import ModernDashboardOverview from "@/components/dashboard/ModernDashboardOverview";
+import DashboardSummaryStats from "@/components/dashboard/DashboardSummaryStats";
 
 interface MedicalSummaryProps {
   selectedRecordIds?: string[];
@@ -382,6 +382,10 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto py-6">
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+      
+      {/* Summary Statistics */}
+      <DashboardSummaryStats />
+      
       <ModernDashboardOverview />
       <MedicalSummary />
     </div>

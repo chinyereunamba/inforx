@@ -239,6 +239,8 @@ export default function ActivityLogs() {
           ? dateRange.from
           : null;
       const toDate =
+        dateRange.to !== null && dateRange.to.trim() !== "" 
+          ? dateRange.to 
           : null;
       fetchLogs(pagination.page, actionFilter, fromDate, toDate);
     }
