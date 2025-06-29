@@ -228,7 +228,7 @@ async function _extractTextFromDocx(
   file: Blob,
   fileName: string
 ): Promise<ExtractedText> {
-  try  {
+  try {
     const arrayBuffer = await file.arrayBuffer();
     const { value: text } = await mammoth.extractRawText({ arrayBuffer });
 
@@ -237,7 +237,6 @@ async function _extractTextFromDocx(
       fileName,
       success: true,
     };
-  
   } catch (error) {
     return {
       text: "",
@@ -264,11 +263,6 @@ async function _extractTextFromImage(
       fileName,
       success: true,
       confidence: data.confidence,
-    };
-      text: `[Image content extracted from ${fileName}]`,
-      fileName,
-      success: true,
-      confidence: 0.75,
     };
   } catch (error) {
     return {
