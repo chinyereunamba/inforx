@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
+import { useMedicalRecords } from '@/hooks/useMedicalRecordsHook';
 import {
   Upload,
   FileText,
@@ -26,72 +27,56 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import EnhancedMedicalRecordUpload from "@/components/medical-records/EnhancedMedicalRecordUpload";
 import { MedicalRecord } from "@/lib/types/medical-records";
-import { medicalRecordsService } from "@/lib/services/medical-records";
 
 export default function MedicalVaultPage() {
   const { user } = useAuthStore();
-  const [records, setRecords] = useState<MedicalRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { records, loading, deleteRecord, refetch } = useMedicalRecords();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [isUploadExpanded, setIsUploadExpanded] = useState(false);
   const [recentUploads, setRecentUploads] = useState<MedicalRecord[]>([]);
 
+  // Filtered records based on search and filter type
+  const filteredRecords = useMemo(() => {
+    return records.filter(record => {
+      // Filter by search term
+      const matchesSearch = !searchTerm || 
+        record.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        record.hospital_name.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // Filter by type
+      const matchesType = filterType === 'all' || record.type === filterType;
+      
+      return matchesSearch && matchesType;
+    });
+  }, [records, searchTerm, filterType]);
+
   useEffect(() => {
     if (user) {
-      fetchRecords();
-
+      // Set recent uploads when records change
+      const recentFiles = [...records]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 3);
+      
+      setRecentUploads(recentFiles);
+      
       // Log page view
       LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
         page: "medical_vault",
       });
     }
-  }, [user]);
-
-  const fetchRecords = async () => {
-    try {
-      setLoading(true);
-      const filters = {};
-      if (searchTerm) {
-        Object.assign(filters, { search: searchTerm });
-      }
-      if (filterType !== "all") {
-        Object.assign(filters, { type: filterType });
-      }
-
-      const data = await medicalRecordsService.getRecords(filters);
-      setRecords(data);
-
-      // Set most recent uploads
-      const recentFiles = [...data]
-        .sort((a, b) => {
-          return (
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          );
-        })
-        .slice(0, 3);
-
-      setRecentUploads(recentFiles);
-    } catch (error) {
-      console.error("Error fetching records:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [user, records]);
 
   const handleRecordAdded = (newRecord: MedicalRecord) => {
-    setRecords((prev) => [newRecord, ...prev]);
-    setRecentUploads((prev) => [newRecord, ...prev].slice(0, 3));
-    fetchRecords(); // Refresh all records to ensure consistency
+    // No need to update local state as the store will handle it via Realtime
+    // Just ensure we refresh the records list
+    refetch();
   };
 
   const handleRecordDeleted = async (recordId: string) => {
     try {
-      await medicalRecordsService.deleteRecord(recordId);
-      setRecords((prev) => prev.filter((record) => record.id !== recordId));
-      setRecentUploads((prev) =>
-        prev.filter((record) => record.id !== recordId)
-      );
+      await deleteRecord(recordId);
+      // No need to update local state as the store will handle it via Realtime
     } catch (error) {
       console.error("Error deleting record:", error);
     }
@@ -134,7 +119,7 @@ export default function MedicalVaultPage() {
 
   // Filter records by type for each section
   const getRecordsByType = (type: string) => {
-    return records.filter((record) => record.type === type);
+    return filteredRecords.filter((record) => record.type === type);
   };
 
   const prescriptions = getRecordsByType("prescription");
@@ -165,7 +150,7 @@ export default function MedicalVaultPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    fetchRecords();
+                    // Search is already handled by the filteredRecords memo
                   }
                 }}
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-full"
@@ -204,7 +189,7 @@ export default function MedicalVaultPage() {
                 onRecordAdded={handleRecordAdded}
                 onUploadComplete={() => {
                   setIsUploadExpanded(false);
-                  fetchRecords();
+                  refetch();
                 }}
               />
             </CardContent>
@@ -315,7 +300,7 @@ export default function MedicalVaultPage() {
           </div>
         ) : (
           <>
-            {records.length === 0 ? (
+            {filteredRecords.length === 0 ? (
               <div className="bg-white rounded-lg shadow-md p-8 text-center">
                 <FolderOpen className="h-16 w-16 mx-auto text-gray-400 mb-4" />
                 <h3 className="text-xl font-medium text-gray-900 mb-2">
@@ -392,7 +377,7 @@ export default function MedicalVaultPage() {
                   <RecordSection
                     title={`${getTypeLabel(filterType)} Records`}
                     icon={getTypeIcon(filterType)}
-                    records={records}
+                    records={filteredRecords}
                     formatDate={formatDate}
                     getTypeIcon={getTypeIcon}
                     getTypeLabel={getTypeLabel}

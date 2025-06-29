@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -13,33 +12,11 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { useAuthStore } from "@/lib/stores/auth-store";
-import { medicalRecordsService } from "@/lib/services/medical-records";
-import { MedicalRecordsStats } from "@/lib/services/medical-records";
+import { useMedicalRecords } from '@/hooks/useMedicalRecordsHook';
 
 export default function DashboardSummaryStats() {
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<MedicalRecordsStats | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { stats, loadingStats: loading, statsError: error } = useMedicalRecords();
   const { user } = useAuthStore();
-
-  useEffect(() => {
-    async function fetchStats() {
-      if (!user) return;
-
-      try {
-        setLoading(true);
-        const data = await medicalRecordsService.getStats();
-        setStats(data);
-      } catch (err) {
-        console.error("Failed to fetch stats:", err);
-        setError("Could not load your medical records statistics");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchStats();
-  }, [user]);
 
   if (loading) {
     return (

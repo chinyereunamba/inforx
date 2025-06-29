@@ -9,6 +9,7 @@ import { gsap } from "gsap";
 import { LoggingService } from "@/lib/services/logging-service";
 import { signOut } from "@/app/(auth)/auth/auth";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import {
   Menu,
   X,
@@ -30,7 +31,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -102,7 +102,7 @@ export default function EnhancedDashboardLayout({
   const sidebarRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
 
   // Handle dark mode
   useEffect(() => {

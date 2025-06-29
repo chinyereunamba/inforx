@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import {
   Search,
   BarChart3,
@@ -65,7 +66,8 @@ export default function NavigationSidebar({
   isOpen,
   onClose,
   user,
-}: NavigationSidebarProps) {
+}: NavigationSidebarProps) { 
+  const { signOut } = useAuthStore();
   const sidebarRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const navItemsRef = useRef<HTMLDivElement[]>([]);
@@ -74,7 +76,7 @@ export default function NavigationSidebar({
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await signOut(); 
       // The auth state change will automatically redirect to login
     } catch (error) {
       console.error("Sign out failed:", error);

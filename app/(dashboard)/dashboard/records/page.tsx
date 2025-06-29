@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuthStore } from "@/lib/stores/auth-store";
+import { useMedicalRecords } from '@/hooks/useMedicalRecordsHook';
 import { LoggingService } from "@/lib/services/logging-service";
 import {
   FilePlus,
@@ -21,17 +22,10 @@ import MedicalRecordsList from "@/components/medical-records/MedicalRecordsList"
 import { MedicalSummary } from "@/components/medical-records/MedicalSummary";
 import { MedicalRecord } from "@/lib/types/medical-records";
 import { MedicalSummary as MedicalSummaryType } from "@/lib/types/medical-summaries";
-import {
-  medicalRecordsService,
-  MedicalRecordsFilters,
-  MedicalRecordsStats,
-} from "@/lib/services/medical-records";
 
 export default function MedicalRecordsPage() {
   const { user } = useAuthStore();
-  const [records, setRecords] = useState<MedicalRecord[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<MedicalRecordsStats | null>(null);
+  const { records, loading, stats, deleteRecord, refetch } = useMedicalRecords();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [filterHospital, setFilterHospital] = useState<string>("all");
@@ -39,45 +33,28 @@ export default function MedicalRecordsPage() {
   const [selectedRecordIds, setSelectedRecordIds] = useState<string[]>([]);
   const [showSummary, setShowSummary] = useState(false);
 
-  // Fetch user's medical records
-  const fetchRecords = useCallback(
-    async (filters?: MedicalRecordsFilters) => {
-      if (!user) return;
-
-      try {
-        setLoading(true);
-        setError(null);
-
-        const data = await medicalRecordsService.getRecords(filters);
-        setRecords(data);
-      } catch (error: any) {
-        console.error("Error fetching records:", error);
-        setError(error.message || "Failed to fetch medical records");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [user]
-  );
-
-  // Fetch statistics
-  const fetchStats = async () => {
-    if (!user) return;
-
-    try {
-      const data = await medicalRecordsService.getStats();
-      setStats(data);
-    } catch (error: any) {
-      console.error("Error fetching stats:", error);
-      // Don't show error for stats, it's not critical
-    }
-  };
+  // Filter records based on search term, type, and hospital
+  const filteredRecords = useMemo(() => {
+    return records.filter(record => {
+      // Filter by search term
+      const matchesSearch = !searchTerm || 
+        record.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        record.hospital_name.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // Filter by type
+      const matchesType = filterType === 'all' || record.type === filterType;
+      
+      // Filter by hospital
+      const matchesHospital = filterHospital === 'all' || record.hospital_name === filterHospital;
+      
+      return matchesSearch && matchesType && matchesHospital;
+    });
+  }, [records, searchTerm, filterType, filterHospital]);
 
   // Add new record to the list
   const addRecord = (newRecord: MedicalRecord) => {
-    setRecords((prev) => [newRecord, ...prev]);
-
-    fetchStats(); // Refresh stats when new record is added
+    // No need to manually add the record - store will handle it via Realtime
+    refetch();
 
     // Log the record was added
     if (user) {
@@ -90,13 +67,10 @@ export default function MedicalRecordsPage() {
   };
 
   // Delete record from the list
-  const deleteRecord = async (recordId: string) => {
+  const handleDeleteRecord = async (recordId: string) => {
     try {
-      await medicalRecordsService.deleteRecord(recordId);
-      setRecords((prev) => prev.filter((record) => record.id !== recordId));
-
+      await deleteRecord(recordId);
       setSelectedRecordIds((prev) => prev.filter((id) => id !== recordId)); // Remove from selected records
-      fetchStats(); // Refresh stats when record is deleted
 
       // Log record deletion
       if (user) {
@@ -134,13 +108,7 @@ export default function MedicalRecordsPage() {
 
   // Handle search and filter changes
   const handleFiltersChange = () => {
-    const filters: MedicalRecordsFilters = {};
-
-    if (searchTerm) filters.search = searchTerm;
-    if (filterType !== "all") filters.type = filterType;
-    if (filterHospital !== "all") filters.hospital = filterHospital;
-
-    fetchRecords(filters);
+    // No need for API call - filtering is done client-side with useMemo
   };
 
   // Debounced search
@@ -154,15 +122,12 @@ export default function MedicalRecordsPage() {
 
   useEffect(() => {
     if (user) {
-      fetchRecords();
-      fetchStats();
-
       // Log page view
       LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
         page: "medical_records",
       });
     }
-  }, [user, fetchRecords]);
+  }, [user]);
 
   if (!user) {
     return (
@@ -179,7 +144,7 @@ export default function MedicalRecordsPage() {
 
   // Get unique hospitals for filter
   const hospitals = Array.from(
-    new Set(records.map((record) => record.hospital_name))
+    new Set(records.map(record => record.hospital_name))
   );
 
   return (
@@ -300,8 +265,7 @@ export default function MedicalRecordsPage() {
               userId={user.id}
               onRecordAdded={addRecord}
               onUploadComplete={() => {
-                fetchRecords();
-                fetchStats();
+                refetch();
               }}
             />
           </div>
@@ -356,7 +320,7 @@ export default function MedicalRecordsPage() {
                 </select>
 
                 <span className="text-sm text-gray-500">
-                  {records.length} records found
+                  {filteredRecords.length} records found
                 </span>
 
                 {selectedRecordIds.length > 0 && (
@@ -369,13 +333,10 @@ export default function MedicalRecordsPage() {
 
             {/* Records List */}
             <MedicalRecordsList
-              records={records}
+              records={filteredRecords}
               loading={loading}
-              onRecordDeleted={deleteRecord}
-              onRefresh={() => {
-                fetchRecords();
-                fetchStats();
-              }}
+              onRecordDeleted={recordId => handleDeleteRecord(recordId)}
+              onRefresh={refetch}
               selectedRecordIds={selectedRecordIds}
               onRecordSelection={handleRecordSelection}
             />

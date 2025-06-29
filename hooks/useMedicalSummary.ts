@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import {
   MedicalSummary,
   GenerateSummaryRequest,
@@ -7,6 +8,7 @@ import {
 
 export function useMedicalSummary() {
   const supabase = createClient();
+  const { user } = useAuthStore();
   const [summary, setSummary] = useState<MedicalSummary | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,16 +18,13 @@ export function useMedicalSummary() {
       setLoading(true);
       setError(null);
 
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error("No active session");
+      if (!user) {
+        throw new Error("No authenticated user");
       }
 
       const response = await fetch("/api/medical-summary/latest", {
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${await getAccessToken()}`,
         },
       });
 
@@ -49,11 +48,8 @@ export function useMedicalSummary() {
       setLoading(true);
       setError(null);
 
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error("No active session");
+      if (!user) {
+        throw new Error("No authenticated user");
       }
 
       const requestBody: GenerateSummaryRequest = { recordIds };
@@ -62,7 +58,7 @@ export function useMedicalSummary() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${await getAccessToken()}`,
         },
         body: JSON.stringify(requestBody),
       });
@@ -82,6 +78,15 @@ export function useMedicalSummary() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper to get the access token
+  const getAccessToken = async (): Promise<string> => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      throw new Error("No active session");
+    }
+    return session.access_token;
   };
 
   useEffect(() => {
