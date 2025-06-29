@@ -295,6 +295,102 @@ Please respond with ONLY the JSON object, no additional text.`;
   }
 
   /**
+   * Interpret medical text using AI
+   */
+  async interpretMedicalText(
+    textContent: string,
+    recordType: string
+  ): Promise<{ interpretation: string; error?: string }> {
+    try {
+      // Skip if textContent is empty or too short
+      if (!textContent || textContent.length < 10) {
+        return { 
+          interpretation: "Not enough text content to generate an interpretation.",
+          error: "Text content too short"
+        };
+      }
+
+      // Build the prompt based on record type
+      let prompt = "";
+      switch (recordType) {
+        case "prescription":
+          prompt = "Explain this medication prescription for a patient in clear steps. Mention what each drug is used for.";
+          break;
+        case "lab_result":
+          prompt = "Interpret this lab result and explain what each parameter means. Highlight anything abnormal.";
+          break;
+        case "scan":
+          prompt = "Summarize this radiology or scan report in plain English and suggest next steps.";
+          break;
+        case "other":
+        default:
+          prompt = "Explain this medical text to a patient in simple, friendly language.";
+          break;
+      }
+
+      prompt += `\n\nUse this format for your response:
+
+📘 Explanation:
+Explain the input thoroughly. What does this medicine do? What does this lab result signify? Provide relevant background information in a way that's easy to understand.
+
+💡 What to Do:
+Give straightforward, practical steps for the patient. If it's medication, state the dosage clearly. Include lifestyle tips relevant to the situation.
+
+⚠️ When to See a Doctor:
+List 2-3 specific warning signs that would require immediate medical attention. Be precise.
+
+Medical Text:
+${textContent}`;
+
+      // Call OpenRouter API
+      const response = await fetch(`${this.baseUrl}/chat/completions`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+          "X-Title": "InfoRx Medical Interpretation",
+        },
+        body: JSON.stringify({
+          model: "anthropic/claude-3-haiku",
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          temperature: 0.3,
+          max_tokens: 1500,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          `AI API error: ${response.status} - ${
+            errorData.error?.message || errorData.message || "Unknown error"
+          }`
+        );
+      }
+
+      const data = await response.json();
+      const aiResponse = data.choices[0]?.message?.content;
+
+      if (!aiResponse) {
+        throw new Error("No response from AI service");
+      }
+
+      return { interpretation: aiResponse };
+    } catch (error) {
+      console.error("AI interpretation error:", error);
+      return { 
+        interpretation: "Sorry, we couldn't generate an interpretation at this time.",
+        error: error instanceof Error ? error.message : "Unknown error during interpretation"
+      };
+    }
+  }
+
+  /**
    * Validate API configuration
    */
   validateConfig(): { isValid: boolean; error?: string } {

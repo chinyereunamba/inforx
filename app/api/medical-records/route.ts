@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { TextExtractor } from "@/lib/utils/text-extraction";
+import { aiMedicalSummaryService } from "@/lib/services/ai-medical-summary";
 
 // GET /api/medical-records - Fetch user's medical records
 export async function GET(request: NextRequest) {
@@ -198,6 +199,27 @@ export async function POST(request: NextRequest) {
         // Extract text from the file
         const extractionResult = await TextExtractor.extractText(file);
 
+        let interpretationText = null;
+        let interpretationError = null;
+
+        // If text extraction was successful, try to generate an AI interpretation
+        if (extractionResult.success && extractionResult.text) {
+          try {
+            const { interpretation, error: aiError } = await aiMedicalSummaryService.interpretMedicalText(
+              extractionResult.text,
+              formData.type
+            );
+
+            interpretationText = interpretation;
+            interpretationError = aiError;
+          } catch (aiInterpretError) {
+            console.error("AI interpretation error:", aiInterpretError);
+            interpretationError = aiInterpretError instanceof Error 
+              ? aiInterpretError.message 
+              : "Failed to generate interpretation";
+          }
+        }
+
         // Update record with extracted text
         const { data: updatedRecord, error: updateError } = await supabase
           .from("medical_records")
@@ -205,11 +227,12 @@ export async function POST(request: NextRequest) {
             text_content: extractionResult.success
               ? extractionResult.text
               : null,
+            interpretation_text: interpretationText,
             processing_status: extractionResult.success ? "complete" : "failed",
             processed_at: new Date().toISOString(),
             processing_error: extractionResult.success
-              ? null
-              : extractionResult.error || "Text extraction failed",
+              ? (interpretationError || null)
+              : (extractionResult.error || "Text extraction failed"),
           })
           .eq("id", record.id)
           .select()

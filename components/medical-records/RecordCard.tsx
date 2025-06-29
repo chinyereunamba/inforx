@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge"; 
 import {
   FileText,
   Calendar,
@@ -14,7 +14,9 @@ import {
   FileImage,
   FileCheck,
   Pill,
-  AlertTriangle,
+  AlertTriangle, 
+  Lightbulb,
+  BookOpen,
 } from "lucide-react";
 import { MedicalRecord } from "@/lib/types/medical-records";
 
@@ -161,8 +163,8 @@ export default function RecordCard({ record, onDelete, onView }: RecordCardProps
         {/* Extracted text section - only shown when expanded */}
         {isExpanded && record.text_content && (
           <div className="mb-3 mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="text-xs font-medium text-gray-700">Extracted Text</h4>
+            <div className="flex items-center justify-between mb-2"> 
+              <h4 className="text-xs font-medium text-gray-700">Extracted Text</h4> 
               {record.processed_at && (
                 <span className="text-xs text-gray-500">
                   {new Date(record.processed_at).toLocaleString()}
@@ -171,6 +173,26 @@ export default function RecordCard({ record, onDelete, onView }: RecordCardProps
             </div>
             <div className="text-xs text-gray-600 max-h-32 overflow-y-auto">
               {record.text_content}
+            </div>
+          </div>
+        )}
+        
+        {/* AI Interpretation section - only shown when expanded */}
+        {isExpanded && record.interpretation_text && (
+          <div className="mb-3 mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4 text-blue-600" />
+                <h4 className="text-xs font-medium text-blue-700">AI Interpretation</h4>
+              </div>
+              {record.processed_at && (
+                <span className="text-xs text-blue-500">
+                  Generated {new Date(record.processed_at).toLocaleString()}
+                </span>
+              )}
+            </div>
+            <div className="text-xs text-blue-800 whitespace-pre-line">
+              {record.interpretation_text}
             </div>
           </div>
         )}
