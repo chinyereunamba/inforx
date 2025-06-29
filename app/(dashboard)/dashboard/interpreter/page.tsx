@@ -1,3 +1,4 @@
+"use client"
 import type { Metadata } from "next";
 import { useEffect } from "react";
 import { useAuthStore } from "@/lib/auth-store";
