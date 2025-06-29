@@ -10,27 +10,27 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Activity, 
-  Search, 
-  Filter, 
-  RefreshCw, 
-  FileText, 
-  User, 
-  Brain, 
-  LogIn, 
-  LogOut, 
-  Upload, 
-  Trash, 
-  BarChart2, 
-  Loader2, 
-  Eye, 
+import {
+  Activity,
+  Search,
+  Filter,
+  RefreshCw,
+  FileText,
+  User,
+  Brain,
+  LogIn,
+  LogOut,
+  Upload,
+  Trash,
+  BarChart2,
+  Loader2,
+  Eye,
   Pencil,
   Clock,
   Calendar as CalendarIcon,
   Info,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
 } from "lucide-react";
 import { useAuthStore } from "@/lib/auth-store";
 import { cn } from "@/lib/utils";
@@ -73,9 +73,12 @@ export default function ActivityLogs() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [groupedLogs, setGroupedLogs] = useState<Record<string, Log[]>>({});
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
-  const [dateRange, setDateRange] = useState<{from: string | null, to: string | null}>({
+  const [dateRange, setDateRange] = useState<{
+    from: string | null;
+    to: string | null;
+  }>({
     from: null,
-    to: null
+    to: null,
   });
 
   const actionConfigs: Record<string, ActionConfig> = {
@@ -84,81 +87,86 @@ export default function ActivityLogs() {
       color: "text-green-500",
       label: "User Login",
       badgeColor: "bg-green-100 text-green-800 border-green-200",
-      description: "Successfully signed into account"
+      description: "Successfully signed into account",
     },
     user_logout: {
       icon: LogOut,
       color: "text-slate-500",
       label: "User Logout",
       badgeColor: "bg-slate-100 text-slate-800 border-slate-200",
-      description: "Signed out of account"
+      description: "Signed out of account",
     },
     user_signup: {
       icon: User,
       color: "text-blue-500",
       label: "User Signup",
       badgeColor: "bg-blue-100 text-blue-800 border-blue-200",
-      description: "Created a new account"
+      description: "Created a new account",
     },
     uploaded_file: {
       icon: Upload,
       color: "text-blue-500",
       label: "File Upload",
       badgeColor: "bg-blue-100 text-blue-800 border-blue-200",
-      description: "Uploaded a new medical record"
+      description: "Uploaded a new medical record",
     },
     deleted_file: {
       icon: Trash,
       color: "text-red-500",
       label: "File Delete",
       badgeColor: "bg-red-100 text-red-800 border-red-200",
-      description: "Deleted a medical record"
+      description: "Deleted a medical record",
     },
     generated_summary: {
       icon: BarChart2,
       color: "text-purple-500",
       label: "Summary Generation",
       badgeColor: "bg-purple-100 text-purple-800 border-purple-200",
-      description: "Generated a health summary"
+      description: "Generated a health summary",
     },
     viewed_summary: {
       icon: Eye,
       color: "text-indigo-500",
       label: "Viewed Summary",
       badgeColor: "bg-indigo-100 text-indigo-800 border-indigo-200",
-      description: "Viewed a health summary"
+      description: "Viewed a health summary",
     },
     used_ai_interpreter: {
       icon: Brain,
       color: "text-emerald-500",
       label: "AI Interpreter",
       badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200",
-      description: "Used AI to interpret medical text"
+      description: "Used AI to interpret medical text",
     },
     viewed_record: {
       icon: FileText,
       color: "text-amber-500",
       label: "Viewed Record",
       badgeColor: "bg-amber-100 text-amber-800 border-amber-200",
-      description: "Viewed a medical record"
+      description: "Viewed a medical record",
     },
     updated_record: {
       icon: Pencil,
       color: "text-sky-500",
       label: "Updated Record",
       badgeColor: "bg-sky-100 text-sky-800 border-sky-200",
-      description: "Updated a medical record"
+      description: "Updated a medical record",
     },
     page_view: {
       icon: Eye,
       color: "text-gray-500",
       label: "Page View",
       badgeColor: "bg-gray-100 text-gray-800 border-gray-200",
-      description: "Visited a page on the platform"
-    }
+      description: "Visited a page on the platform",
+    },
   };
 
-  const fetchLogs = async (page = 1, action = "", from = null, to = null) => {
+  const fetchLogs = async (
+    page = 1,
+    action = "",
+    from: string | null = null,
+    to: string | null = null
+  ) => {
     if (!user) return;
 
     try {
@@ -172,11 +180,11 @@ export default function ActivityLogs() {
       if (action) {
         params.append("action", action);
       }
-      
+
       if (from) {
         params.append("from", from);
       }
-      
+
       if (to) {
         params.append("to", to);
       }
@@ -191,10 +199,9 @@ export default function ActivityLogs() {
       const data = await response.json();
       setLogs(data.logs);
       setPagination(data.pagination);
-      
+
       // Group logs by date
       groupLogsByDate(data.logs);
-      
     } catch (err) {
       console.error("Error fetching logs:", err);
       setError(
@@ -207,27 +214,33 @@ export default function ActivityLogs() {
 
   const groupLogsByDate = (logs: Log[]) => {
     const grouped: Record<string, Log[]> = {};
-    
-    logs.forEach(log => {
-      const date = new Date(log.created_at).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+
+    logs.forEach((log) => {
+      const date = new Date(log.created_at).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       });
-      
+
       if (!grouped[date]) {
         grouped[date] = [];
       }
-      
+
       grouped[date].push(log);
     });
-    
+
     setGroupedLogs(grouped);
   };
 
   useEffect(() => {
     if (user) {
-      fetchLogs(pagination.page, actionFilter, dateRange.from ?? undefined, dateRange.to ?? undefined);
+      const fromDate =
+        dateRange.from && dateRange.from.trim() !== ""
+          ? dateRange.from
+          : undefined;
+      const toDate =
+        dateRange.to && dateRange.to.trim() !== "" ? dateRange.to : undefined;
+      fetchLogs(pagination.page, actionFilter, fromDate, toDate);
     }
   }, [user, pagination.page, actionFilter, dateRange.from, dateRange.to]);
 
@@ -238,7 +251,7 @@ export default function ActivityLogs() {
         color: "text-slate-500",
         label: formatActionName(action),
         badgeColor: "bg-slate-100 text-slate-800 border-slate-200",
-        description: "Performed an action"
+        description: "Performed an action",
       }
     );
   };
@@ -256,29 +269,33 @@ export default function ActivityLogs() {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
-      hour12: true
+      hour12: true,
     });
   };
 
   const formatMetadata = (metadata: Record<string, any>) => {
     if (!metadata || Object.keys(metadata).length === 0) return null;
-    
+
     return Object.entries(metadata).map(([key, value]) => {
       const formattedKey = key.replace(/_/g, " ");
-      
+
       // Handle different value types
       let displayValue = value;
-      
-      if (typeof value === 'object') {
+
+      if (typeof value === "object") {
         displayValue = JSON.stringify(value);
-      } else if (typeof value === 'boolean') {
-        displayValue = value ? 'Yes' : 'No';
+      } else if (typeof value === "boolean") {
+        displayValue = value ? "Yes" : "No";
       }
-      
+
       return (
         <div key={key} className="grid grid-cols-3 gap-2 text-sm mb-1">
-          <div className="font-medium text-slate-700 capitalize">{formattedKey}:</div>
-          <div className="col-span-2 text-slate-600 break-words">{displayValue}</div>
+          <div className="font-medium text-slate-700 capitalize">
+            {formattedKey}:
+          </div>
+          <div className="col-span-2 text-slate-600 break-words">
+            {displayValue}
+          </div>
         </div>
       );
     });
@@ -292,29 +309,29 @@ export default function ActivityLogs() {
     const value = event.target.value;
     const today = new Date();
     const now = new Date().toISOString();
-    
+
     let from = null;
-    
-    if (value === 'today') {
+
+    if (value === "today") {
       from = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-    } else if (value === 'yesterday') {
+    } else if (value === "yesterday") {
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
       yesterday.setHours(0, 0, 0, 0);
       from = yesterday.toISOString();
-      
+
       const endOfDay = new Date(yesterday);
       endOfDay.setHours(23, 59, 59, 999);
-    } else if (value === 'week') {
+    } else if (value === "week") {
       const lastWeek = new Date(today);
       lastWeek.setDate(lastWeek.getDate() - 7);
       from = lastWeek.toISOString();
-    } else if (value === 'month') {
+    } else if (value === "month") {
       const lastMonth = new Date(today);
       lastMonth.setMonth(lastMonth.getMonth() - 1);
       from = lastMonth.toISOString();
     }
-    
+
     setDateRange({ from, to: now });
   };
 
@@ -345,7 +362,17 @@ export default function ActivityLogs() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => fetchLogs(pagination.page, actionFilter, dateRange.from, dateRange.to)}
+            onClick={() => {
+              const fromDate =
+                dateRange.from && dateRange.from.trim() !== ""
+                  ? dateRange.from
+                  : undefined;
+              const toDate =
+                dateRange.to && dateRange.to.trim() !== ""
+                  ? dateRange.to
+                  : undefined;
+              fetchLogs(pagination.page, actionFilter, fromDate, toDate);
+            }}
             disabled={loading}
             className="ml-auto"
           >
@@ -365,39 +392,44 @@ export default function ActivityLogs() {
               <div className="bg-blue-100 rounded-full p-3 mb-3">
                 <Activity className="h-5 w-5 text-blue-600" />
               </div>
-              <div className="text-2xl font-semibold">{pagination.total || 0}</div>
+              <div className="text-2xl font-semibold">
+                {pagination.total || 0}
+              </div>
               <div className="text-sm text-slate-500">Total Activities</div>
             </CardContent>
           </Card>
-          
+
           <Card className="border border-slate-200">
             <CardContent className="p-4 flex flex-col items-center text-center">
               <div className="bg-green-100 rounded-full p-3 mb-3">
                 <LogIn className="h-5 w-5 text-green-600" />
               </div>
               <div className="text-2xl font-semibold">
-                {logs.filter(log => log.action === 'user_login').length}
+                {logs.filter((log) => log.action === "user_login").length}
               </div>
               <div className="text-sm text-slate-500">Logins</div>
             </CardContent>
           </Card>
-          
+
           <Card className="border border-slate-200">
             <CardContent className="p-4 flex flex-col items-center text-center">
               <div className="bg-purple-100 rounded-full p-3 mb-3">
                 <Brain className="h-5 w-5 text-purple-600" />
               </div>
               <div className="text-2xl font-semibold">
-                {logs.filter(log => log.action === 'used_ai_interpreter').length}
+                {
+                  logs.filter((log) => log.action === "used_ai_interpreter")
+                    .length
+                }
               </div>
               <div className="text-sm text-slate-500">AI Usages</div>
             </CardContent>
           </Card>
-          
+
           <Card className="border border-slate-200">
             <CardContent className="p-4 flex flex-col items-center text-center">
               <div className="bg-amber-100 rounded-full p-3 mb-3">
-                <Calendar className="h-5 w-5 text-amber-600" />
+                <CalendarIcon className="h-5 w-5 text-amber-600" />
               </div>
               <div className="text-2xl font-semibold">
                 {Object.keys(groupedLogs).length}
@@ -406,7 +438,7 @@ export default function ActivityLogs() {
             </CardContent>
           </Card>
         </div>
-      
+
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
@@ -434,7 +466,7 @@ export default function ActivityLogs() {
               ))}
             </select>
           </div>
-          
+
           <div className="flex items-center relative min-w-[180px]">
             <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
             <select
@@ -498,10 +530,10 @@ export default function ActivityLogs() {
                   </div>
                   <div className="flex-grow border-t border-slate-200"></div>
                 </div>
-                
+
                 {/* Timeline Line */}
                 <div className="absolute left-5 top-14 bottom-0 w-0.5 bg-slate-200 z-0"></div>
-                
+
                 {/* Timeline Items */}
                 <div className="space-y-4 relative">
                   {dateLogs.map((log) => {
@@ -510,12 +542,12 @@ export default function ActivityLogs() {
                       color,
                       label,
                       badgeColor,
-                      description
+                      description,
                     } = getActionInfo(log.action);
-                    
+
                     return (
-                      <div 
-                        key={log.id} 
+                      <div
+                        key={log.id}
                         className={cn(
                           "relative flex pl-10 z-10",
                           expandedCard === log.id ? "pb-4" : ""
@@ -523,36 +555,45 @@ export default function ActivityLogs() {
                       >
                         {/* Timeline Point */}
                         <div className="absolute left-[11px] -translate-x-1/2 w-[10px] h-[10px] rounded-full bg-white border-2 border-blue-600 z-20"></div>
-                        
+
                         {/* Card */}
                         <div className="flex-1">
                           <Card className="border border-slate-200 hover:border-slate-300 transition-colors">
                             <CardContent className="p-4">
                               <div className="flex justify-between items-start">
                                 <div className="flex items-start gap-3">
-                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${color} bg-opacity-10`}>
+                                  <div
+                                    className={`w-8 h-8 rounded-full flex items-center justify-center ${color} bg-opacity-10`}
+                                  >
                                     <IconComponent className="h-4 w-4" />
                                   </div>
-                                  
+
                                   <div>
                                     <div className="flex items-center gap-2 mb-1">
-                                      <Badge className={badgeColor}>{label}</Badge>
+                                      <Badge className={badgeColor}>
+                                        {label}
+                                      </Badge>
                                       <span className="text-xs text-slate-500">
                                         {formatDate(log.created_at)}
                                       </span>
                                     </div>
-                                    
+
                                     <p className="text-sm text-slate-700">
                                       {description}
-                                      {log.action === 'page_view' && log.metadata?.page && (
-                                        <span className="font-medium">
-                                          : {log.metadata.page.replace(/_/g, ' ')}
-                                        </span>
-                                      )}
+                                      {log.action === "page_view" &&
+                                        log.metadata?.page && (
+                                          <span className="font-medium">
+                                            :{" "}
+                                            {log.metadata.page.replace(
+                                              /_/g,
+                                              " "
+                                            )}
+                                          </span>
+                                        )}
                                     </p>
                                   </div>
                                 </div>
-                                
+
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -566,19 +607,23 @@ export default function ActivityLogs() {
                                   )}
                                 </Button>
                               </div>
-                              
+
                               {/* Expanded Details */}
-                              {expandedCard === log.id && log.metadata && Object.keys(log.metadata).length > 0 && (
-                                <div className="mt-3 pt-3 border-t border-slate-100">
-                                  <div className="bg-slate-50 rounded-md p-3">
-                                    <div className="flex items-center gap-2 mb-2">
-                                      <Info className="h-4 w-4 text-blue-600" />
-                                      <span className="text-sm font-medium text-slate-700">Details</span>
+                              {expandedCard === log.id &&
+                                log.metadata &&
+                                Object.keys(log.metadata).length > 0 && (
+                                  <div className="mt-3 pt-3 border-t border-slate-100">
+                                    <div className="bg-slate-50 rounded-md p-3">
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <Info className="h-4 w-4 text-blue-600" />
+                                        <span className="text-sm font-medium text-slate-700">
+                                          Details
+                                        </span>
+                                      </div>
+                                      {formatMetadata(log.metadata)}
                                     </div>
-                                    {formatMetadata(log.metadata)}
                                   </div>
-                                </div>
-                              )}
+                                )}
                             </CardContent>
                           </Card>
                         </div>
