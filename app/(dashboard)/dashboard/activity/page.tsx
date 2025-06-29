@@ -19,12 +19,12 @@ export default function ActivityPage() {
 
   return (
     <div className="space-y-6">
-      <div>
+      {/* <div>
         <h1 className="text-2xl font-bold font-noto text-gray-900 mb-2">Activity Logs</h1>
         <p className="text-gray-600">
           Track your recent activity and interactions with InfoRx. This helps you monitor your healthcare journey and security.
         </p>
-      </div>
+      </div> */}
       
       <ActivityLogs />
     </div>

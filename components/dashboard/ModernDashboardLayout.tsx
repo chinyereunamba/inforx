@@ -41,6 +41,7 @@ interface NavigationItem {
   icon: any;
   badge?: number;
   description: string;
+  subTitle?: string;
 }
 
 const navigationItems: NavigationItem[] = [
@@ -57,6 +58,8 @@ const navigationItems: NavigationItem[] = [
     href: "/dashboard/interpreter",
     icon: Heart,
     description: "Medical document analysis",
+    subTitle:
+      "Upload a medical document or paste text for AI-powered interpretation",
   },
   {
     id: "records",
@@ -65,6 +68,7 @@ const navigationItems: NavigationItem[] = [
     icon: FileText,
     badge: 3,
     description: "Manage your health records",
+    subTitle: "Manage and organize your medical documents securely",
   },
   {
     id: "upload",
@@ -72,6 +76,8 @@ const navigationItems: NavigationItem[] = [
     href: "/dashboard/upload",
     icon: Upload,
     description: "Add new documents",
+    subTitle:
+      "Upload your prescriptions, lab results, or medical reports for AI-powered analysis and interpretation.",
   },
   {
     id: "analytics",
@@ -79,6 +85,7 @@ const navigationItems: NavigationItem[] = [
     href: "/dashboard/analytics",
     icon: BarChart3,
     description: "Health trends and insights",
+    subTitle: "",
   },
   {
     id: "activity",
@@ -86,6 +93,8 @@ const navigationItems: NavigationItem[] = [
     href: "/dashboard/activity",
     icon: Activity,
     description: "Track your health journey",
+    subTitle:
+      "Track your recent activity and interactions with InfoRx. This helps you monitor your healthcare journey and security.",
   },
 ];
 
@@ -215,7 +224,7 @@ export default function ModernDashboardLayout({
       });
     }
   };
-  
+
   // Skip rendering until mounted to prevent hydration issues
   if (!mounted) return null;
 
@@ -224,14 +233,14 @@ export default function ModernDashboardLayout({
       className={cn(
         "min-h-screen transition-colors duration-300",
         "bg-slate-50 text-slate-900",
-        "dark:bg-slate-900 dark:text-white"
+        "dark:bg-slate-900 dark:text-slate-100"
       )}
     >
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
           ref={overlayRef}
-          className="fixed inset-0 bg-slate-900/50 dark:bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 bg-slate-900/60 dark:bg-black/60 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
           onClick={handleSidebarClose}
           aria-hidden="true"
         />
@@ -260,7 +269,7 @@ export default function ModernDashboardLayout({
                 <Heart className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-medium font-inter text-slate-900 dark:text-white">
+                <h1 className="text-xl font-medium font-noto text-slate-900 dark:text-slate-100">
                   InfoRx
                 </h1>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -272,7 +281,7 @@ export default function ModernDashboardLayout({
               variant="ghost"
               size="sm"
               onClick={handleSidebarClose}
-              className="lg:hidden text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+              className="lg:hidden text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
               aria-label="Close sidebar"
             >
               <X className="h-5 w-5" strokeWidth={1.5} />
@@ -417,7 +426,7 @@ export default function ModernDashboardLayout({
               variant="ghost"
               size="sm"
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              className="lg:hidden text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
               aria-label="Open menu"
             >
               <Menu className="h-6 w-6" strokeWidth={1.5} />
@@ -425,10 +434,16 @@ export default function ModernDashboardLayout({
 
             {/* Page Title - Desktop */}
             <div className="hidden lg:block">
-              <h2 className="text-xl font-medium text-slate-900 dark:text-white font-inter">
+              <h2 className="text-xl font-medium text-slate-900 dark:text-slate-100 font-noto">
                 {navigationItems.find((item) => isActiveRoute(item.href))
                   ?.label || "Dashboard"}
               </h2>
+              <p>
+                {
+                  navigationItems.find((item) => isActiveRoute(item.href))
+                    ?.description
+                }
+              </p>
             </div>
 
             {/* Actions */}
@@ -438,7 +453,7 @@ export default function ModernDashboardLayout({
                 variant="ghost"
                 size="sm"
                 onClick={toggleTheme}
-                className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg"
+                className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-lg"
                 aria-label={
                   darkMode ?? false
                     ? "Switch to light mode"
@@ -456,7 +471,7 @@ export default function ModernDashboardLayout({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg relative"
+                className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-lg relative"
                 aria-label={`${notifications} notifications`}
               >
                 <Bell className="h-5 w-5" strokeWidth={1.5} />
@@ -471,7 +486,7 @@ export default function ModernDashboardLayout({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg"
+                className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-lg"
                 aria-label="Help and resources"
               >
                 <HelpCircle className="h-5 w-5" strokeWidth={1.5} />
@@ -481,7 +496,7 @@ export default function ModernDashboardLayout({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg"
+                className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-lg"
                 aria-label="User settings"
               >
                 <Settings className="h-5 w-5" strokeWidth={1.5} />

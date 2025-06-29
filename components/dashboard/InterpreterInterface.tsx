@@ -255,7 +255,7 @@ export default function InterpreterInterface({
   return (
     <div ref={formRef} className="h-full flex flex-col p-6 overflow-y-auto">
       {/* Header */}
-      <div className="mb-8">
+      {/* <div className="mb-8">
         <h1
           ref={headerRef}
           className="text-2xl font-bold font-noto text-gray-900 mb-2"
@@ -265,7 +265,7 @@ export default function InterpreterInterface({
         <p className="text-gray-600">
           Upload a medical document or paste text for AI-powered interpretation
         </p>
-      </div>
+      </div> */}
 
       {/* Upload Section */}
       <div ref={uploadSectionRef} className="mb-8">
