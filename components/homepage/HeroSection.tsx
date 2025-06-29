@@ -129,9 +129,6 @@ export default function HeroSection() {
             ref={subtitleRef}
             className="text-xl md:text-2xl text-slate-600 leading-relaxed max-w-2xl lg:max-w-none"
             style={{ fontFamily: "Inter, system-ui, sans-serif" }}
-            onClick={()=>textToSpeech(AI-powered insights for lab results, prescriptions, and symptoms.
-            Transform your healthcare experience with technology designed for
-            Nigerian communities.)}
           >
             AI-powered insights for lab results, prescriptions, and symptoms.
             Transform your healthcare experience with technology designed for
