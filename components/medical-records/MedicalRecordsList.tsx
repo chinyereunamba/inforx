@@ -90,7 +90,7 @@ export default function MedicalRecordsList({
       // Delete file from storage if it exists
       if (record.file_url) {
         const filePath = record.file_url.split("/").slice(-2).join("/");
-        await supabase.storage.from("medical-files").remove([filePath]);
+        await supabase.storage.from("vault").remove([filePath]);
       }
 
       // Delete record from database
