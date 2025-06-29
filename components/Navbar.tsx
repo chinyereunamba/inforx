@@ -202,17 +202,16 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Mobile CTA Section */}
+            className={`lg:hidden transition-all duration-300 ease-in-out z-50 fixed inset-x-0 top-20 ${
           <div className="border-t border-gray-100 px-4 py-4 space-y-3">
-            {/* <Button
-            asChild
-            className="w-full bg-green-500 hover:bg-green-600 text-white text-center py-3 px-4 rounded-lg font-medium transition-colors duration-200"
-          >
-            <Link href="/contact" onClick={closeMobileMenu}>
-              Contact us
-              <div className="w-10" /> 
-            </Link>
-          </Button> */}
+                ? "max-h-[calc(100vh-5rem)] opacity-100 visible"
+                asChild
+                className="w-full bg-green-500 hover:bg-green-600 text-white text-center py-3 px-4 rounded-lg font-medium transition-colors duration-200"
+              >
+                <Link href="/contact" onClick={closeMobileMenu}>
+                  Contact us
+                </Link>
+              </Button> */}
 
             {/* Mobile Language Selector */}
             <div className="flex items-center justify-center space-x-2 text-slate-700 py-2">
