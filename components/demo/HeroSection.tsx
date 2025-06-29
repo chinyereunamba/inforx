@@ -192,7 +192,7 @@ export default function HeroSection({ onStartDemo }: HeroSectionProps) {
 
             <div
               ref={ctaRef}
-              className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16"
+              className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16 w-full"
             >
               <Button
                 size="lg"
