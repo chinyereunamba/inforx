@@ -15,7 +15,7 @@ const navigationLinks: NavLink[] = [
   { href: "about", label: "About us" },
   { href: "demo", label: "Demo" },
   { href: "roadmap", label: "Roadmap" },
-  { href: "faq", label: "FAQ" },
+  { href: "faq", label: "FAQs" },
 ];
 
 export default function Navbar() {
