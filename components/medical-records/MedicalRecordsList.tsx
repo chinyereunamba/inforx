@@ -193,7 +193,7 @@ export default function MedicalRecordsList({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {records.map((record) => {
+            {records.map((record, index) => {
               const isSelected = selectedRecordIds.includes(record.id);
               return (
                 <tr
@@ -218,14 +218,24 @@ export default function MedicalRecordsList({
                   )}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-gray-900 flex items-center gap-2">
                         {record.title}
+                        {record.processing_status === "processing" && (
+                          <span className="inline-block h-4 w-4">
+                            <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+                          </span>
+                        )}
+                        {record.processing_status === "failed" && (
+                          <span className="inline-block h-4 w-4 text-red-500" title={record.processing_error || "Processing failed"}>
+                            <AlertTriangle className="h-4 w-4" />
+                          </span>
+                        )}
                       </div>
-                      {record.notes && (
-                        <div className="text-sm text-gray-500 truncate max-w-xs">
-                          {record.notes}
+                      <div className="text-sm text-gray-500 truncate max-w-xs">
+                        {record.notes || (record.text_content && "Text extracted successfully") || (
+                          record.processing_status === "processing" ? "Processing document..." : ""
+                        )}
                         </div>
-                      )}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

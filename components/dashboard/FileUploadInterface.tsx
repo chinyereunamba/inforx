@@ -26,6 +26,7 @@ interface UploadedFile {
   file: File;
   preview?: string;
   status: "uploading" | "processing" | "completed" | "error";
+  extractedText?: string;
   progress: number;
   result?: InterpretationResult;
   error?: string;
@@ -34,6 +35,8 @@ interface UploadedFile {
 interface InterpretationResult {
   id: string;
   simpleExplanation: string;
+  text_content?: string;
+  processing_status?: string;
   recommendedActions: string[];
   warnings: string[];
   confidence: number;
@@ -170,6 +173,8 @@ export default function FileUploadInterface() {
     const mockResult: InterpretationResult = {
       id: `result-${file.name}-${fileIndex}`,
       simpleExplanation: `Analysis complete for ${file.name}. This appears to be a medical document with important health information.`,
+      text_content: uploadedFiles[fileIndex].extractedText || "No text extracted",
+      processing_status: "complete",
       recommendedActions: [
         "Follow medication schedule as prescribed",
         "Schedule follow-up appointment in 2 weeks",

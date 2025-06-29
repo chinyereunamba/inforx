@@ -745,6 +745,17 @@ export default function EnhancedMedicalRecordUpload({
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Additional notes about this medical record..."
           />
+          {uploadState.extractedText && (
+            <div className="text-xs text-gray-600 mt-2">
+              <details>
+                <summary className="cursor-pointer">View extracted text</summary>
+                <div className="mt-2 p-2 bg-gray-50 rounded-md max-h-32 overflow-y-auto text-xs">
+                  {uploadState.extractedText.substring(0, 500)}
+                  {uploadState.extractedText.length > 500 ? "..." : ""}
+                </div>
+              </details>
+            </div>
+          )}
         </div>
 
         {/* Submit Button */}
