@@ -45,7 +45,7 @@ export default function DashboardSummaryStats() {
     return (
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <Card key={i} className="animate-pulse">
+          <Card key={i} className="animate-none">
             <CardContent className="p-6">
               <div className="w-12 h-12 rounded-full bg-slate-200 mb-4"></div>
               <div className="h-7 bg-slate-200 rounded w-1/2 mb-2"></div>

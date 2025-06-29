@@ -41,8 +41,5 @@ export default function DashboardLayout({ children }: DashboardProps) {
     );
   }
 
-
-  return (
-    <ModernDashboardLayout>{children}</ModernDashboardLayout>
-  );
+  return <EnhancedDashboardLayout>{children}</EnhancedDashboardLayout>;
 }
