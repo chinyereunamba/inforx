@@ -26,18 +26,18 @@ export const useAuthStore = create<AuthState>((set: any, get: any) => ({
     console.log("Initializing auth store..."); // Debug log
     const supabase = createClient();
 
-    // Get initial session
+    // Get initial user
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
+      data: { user },
+    } = await supabase.auth.getUser();
     
-    console.log("Initial session:", !!session?.user, session?.user?.id); // Debug log
-    set({ user: session?.user || null, loading: false, initialized: true });
+    console.log("Initial user:", !!user, user?.id); // Debug log
+    set({ user: user || null, loading: false, initialized: true });
 
     // Listen for auth changes
-    supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, !!session?.user, session?.user?.id); // Debug log
-      set({ user: session?.user || null, loading: false });
+    supabase.auth.onAuthStateChange((event, user) => {
+      console.log("Auth state changed:", event, user?.id); // Debug log
+      set({ user: user || null, loading: false });
     });
   },
 
