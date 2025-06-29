@@ -22,6 +22,11 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const pathName = usePathname().split('/')[1]
 
+  const handleNavigationClick = (route: string) => {
+    // You can add analytics tracking or other functionality here
+    // This function is called when a navigation link is clicked
+  }
+
   // Track scroll position to show/hide shadow
   useEffect(() => {
     const handleScroll = () => {
@@ -80,7 +85,7 @@ export default function Navbar() {
       <nav
         className={`sticky top-0 z-50 bg-white  transition-shadow duration-200 ${
           isScrolled ? "shadow-sm" : ""
-        }`}
+        } w-full`}
         data-navbar
         role="navigation"
         aria-label="Main navigation"
@@ -152,7 +157,10 @@ export default function Navbar() {
             {/* Mobile menu button */}
             <div className="lg:hidden">
               <button
-                onClick={toggleMobileMenu}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleMobileMenu();
+                }}
                 className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-teal-600 hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500 transition-colors duration-200"
                 aria-expanded={isMobileMenuOpen}
                 aria-controls="mobile-menu"
@@ -184,7 +192,10 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className="text-gray-700 hover:text-teal-600 hover:bg-teal-50 block px-3 py-2 text-base font-medium rounded-md transition-colors duration-200"
-                onClick={closeMobileMenu}
+                onClick={() => {
+                  closeMobileMenu();
+                  handleNavigationClick(link.href);
+                }}
               >
                 {link.label}
               </Link>
@@ -230,7 +241,9 @@ export default function Navbar() {
           className="fixed inset-0 bg-black bg-opacity-25 z-30 lg:hidden"
           onClick={closeMobileMenu}
           aria-hidden="true"
-        />
+        >
+          <span className="sr-only">Close menu</span>
+        </div>
       )}
     </>
   );
