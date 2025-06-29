@@ -235,11 +235,11 @@ export default function ActivityLogs() {
   useEffect(() => {
     if (user) {
       const fromDate =
-        dateRange.from && dateRange.from.trim() !== ""
+        dateRange.from !== null && dateRange.from.trim() !== ""
           ? dateRange.from
-          : undefined;
+          : null;
       const toDate =
-        dateRange.to && dateRange.to.trim() !== "" ? dateRange.to : undefined;
+          : null;
       fetchLogs(pagination.page, actionFilter, fromDate, toDate);
     }
   }, [user, pagination.page, actionFilter, dateRange.from, dateRange.to]);
