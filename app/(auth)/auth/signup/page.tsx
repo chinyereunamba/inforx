@@ -257,7 +257,7 @@ export default function SignUpPage() {
       />
 
       {/* Sign In Link */}
-      <div className="text-center text-sm">
+      <div className="text-center text-sm my-4">
         <span className="text-slate-600">
           Already have an account?{" "}
           <Link
