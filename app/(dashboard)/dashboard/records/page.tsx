@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useAuthStore } from "@/lib/stores/auth-store";
-import { useMedicalRecords } from '@/hooks/useMedicalRecordsHook';
+import { useMedicalRecords } from "@/hooks/useMedicalRecordsHook";
 import { LoggingService } from "@/lib/services/logging-service";
 import {
   FilePlus,
@@ -25,7 +25,8 @@ import { MedicalSummary as MedicalSummaryType } from "@/lib/types/medical-summar
 
 export default function MedicalRecordsPage() {
   const { user } = useAuthStore();
-  const { records, loading, stats, deleteRecord, refetch } = useMedicalRecords();
+  const { records, loading, stats, deleteRecord, refetch } =
+    useMedicalRecords();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [filterHospital, setFilterHospital] = useState<string>("all");
@@ -35,18 +36,20 @@ export default function MedicalRecordsPage() {
 
   // Filter records based on search term, type, and hospital
   const filteredRecords = useMemo(() => {
-    return records.filter(record => {
+    return records.filter((record) => {
       // Filter by search term
-      const matchesSearch = !searchTerm || 
+      const matchesSearch =
+        !searchTerm ||
         record.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         record.hospital_name.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       // Filter by type
-      const matchesType = filterType === 'all' || record.type === filterType;
-      
+      const matchesType = filterType === "all" || record.type === filterType;
+
       // Filter by hospital
-      const matchesHospital = filterHospital === 'all' || record.hospital_name === filterHospital;
-      
+      const matchesHospital =
+        filterHospital === "all" || record.hospital_name === filterHospital;
+
       return matchesSearch && matchesType && matchesHospital;
     });
   }, [records, searchTerm, filterType, filterHospital]);
@@ -144,7 +147,7 @@ export default function MedicalRecordsPage() {
 
   // Get unique hospitals for filter
   const hospitals = Array.from(
-    new Set(records.map(record => record.hospital_name))
+    new Set(records.map((record) => record.hospital_name))
   );
 
   return (
@@ -262,7 +265,6 @@ export default function MedicalRecordsPage() {
               </h2>
             </div>
             <MedicalRecordUpload
-              userId={user.id}
               onRecordAdded={addRecord}
               onUploadComplete={() => {
                 refetch();
@@ -335,7 +337,7 @@ export default function MedicalRecordsPage() {
             <MedicalRecordsList
               records={filteredRecords}
               loading={loading}
-              onRecordDeleted={recordId => handleDeleteRecord(recordId)}
+              onRecordDeleted={(recordId) => handleDeleteRecord(recordId)}
               onRefresh={refetch}
               selectedRecordIds={selectedRecordIds}
               onRecordSelection={handleRecordSelection}
