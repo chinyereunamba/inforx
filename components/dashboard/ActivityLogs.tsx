@@ -227,7 +227,7 @@ export default function ActivityLogs() {
 
   useEffect(() => {
     if (user) {
-      fetchLogs(pagination.page, actionFilter, dateRange.from, dateRange.to);
+      fetchLogs(pagination.page, actionFilter, dateRange.from ?? undefined, dateRange.to ?? undefined);
     }
   }, [user, pagination.page, actionFilter, dateRange.from, dateRange.to]);
 
