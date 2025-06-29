@@ -2,7 +2,6 @@ import { createClient } from "@supabase/supabase-js";
 import Tesseract from "tesseract.js";
 import mammoth from "mammoth";
 
-
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -164,10 +163,29 @@ async function _extractTextFromPDF(
   fileName: string
 ): Promise<ExtractedText> {
   try {
-    // For now, return a placeholder since pdf-parse requires additional setup
-    // In production, you would use: const pdfParse = require('pdf-parse');
+    // Create FormData to send to API
+    const formData = new FormData();
+    formData.append("file", file);
+
+    // Call the API route
+    const response = await fetch("/api/extract-pdf", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `API error: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || "PDF extraction failed");
+    }
+
     return {
-      text: `[PDF content extracted from ${fileName}]`,
+      text: result.text,
       fileName,
       success: true,
     };
@@ -247,8 +265,6 @@ async function _extractTextFromImage(
       success: true,
       confidence: data.confidence,
     };
-
-    return {
       text: `[Image content extracted from ${fileName}]`,
       fileName,
       success: true,
