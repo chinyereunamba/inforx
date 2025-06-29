@@ -75,7 +75,7 @@ export function MedicalSummary({
 
   if (loading && !summary) {
     return (
-      <Card className="w-full">
+      <Card className="w-full border border-slate-200 dark:border-slate-700">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
@@ -94,7 +94,7 @@ export function MedicalSummary({
 
   if (error && !summary) {
     return (
-      <Card className="w-full">
+      <Card className="w-full border border-slate-200 dark:border-slate-700">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
@@ -128,7 +128,7 @@ export function MedicalSummary({
     <div className="space-y-6">
       {/* Generate Summary Button */}
       {selectedRecordIds.length > 0 && (
-        <Card>
+        <Card className="border border-slate-200 dark:border-slate-700">
           <CardHeader>
             <CardTitle className="text-lg">Generate Health Summary</CardTitle>
             <CardDescription>
@@ -160,7 +160,7 @@ export function MedicalSummary({
 
       {/* Display Summary */}
       {summary && (
-        <Card className="w-full">
+        <Card className="w-full border border-slate-200 dark:border-slate-700">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -337,7 +337,7 @@ export function MedicalSummary({
 
       {/* No Summary State */}
       {!summary && !loading && !error && (
-        <Card className="w-full">
+        <Card className="w-full border border-slate-200 dark:border-slate-700">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />

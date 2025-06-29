@@ -218,7 +218,7 @@ export default function InteractiveChart({
   }, []);
 
   return (
-    <Card className="col-span-full lg:col-span-2 rounded-2xl">
+    <Card className="col-span-full lg:col-span-2 rounded-2xl border border-slate-200 dark:border-slate-700">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="flex items-center gap-2">
           <BarChart3 className={`h-5 w-5 text-${color}-500`} />

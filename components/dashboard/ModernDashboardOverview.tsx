@@ -126,7 +126,7 @@ const HealthProgress = () => {
   ];
 
   return (
-    <Card ref={progressRef} className="col-span-full lg:col-span-1 rounded-2xl">
+    <Card className="col-span-full lg:col-span-1 rounded-2xl border border-slate-200 dark:border-slate-700">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Heart className="h-5 w-5 text-red-500" />
@@ -146,7 +146,7 @@ const HealthProgress = () => {
             </div>
             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
               <div
-                className={`h-2 rounded-full transition-all duration-1000 ease-out ${metric.color}`}
+                {...metric}
                 style={{ width: `${metric.value}%` }}
               />
             </div>
@@ -232,7 +232,7 @@ const RecentActivity = () => {
   };
 
   return (
-    <Card ref={activityRef} className="col-span-full lg:col-span-2 rounded-2xl">
+    <Card ref={activityRef} className="col-span-full lg:col-span-2 rounded-2xl border border-slate-200 dark:border-slate-700">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <Activity className="h-5 w-5 text-sky-500" />
@@ -318,7 +318,7 @@ const QuickActions = () => {
   ];
 
   return (
-    <Card ref={actionsRef} className="col-span-full rounded-2xl">
+    <Card ref={actionsRef} className="col-span-full rounded-2xl border border-slate-200 dark:border-slate-700">
       <CardHeader>
         <CardTitle>Quick Actions</CardTitle>
       </CardHeader>

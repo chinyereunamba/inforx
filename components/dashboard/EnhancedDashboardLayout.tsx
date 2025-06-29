@@ -238,7 +238,7 @@ export default function EnhancedDashboardLayout({
         ref={sidebarRef}
         className={cn(
           "fixed top-0 left-0 z-50 h-full w-[280px] flex flex-col",
-          "bg-white border-r border-slate-200 shadow-sm",
+          "bg-white border-r border-slate-200",
           "dark:bg-slate-800 dark:border-slate-700 dark:shadow-slate-900/20",
           "transform transition-transform duration-300 ease-in-out lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -389,7 +389,7 @@ export default function EnhancedDashboardLayout({
         {/* Header */}
         <header className={cn(
           "sticky top-0 z-30 py-2 px-4 sm:px-6",
-          "bg-white border-b border-slate-200 shadow-sm",
+          "bg-white border-b border-slate-200",
           "dark:bg-slate-800 dark:border-slate-700",
           "transition-colors duration-300"
         )}>
