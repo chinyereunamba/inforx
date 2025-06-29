@@ -71,7 +71,7 @@ export default function ImpactMetrics() {
       const numValue = parseInt(finalValue.replace("K+", "")) * 1000;
       let current = 0;
       const increment = numValue / 80;
-
+      
       const timer = setInterval(() => {
         current += increment;
         if (current >= numValue) {
@@ -116,9 +116,9 @@ export default function ImpactMetrics() {
         if (card) {
           gsap.fromTo(
             card,
-            {
-              opacity: 0,
-              y: 50,
+            { 
+              opacity: 0, 
+              y: 50, 
               scale: 0.9,
             },
             {
@@ -199,7 +199,7 @@ export default function ImpactMetrics() {
           {impactStats.map((stat, index) => {
             const IconComponent = stat.icon;
             const displayValue = animatedValues[stat.id] || "0";
-
+            
             return (
               <div
                 key={stat.id}
@@ -213,18 +213,18 @@ export default function ImpactMetrics() {
                 >
                   <IconComponent className="h-6 w-6 md:h-8 md:w-8" />
                 </div>
-
+                
                 <div
                   className="text-2xl md:text-4xl font-bold text-slate-900 mb-2"
                   aria-live="polite"
                 >
                   {displayValue}
                 </div>
-
+                
                 <h3 className="text-sm md:text-lg font-semibold text-slate-800 mb-1">
                   {stat.label}
                 </h3>
-
+                
                 <p className="text-xs md:text-sm text-slate-600 font-noto">
                   {stat.description}
                 </p>

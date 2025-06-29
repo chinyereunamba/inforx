@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { gsap } from "gsap";
 import { User } from "@supabase/supabase-js";
 import { LoggingService } from "@/lib/services/logging-service";
@@ -12,7 +13,6 @@ import {
   Settings,
   Moon,
   Sun,
-  ChevronDown,
   Home,
   FileText,
   Upload,
@@ -20,11 +20,15 @@ import {
   Heart,
   Activity,
   LogOut,
+  User as UserIcon,
+  HelpCircle,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -78,7 +82,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     id: "activity",
-    label: "Recent Activity",
+    label: "Activity",
     href: "/dashboard/activity",
     icon: Activity,
     description: "Track your health journey",
@@ -90,16 +94,17 @@ export default function ModernDashboardLayout({
 }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [notifications, setNotifications] = useState(2);
+  const [mounted, setMounted] = useState(false);
 
   const sidebarRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const { user } = useAuth();
 
-  // Initialize theme
+  // Handle dark mode
   useEffect(() => {
+    setMounted(true);
     const savedTheme = localStorage.getItem("inforx-theme");
     const prefersDark =
       savedTheme === "dark" ||
@@ -118,16 +123,24 @@ export default function ModernDashboardLayout({
         device: window.innerWidth < 768 ? "mobile" : "desktop",
       });
     }
-  }, []);
+  }, [user]);
+
+  // Skip rendering until mounted to prevent hydration issues
+  if (!mounted) {
+    return null;
+  }
 
   // Sidebar animations
   useEffect(() => {
-    if (sidebarOpen) {
+    if (sidebarOpen && sidebarRef.current && overlayRef.current) {
+      // Animate sidebar
       gsap.fromTo(
         sidebarRef.current,
         { x: "-100%" },
-        { x: "0%", duration: 0.3, ease: "power2.out" }
+        { x: 0, duration: 0.3, ease: "power2.out" }
       );
+
+      // Animate overlay
       gsap.fromTo(
         overlayRef.current,
         { opacity: 0 },
@@ -176,144 +189,195 @@ export default function ModernDashboardLayout({
         page: route.replace("/dashboard/", "").replace("/", ""),
       });
     }
+    setSidebarOpen(false);
   };
 
   const handleSidebarClose = () => {
-    if (sidebarOpen) {
+    if (sidebarOpen && sidebarRef.current && overlayRef.current) {
+      // Animate sidebar out
       gsap.to(sidebarRef.current, {
         x: "-100%",
         duration: 0.3,
         ease: "power2.out",
         onComplete: () => setSidebarOpen(false),
       });
-      gsap.to(overlayRef.current, { opacity: 0, duration: 0.3 });
+
+      // Fade out overlay
+      gsap.to(overlayRef.current, {
+        opacity: 0,
+        duration: 0.3,
+      });
     }
+  };
+
+  // Render the overlay using createPortal to ensure proper z-index behavior
+  const renderOverlay = () => {
+    if (typeof window === "undefined") return null;
+
+    return (
+      sidebarOpen &&
+      createPortal(
+        <div
+          ref={overlayRef}
+          className="fixed inset-0 bg-slate-900/50 dark:bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+          onClick={handleSidebarClose}
+          aria-hidden="true"
+        />,
+        document.body
+      )
+    );
   };
 
   return (
     <div
-      className={`min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 ${
-        darkMode ? "dark" : ""
-      }`}
-    >
-      {/* Mobile Overlay */}
-      {sidebarOpen && (
-        <div
-          ref={overlayRef}
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={handleSidebarClose}
-        />
+      className={cn(
+        "min-h-screen transition-colors duration-300",
+        "bg-slate-50 text-slate-900",
+        "dark:bg-slate-900 dark:text-white"
       )}
+    >
+      {renderOverlay()}
 
       {/* Sidebar */}
       <aside
         ref={sidebarRef}
-        className={`fixed top-0 left-0 z-50 w-72 h-full flex flex-col justify-between bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 shadow-xl lg:shadow-none transition-all duration-300 ${
+        className={cn(
+          "fixed top-0 left-0 z-50 h-full w-[280px] flex flex-col",
+          "bg-white border-r border-slate-200",
+          "dark:bg-slate-800 dark:border-slate-700 dark:shadow-slate-900/20",
+          "transform transition-transform duration-300 ease-in-out lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0`}
+        )}
       >
-        {/* Sidebar Header */}
-        <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+        {/* Logo / Brand */}
+        <div className="p-4 border-b border-slate-200 dark:border-slate-700">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-emerald-500 rounded-xl flex items-center justify-center">
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-3"
+              onClick={() => handleNavigationClick("/dashboard")}
+            >
+              <div className="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center">
                 <Heart className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold font-noto text-slate-900 dark:text-white">
+                <h1 className="text-xl font-medium font-inter text-slate-900 dark:text-white">
                   InfoRx
                 </h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Healthcare AI
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Healthcare Dashboard
                 </p>
               </div>
-            </div>
+            </Link>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleSidebarClose}
-              className="lg:hidden text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              className="lg:hidden text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+              aria-label="Close sidebar"
             >
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5" strokeWidth={1.5} />
             </Button>
           </div>
         </div>
 
-        {/* Search */}
+        {/* Search Bar */}
         <div className="p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500"
+              strokeWidth={1.5}
+            />
             <input
               type="text"
               placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
+              className={cn(
+                "w-full pl-10 pr-4 py-2 rounded-lg",
+                "bg-slate-100 border border-slate-200",
+                "dark:bg-slate-700/50 dark:border-slate-600",
+                "text-slate-900 placeholder-slate-500",
+                "dark:text-white dark:placeholder-slate-400",
+                "focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors"
+              )}
             />
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-2">
-          <div className="space-y-1">
+        <nav className="flex-1 px-2 py-4 overflow-y-auto">
+          <ul className="space-y-1">
             {navigationItems.map((item) => {
               const IconComponent = item.icon;
               const isActive = isActiveRoute(item.href);
 
               return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={() => {
-                    if (window.innerWidth < 1024) handleSidebarClose();
-                    handleNavigationClick(item.href);
-                  }}
-                  className={`group flex items-center gap-3 px-3 py-3 text-slate-700 rounded-xl transition-all duration-200 ${
-                    isActive
-                      ? "border-teal-600 border-2 shadow-lg"
-                      : " dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  <IconComponent
-                    className={`h-5 w-5 ${
+                <li key={item.id}>
+                  <Link
+                    href={item.href}
+                    onClick={() => handleNavigationClick(item.href)}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 rounded-lg",
+                      "transition-colors duration-200 group relative",
                       isActive
-                        ? "text-white"
-                        : "text-slate-500 dark:text-slate-400 group-hover:text-sky-500"
-                    }`}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium truncate">{item.label}</span>
-                      {item.badge && (
-                        <span
-                          className={`ml-2 px-2 py-1 text-xs font-medium rounded-full bg-sky-100 text-sky-600 dark:bg-sky-900/50 dark:text-sky-400
-                        }`}
-                        >
-                          {item.badge}
+                        ? "bg-teal-600 text-white"
+                        : "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700/50"
+                    )}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    <IconComponent
+                      className="h-5 w-5 flex-shrink-0"
+                      strokeWidth={1.5}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium font-inter truncate">
+                          {item.label}
                         </span>
-                      )}
+                        {item.badge && (
+                          <span
+                            className={cn(
+                              "ml-2 px-2 py-1 text-xs font-medium rounded-full",
+                              isActive
+                                ? "bg-white/20 text-white"
+                                : "bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300"
+                            )}
+                          >
+                            {item.badge}
+                          </span>
+                        )}
+                      </div>
+                      <p
+                        className={cn(
+                          "text-xs truncate",
+                          isActive
+                            ? "text-white/80"
+                            : "text-slate-500 dark:text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                        )}
+                      >
+                        {item.description}
+                      </p>
                     </div>
-                    <p
-                      className={`text-xs truncate 
-                          text-slate-500 dark:text-slate-400
-                      }`}
-                    >
-                      {item.description}
-                    </p>
-                  </div>
-                </Link>
+                    {isActive && (
+                      <ChevronRight
+                        className="h-4 w-4 text-white/80 flex-shrink-0"
+                        strokeWidth={1.5}
+                      />
+                    )}
+                  </Link>
+                </li>
               );
             })}
-          </div>
+          </ul>
         </nav>
 
-        {/* User Profile */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-700">
-          <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-sky-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold">
+        {/* User Profile & Settings */}
+        <div className="p-4 border-t border-slate-200 dark:border-slate-700 mt-auto">
+          <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors cursor-pointer">
+            <div className="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-medium">
                 {user?.user_metadata?.full_name?.[0] ||
-                  user?.email?.[0]?.toUpperCase()}
+                  user?.email?.[0]?.toUpperCase() ||
+                  "U"}
               </span>
             </div>
             <div className="flex-1 min-w-0">
@@ -324,50 +388,66 @@ export default function ModernDashboardLayout({
                 {user?.email}
               </p>
             </div>
-            {/* <ChevronDown className="h-4 w-4 text-slate-400" /> */}
-            <span onClick={handleSignOut}>
-              <LogOut className="h-4 w-4 text-slate-400 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300" />
-            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleSignOut}
+              className="h-8 w-8 p-0 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+              aria-label="Sign out"
+            >
+              <LogOut className="h-4 w-4" strokeWidth={1.5} />
+            </Button>
           </div>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <div className="lg:ml-72">
-        {/* Top Navigation */}
-        <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30">
-          <div className="flex items-center justify-between px-6 py-4">
+      {/* Main Content */}
+      <div className="lg:ml-[280px]">
+        {/* Header */}
+        <header
+          className={cn(
+            "sticky top-0 z-30 py-2 px-4 sm:px-6",
+            "bg-white border-b border-slate-200",
+            "dark:bg-slate-800 dark:border-slate-700",
+            "transition-colors duration-300"
+          )}
+        >
+          <div className="flex items-center justify-between h-14">
             {/* Mobile Menu Button */}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              className="lg:hidden text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              aria-label="Open menu"
             >
-              <Menu className="h-6 w-6" />
+              <Menu className="h-6 w-6" strokeWidth={1.5} />
             </Button>
 
-            {/* Page Title - Hide on mobile */}
+            {/* Page Title - Desktop */}
             <div className="hidden lg:block">
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+              <h2 className="text-xl font-medium text-slate-900 dark:text-white font-inter">
                 {navigationItems.find((item) => isActiveRoute(item.href))
                   ?.label || "Dashboard"}
               </h2>
             </div>
 
-            {/* Right Side Actions */}
-            <div className="flex items-center gap-3">
+            {/* Actions */}
+            <div className="flex items-center gap-2">
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleTheme}
-                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg"
+                aria-label={
+                  darkMode ? "Switch to light mode" : "Switch to dark mode"
+                }
               >
                 {darkMode ? (
-                  <Sun className="h-5 w-5" />
+                  <Sun className="h-5 w-5" strokeWidth={1.5} />
                 ) : (
-                  <Moon className="h-5 w-5" />
+                  <Moon className="h-5 w-5" strokeWidth={1.5} />
                 )}
               </Button>
 
@@ -375,33 +455,44 @@ export default function ModernDashboardLayout({
               <Button
                 variant="ghost"
                 size="sm"
-                className="relative text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg relative"
+                aria-label={`${notifications} notifications`}
               >
-                <Bell className="h-5 w-5" />
+                <Bell className="h-5 w-5" strokeWidth={1.5} />
                 {notifications > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-teal-500 text-white text-xs rounded-full flex items-center justify-center">
                     {notifications}
                   </span>
                 )}
+              </Button>
+
+              {/* Help */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg"
+                aria-label="Help and resources"
+              >
+                <HelpCircle className="h-5 w-5" strokeWidth={1.5} />
               </Button>
 
               {/* Settings */}
               <Button
                 variant="ghost"
                 size="sm"
-                asChild
-                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg"
+                aria-label="User settings"
               >
-                <Link href="/dashboard/settings">
-                  <Settings className="h-5 w-5" />
-                </Link>
+                <Settings className="h-5 w-5" strokeWidth={1.5} />
               </Button>
             </div>
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="p-6">{children}</main>
+        {/* Main Content Area */}
+        <main className="p-4 sm:p-6 transition-colors duration-300">
+          {children}
+        </main>
       </div>
     </div>
   );
