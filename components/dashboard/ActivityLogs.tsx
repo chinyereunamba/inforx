@@ -1,15 +1,33 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription 
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Activity, Search, Filter, RefreshCw, FileText, User, Brain, LogIn, LogOut, Upload, Trash, Calendar, BarChart2, Loader2, Eye, DivideIcon as LucideIcon, Pencil } from "lucide-react";
+import {
+  Activity,
+  Search,
+  Filter,
+  RefreshCw,
+  FileText,
+  User,
+  Brain,
+  LogIn,
+  LogOut,
+  Upload,
+  Trash,
+  Calendar,
+  BarChart2,
+  Loader2,
+  Eye,
+  DivideIcon as LucideIcon,
+  Pencil,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/lib/auth-store";
 
@@ -29,7 +47,7 @@ interface PaginationInfo {
 }
 
 interface ActionConfig {
-  icon: LucideIcon;
+  icon: React.ComponentType<any>;
   color: string;
   label: string;
   badgeColor: string;
@@ -54,68 +72,68 @@ export default function ActivityLogs() {
       icon: LogIn,
       color: "text-green-500",
       label: "User Login",
-      badgeColor: "bg-green-100 text-green-800"
+      badgeColor: "bg-green-100 text-green-800",
     },
     user_logout: {
       icon: LogOut,
       color: "text-slate-500",
-      label: "User Logout", 
-      badgeColor: "bg-slate-100 text-slate-800"
+      label: "User Logout",
+      badgeColor: "bg-slate-100 text-slate-800",
     },
     user_signup: {
       icon: User,
       color: "text-blue-500",
       label: "User Signup",
-      badgeColor: "bg-blue-100 text-blue-800"
+      badgeColor: "bg-blue-100 text-blue-800",
     },
     uploaded_file: {
       icon: Upload,
       color: "text-blue-500",
       label: "File Upload",
-      badgeColor: "bg-blue-100 text-blue-800"
+      badgeColor: "bg-blue-100 text-blue-800",
     },
     deleted_file: {
       icon: Trash,
       color: "text-red-500",
       label: "File Delete",
-      badgeColor: "bg-red-100 text-red-800"
+      badgeColor: "bg-red-100 text-red-800",
     },
     generated_summary: {
       icon: BarChart2,
       color: "text-purple-500",
       label: "Summary Generation",
-      badgeColor: "bg-purple-100 text-purple-800"
+      badgeColor: "bg-purple-100 text-purple-800",
     },
     viewed_summary: {
       icon: Eye,
-      color: "text-indigo-500", 
+      color: "text-indigo-500",
       label: "Viewed Summary",
-      badgeColor: "bg-indigo-100 text-indigo-800"
+      badgeColor: "bg-indigo-100 text-indigo-800",
     },
     used_ai_interpreter: {
       icon: Brain,
       color: "text-emerald-500",
       label: "AI Interpreter",
-      badgeColor: "bg-emerald-100 text-emerald-800"
+      badgeColor: "bg-emerald-100 text-emerald-800",
     },
     viewed_record: {
       icon: FileText,
       color: "text-amber-500",
       label: "Viewed Record",
-      badgeColor: "bg-amber-100 text-amber-800" 
+      badgeColor: "bg-amber-100 text-amber-800",
     },
     updated_record: {
-      icon: Pencil, 
+      icon: Pencil,
       color: "text-sky-500",
       label: "Updated Record",
-      badgeColor: "bg-sky-100 text-sky-800"
+      badgeColor: "bg-sky-100 text-sky-800",
     },
     updated_profile: {
       icon: User,
       color: "text-violet-500",
       label: "Profile Update",
-      badgeColor: "bg-violet-100 text-violet-800"
-    }
+      badgeColor: "bg-violet-100 text-violet-800",
+    },
   };
 
   const fetchLogs = async (page = 1, action = "") => {
@@ -128,24 +146,26 @@ export default function ActivityLogs() {
       const params = new URLSearchParams();
       params.append("page", page.toString());
       params.append("limit", pagination.limit.toString());
-      
+
       if (action) {
         params.append("action", action);
       }
 
       const response = await fetch(`/api/logs?${params.toString()}`);
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to fetch logs");
       }
-      
+
       const data = await response.json();
       setLogs(data.logs);
       setPagination(data.pagination);
     } catch (err) {
       console.error("Error fetching logs:", err);
-      setError(err instanceof Error ? err.message : "Failed to fetch activity logs");
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch activity logs"
+      );
     } finally {
       setLoading(false);
     }
@@ -158,30 +178,32 @@ export default function ActivityLogs() {
   }, [user, pagination.page, actionFilter]);
 
   const getActionInfo = (action: string): ActionConfig => {
-    return actionConfigs[action] || {
-      icon: Activity,
-      color: "text-slate-500",
-      label: formatActionName(action),
-      badgeColor: "bg-slate-100 text-slate-800"
-    };
+    return (
+      actionConfigs[action] || {
+        icon: Activity,
+        color: "text-slate-500",
+        label: formatActionName(action),
+        badgeColor: "bg-slate-100 text-slate-800",
+      }
+    );
   };
 
   const formatActionName = (action: string) => {
     return action
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleString('en-US', { 
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
+    return date.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     });
   };
 
@@ -215,7 +237,9 @@ export default function ActivityLogs() {
             onClick={() => fetchLogs(pagination.page, actionFilter)}
             disabled={loading}
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
         </div>
@@ -234,7 +258,7 @@ export default function ActivityLogs() {
               className="pl-10 w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          
+
           <div className="flex items-center relative min-w-[200px]">
             <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
             <select
@@ -242,7 +266,7 @@ export default function ActivityLogs() {
               onChange={(e) => setActionFilter(e.target.value)}
               className="pl-10 w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
             >
-              {actionOptions.map(option => (
+              {actionOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -270,12 +294,13 @@ export default function ActivityLogs() {
         {!loading && logs.length === 0 && (
           <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-lg">
             <Activity className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-            <p className="text-slate-700 font-medium mb-2">No activity logs found</p>
+            <p className="text-slate-700 font-medium mb-2">
+              No activity logs found
+            </p>
             <p className="text-slate-500 max-w-md mx-auto">
-              {actionFilter ? 
-                `No logs found for the selected action type. Try selecting a different filter.` : 
-                `Your activity logs will appear here as you use the platform.`
-              }
+              {actionFilter
+                ? `No logs found for the selected action type. Try selecting a different filter.`
+                : `Your activity logs will appear here as you use the platform.`}
             </p>
           </div>
         )}
@@ -284,13 +309,23 @@ export default function ActivityLogs() {
         {!loading && logs.length > 0 && (
           <div className="space-y-4">
             {logs.map((log) => {
-              const { icon: IconComponent, color, label, badgeColor } = getActionInfo(log.action);
-              
+              const {
+                icon: IconComponent,
+                color,
+                label,
+                badgeColor,
+              } = getActionInfo(log.action);
+
               return (
-                <div key={log.id} className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50">
+                <div
+                  key={log.id}
+                  className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50"
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center ${color}`}>
+                      <div
+                        className={`w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center ${color}`}
+                      >
                         <IconComponent className="h-4 w-4" />
                       </div>
                       <div>
@@ -301,13 +336,19 @@ export default function ActivityLogs() {
                       {formatDate(log.created_at)}
                     </div>
                   </div>
-                  
+
                   {log.metadata && Object.keys(log.metadata).length > 0 && (
                     <div className="ml-11 text-sm text-slate-600 bg-slate-50 rounded-md p-3 border border-slate-200">
                       {Object.entries(log.metadata).map(([key, value]) => (
                         <div key={key} className="grid grid-cols-3 gap-2">
-                          <div className="font-medium">{key.replace(/_/g, ' ')}:</div>
-                          <div className="col-span-2">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</div>
+                          <div className="font-medium">
+                            {key.replace(/_/g, " ")}:
+                          </div>
+                          <div className="col-span-2">
+                            {typeof value === "object"
+                              ? JSON.stringify(value)
+                              : String(value)}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -322,9 +363,9 @@ export default function ActivityLogs() {
         {pagination.pages > 1 && (
           <div className="flex justify-between items-center mt-6">
             <div className="text-sm text-slate-500">
-              Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
-              {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-              {pagination.total} logs
+              Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
+              {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
+              of {pagination.total} logs
             </div>
             <div className="flex gap-2">
               <Button

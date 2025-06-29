@@ -15,16 +15,16 @@ export default function InterpreterPage() {
     error: null as string | null,
   });
 
-
-
-  const setResult = (result: InterpretationResult | null) => {
+  const setResult = async (result: InterpretationResult | null) => {
     setState((prev) => {
       // Log result generation if there's a user and a result
       if (user && result) {
         LoggingService.logAction(user, LoggingService.actions.AI_INTERPRET, {
           language: result.language,
           document_type: result.documentType,
-          content_length: result.originalText.length
+          content_length: result.originalText.length,
+        }).catch((error) => {
+          console.error("Failed to log AI interpretation:", error);
         });
       }
       return { ...prev, currentResult: result };
@@ -38,16 +38,18 @@ export default function InterpreterPage() {
   const setError = (error: string | null) => {
     setState((prev) => ({ ...prev, error }));
   };
-  
+
   // Log page view on component mount
   useEffect(() => {
     if (user) {
       LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
-        page: "interpreter_page"
+        page: "interpreter_page",
+      }).catch((error) => {
+        console.error("Failed to log page view:", error);
       });
     }
   }, [user]);
-    
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
       <InterpreterInterface

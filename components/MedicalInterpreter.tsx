@@ -741,21 +741,6 @@ const playAudio = async (text: string) => {
                           <Copy className="h-5 w-5 text-gray-500" />
                         )}
                       </button>
-                      <button
-                        onClick={() => playAudio(state.result.interpretation.simpleExplanation)}
-                        className="audio-button p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                        title={isSpeaking ? "Stop speaking" : "Listen to explanation"}
-                        aria-label={isSpeaking ? "Stop speaking" : "Listen to explanation"}
-                        disabled={isLoadingAudio}
-                      >
-                        {isLoadingAudio ? (
-                          <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
-                        ) : isSpeaking ? (
-                          <Volume2 className="h-5 w-5 text-blue-600" />
-                        ) : (
-                          <Volume2 className="h-5 w-5 text-gray-500" />
-                        )}
-                      </button>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
                       {audioError && (
@@ -763,7 +748,9 @@ const playAudio = async (text: string) => {
                           {audioError}
                         </div>
                       )}
-                      {state.result.interpretation.simpleExplanation}
+                      {state.result
+                        ? state.result.interpretation.simpleExplanation
+                        : null}
                     </p>
                   </div>
 
@@ -807,7 +794,10 @@ const playAudio = async (text: string) => {
                     <ul className="space-y-3">
                       {state.result.interpretation.recommendedActions.map(
                         (action, actionIndex) => (
-                          <li key={actionIndex} className="flex items-start gap-3">
+                          <li
+                            key={actionIndex}
+                            className="flex items-start gap-3"
+                          >
                             <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                               <span className="text-yellow-700 font-semibold text-sm">
                                 {actionIndex + 1}

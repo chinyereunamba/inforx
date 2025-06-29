@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -23,13 +23,15 @@ import {
 } from "lucide-react";
 import { useMedicalSummary } from "@/hooks/useMedicalSummary";
 import { MedicalSummary as MedicalSummaryType } from "@/lib/types/medical-summaries";
+import { useAuthStore } from "@/lib/auth-store";
+import { LoggingService } from "@/lib/services/logging-service";
 
 interface MedicalSummaryProps {
   selectedRecordIds?: string[];
   onSummaryGenerated?: (summary: MedicalSummaryType) => void;
 }
 
-export function MedicalSummary({
+function MedicalSummary({
   selectedRecordIds = [],
   onSummaryGenerated,
 }: MedicalSummaryProps) {
@@ -124,17 +126,6 @@ export function MedicalSummary({
     );
   }
 
-  const { user } = useAuthStore();
-  
-  // Log page view
-  useEffect(() => {
-    if (user) {
-      LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
-        page: "dashboard_overview"
-      });
-    }
-  }, [user]);
-  
   return (
     <div className="space-y-6">
       {/* Generate Summary Button */}
@@ -369,6 +360,28 @@ export function MedicalSummary({
           </CardContent>
         </Card>
       )}
+    </div>
+  );
+}
+
+export default function DashboardPage() {
+  const { user } = useAuthStore();
+
+  // Log page view
+  useEffect(() => {
+    if (user) {
+      LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
+        page: "dashboard_overview",
+      }).catch((error) => {
+        console.error("Failed to log page view:", error);
+      });
+    }
+  }, [user]);
+
+  return (
+    <div className="container mx-auto py-6">
+      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+      <MedicalSummary />
     </div>
   );
 }
