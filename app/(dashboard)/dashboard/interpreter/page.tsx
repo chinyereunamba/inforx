@@ -1,7 +1,4 @@
 import type { Metadata } from "next";
-import { useEffect } from "react";
-import { useAuthStore } from "@/lib/auth-store";
-import { LoggingService } from "@/lib/services/logging-service";
 import Interpreter from "@/components/dashboard/InterpreterPage";
 
 export const metadata: Metadata = {
