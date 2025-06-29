@@ -148,7 +148,7 @@ export default function HeroSection({ onStartDemo }: HeroSectionProps) {
             ref={(el) => {
               if (el) floatingElementsRef.current[0] = el;
             }}
-            className="absolute top-1/4 left-1/4 w-32 h-32 bg-emerald-100 rounded-full opacity-60"
+            className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-100 rounded-full opacity-60"
           />
           <div 
             ref={(el) => {
