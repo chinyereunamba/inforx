@@ -73,7 +73,7 @@ const navigationItems: NavigationItem[] = [
   {
     id: "upload",
     label: "Upload",
-    href: "/dashboard/upload",
+    href: "/dashboard/medical-vault",
     icon: Upload,
     description: "Add new documents",
     subTitle:
