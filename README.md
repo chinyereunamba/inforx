@@ -17,10 +17,10 @@
 
 ## 📦 Tech Stack
 
-- **Frontend**: Next.js 14, TailwindCSS, Shadcn UI
+- **Frontend**: Next.js 13, TailwindCSS, Shadcn UI
 - **Backend**: Supabase (Auth, DB, Storage, Realtime)
 - **State Management**: Zustand
-- **AI Integration**: ElevenLabs, DeepSeek (planned)
+- **AI Integration**: ElevenLabs, Openrouter.ai
 - **Realtime Logging**: Custom Supabase log table & listener
 
 ---
@@ -29,5 +29,5 @@
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/inforx.git
+git clone https://github.com/chinyereunamba/inforx.git
 cd inforx
