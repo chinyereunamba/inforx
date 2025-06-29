@@ -92,7 +92,7 @@ export default function ModernDashboardLayout({
   children,
 }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState<boolean | null>(null);
   const [notifications, setNotifications] = useState(2);
   const [mounted, setMounted] = useState(false);
 
@@ -104,6 +104,12 @@ export default function ModernDashboardLayout({
   // Handle dark mode
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Initialize theme after mounting to prevent hydration issues
+  useEffect(() => {
+    if (!mounted) return;
+
     const savedTheme = localStorage.getItem("inforx-theme");
     const prefersDark =
       savedTheme === "dark" ||
@@ -113,6 +119,8 @@ export default function ModernDashboardLayout({
     if (prefersDark) {
       setDarkMode(true);
       document.documentElement.classList.add("dark");
+    } else {
+      setDarkMode(false);
     }
 
     // Log user login event if user just arrived
@@ -122,7 +130,7 @@ export default function ModernDashboardLayout({
         device: window.innerWidth < 768 ? "mobile" : "desktop",
       });
     }
-  }, [user]);
+  }, [mounted, user]);
 
   // Skip rendering until mounted to prevent hydration issues
   if (!mounted) {
@@ -149,7 +157,9 @@ export default function ModernDashboardLayout({
   }, [sidebarOpen]);
 
   const toggleTheme = () => {
-    const newDarkMode = !darkMode;
+    if (!mounted) return; // Prevent accessing localStorage/document before mounting
+
+    const newDarkMode = !(darkMode ?? false);
     setDarkMode(newDarkMode);
 
     if (newDarkMode) {
@@ -165,7 +175,7 @@ export default function ModernDashboardLayout({
     if (user) {
       // Log sign out action before signing out
       await LoggingService.logAction(user, LoggingService.actions.LOGOUT, {
-        theme: darkMode ? "dark" : "light",
+        theme: darkMode ?? false ? "dark" : "light",
         session_duration: Math.floor(
           (new Date().getTime() -
             new Date(user.last_sign_in_at || 0).getTime()) /
@@ -430,10 +440,12 @@ export default function ModernDashboardLayout({
                 onClick={toggleTheme}
                 className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg"
                 aria-label={
-                  darkMode ? "Switch to light mode" : "Switch to dark mode"
+                  darkMode ?? false
+                    ? "Switch to light mode"
+                    : "Switch to dark mode"
                 }
               >
-                {darkMode ? (
+                {darkMode ?? false ? (
                   <Sun className="h-5 w-5" strokeWidth={1.5} />
                 ) : (
                   <Moon className="h-5 w-5" strokeWidth={1.5} />
