@@ -223,7 +223,7 @@ input {
 
 /* Smooth scrolling for the entire page */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: smooth; 
 }
 
 /* Custom animations */
@@ -263,4 +263,22 @@ html {
 .focus\:border-teal-500:focus {
   --tw-border-opacity: 1;
   border-color: #0a9396;
+}
+
+/* InfoRx Brand Colors */
+:root {
+  /* Primary colors */
+  --inforx-blue: #0ea5e9; /* sky-500 */
+  --inforx-green: #10b981; /* emerald-500 */
+  --inforx-dark: #1e293b; /* slate-800 */
+  
+  /* Secondary colors */
+  --inforx-blue-light: #e0f2fe; /* sky-100 */
+  --inforx-green-light: #d1fae5; /* emerald-100 */
+  --inforx-slate-light: #f1f5f9; /* slate-100 */
+
+  /* Accent colors */
+  --inforx-yellow: #fbbf24; /* amber-400 */
+  --inforx-red: #ef4444; /* red-500 */
+  --inforx-purple: #8b5cf6; /* violet-500 */
 }
