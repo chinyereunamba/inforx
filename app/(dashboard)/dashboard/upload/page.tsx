@@ -1,20 +1,9 @@
+"use client"
 import { useEffect } from 'react';
 import { useAuthStore } from '@/lib/auth-store';
 import { LoggingService } from '@/lib/services/logging-service';
 import FileUploadInterface from '@/components/dashboard/FileUploadInterface';
 import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Upload Documents - InfoRx Medical Interpreter',
-  description: 'Upload medical documents for AI-powered interpretation and analysis.',
-  keywords: 'medical document upload, AI analysis, healthcare interpretation, InfoRx upload',
-  openGraph: {
-    title: 'Upload Documents - InfoRx Medical Interpreter',
-    description: 'Upload medical documents for AI-powered interpretation and analysis.',
-    type: 'website',
-    locale: 'en_NG'
-  },
-};
 
 export default function UploadPage() {
   const { user } = useAuthStore();
