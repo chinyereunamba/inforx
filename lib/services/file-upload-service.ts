@@ -34,7 +34,13 @@ export class FileUploadService {
     "image/jpeg",
     "image/jpg",
   ];
-  private static ALLOWED_EXTENSIONS = [".pdf", ".docx", ".png", ".jpg", ".jpeg"];
+  private static ALLOWED_EXTENSIONS = [
+    ".pdf",
+    ".docx",
+    ".png",
+    ".jpg",
+    ".jpeg",
+  ];
 
   /**
    * Validate file before upload
@@ -44,7 +50,9 @@ export class FileUploadService {
     if (file.size > this.MAX_FILE_SIZE) {
       return {
         isValid: false,
-        error: `File size must be less than ${this.formatFileSize(this.MAX_FILE_SIZE)}`,
+        error: `File size must be less than ${this.formatFileSize(
+          this.MAX_FILE_SIZE
+        )}`,
       };
     }
 
@@ -61,7 +69,9 @@ export class FileUploadService {
     if (!this.ALLOWED_EXTENSIONS.includes(fileExt)) {
       return {
         isValid: false,
-        error: `Invalid file extension. Accepted extensions: ${this.ALLOWED_EXTENSIONS.join(", ")}`,
+        error: `Invalid file extension. Accepted extensions: ${this.ALLOWED_EXTENSIONS.join(
+          ", "
+        )}`,
       };
     }
 
@@ -105,11 +115,16 @@ export class FileUploadService {
           contentType: file.type,
           // Custom upload handler for progress tracking
           ...(onProgress && {
-            onUploadProgress: (progress) => {
+            onUploadProgress: (progress: {
+              loaded: number;
+              totalBytes: number;
+            }) => {
               onProgress({
                 loaded: progress.loaded,
                 total: progress.totalBytes,
-                percentage: Math.round((progress.loaded / progress.totalBytes) * 100),
+                percentage: Math.round(
+                  (progress.loaded / progress.totalBytes) * 100
+                ),
               });
             },
           }),
@@ -131,7 +146,9 @@ export class FileUploadService {
       }
 
       // Get public URL for file
-      const { data: urlData } = supabase.storage.from("vault").getPublicUrl(filePath);
+      const { data: urlData } = supabase.storage
+        .from("vault")
+        .getPublicUrl(filePath);
 
       // Log successful upload
       await LoggingService.logAction(user, LoggingService.actions.UPLOAD_FILE, {
@@ -153,7 +170,10 @@ export class FileUploadService {
       console.error("File upload error:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error during upload",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unknown error during upload",
       };
     }
   }
@@ -161,7 +181,10 @@ export class FileUploadService {
   /**
    * Delete file from Supabase Storage
    */
-  public static async deleteFile(filePath: string, user: User): Promise<{ success: boolean; error?: string }> {
+  public static async deleteFile(
+    filePath: string,
+    user: User
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       const supabase = createClient();
 
@@ -191,7 +214,10 @@ export class FileUploadService {
       console.error("File delete error:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error during deletion",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unknown error during deletion",
       };
     }
   }

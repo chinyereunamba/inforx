@@ -14,10 +14,13 @@ export interface ExtractedText {
 }
 
 export class TextExtractor {
-  static async extractText(file: File, onProgress?: (progress: number) => void): Promise<ExtractedText> {
+  static async extractText(
+    file: File,
+    onProgress?: (progress: number) => void
+  ): Promise<ExtractedText> {
     try {
       if (onProgress) onProgress(10);
-      
+
       const fileName = file.name;
       const fileExtension = fileName.split(".").pop()?.toLowerCase();
 
@@ -44,7 +47,7 @@ export class TextExtractor {
             success: true,
           };
       }
-      
+
       if (onProgress) onProgress(100);
       return result;
     } catch (error) {
@@ -68,13 +71,12 @@ export class TextExtractor {
     onFileProgress?: (fileIndex: number, progress: number) => void
   ): Promise<ExtractedText[]> {
     const results: ExtractedText[] = [];
-    
+
     // Process files sequentially to avoid overwhelming the browser
     for (let i = 0; i < files.length; i++) {
       try {
-        const result = await this.extractText(
-          files[i],
-          (progress) => onFileProgress?.(i, progress)
+        const result = await this.extractText(files[i], (progress) =>
+          onFileProgress?.(i, progress)
         );
         results.push(result);
       } catch (error) {
@@ -87,7 +89,7 @@ export class TextExtractor {
         });
       }
     }
-    
+
     return results;
   }
 }
@@ -226,7 +228,7 @@ async function _extractTextFromDocx(
 }
 
 async function _extractTextFromImage(
-  file: Blob, 
+  file: Blob,
   fileName: string
 ): Promise<ExtractedText> {
   try {
@@ -234,10 +236,10 @@ async function _extractTextFromImage(
     // In a production environment, you would:
     // 1. Use Tesseract.js for client-side OCR
     // 2. Or send to a server-side OCR service
-    
+
     // Create preview for demonstration
     const url = URL.createObjectURL(file);
-    
+
     return {
       text: `[Image content extracted from ${fileName}]`,
       fileName,
@@ -263,7 +265,7 @@ export async function extractTextFromMultipleFiles(
   if (!fileUrls || !fileNames || fileUrls.length === 0) {
     return [];
   }
-  
+
   const extractionPromises = fileUrls.map((url, index) => {
     // Handle case where file URL is empty
     if (!url) {
@@ -274,23 +276,26 @@ export async function extractTextFromMultipleFiles(
         error: "File URL is empty",
       });
     }
-    
-    extractTextFromFile(url, fileNames[index])
+
+    extractTextFromFile(url, fileNames[index]);
   });
 
   // Use Promise.allSettled to handle failures gracefully
   const results = await Promise.allSettled(extractionPromises);
-  
+
   return results.map((result, index) => {
-    if (result.status === "fulfilled") {
+    if (result.status === "fulfilled" && result.value) {
       return result.value;
     } else {
       return {
         text: "",
         fileName: fileNames?.[index] || "unknown",
         success: false,
-        error: result.reason?.message || "Text extraction failed",
-      };
+        error:
+          result.status === "rejected"
+            ? result.reason?.message || "Text extraction failed"
+            : "Text extraction failed",
+      } as ExtractedText;
     }
   });
 }

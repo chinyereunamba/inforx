@@ -48,7 +48,7 @@ export default function EnhancedMedicalRecordUpload({
     visit_date: new Date().toISOString().split("T")[0],
     notes: "",
   });
-  
+
   const [uploadState, setUploadState] = useState<{
     status: "idle" | "uploading" | "processing" | "success" | "error";
     file: File | null;
@@ -67,7 +67,9 @@ export default function EnhancedMedicalRecordUpload({
     extractedText: null,
   });
 
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle file drop
@@ -89,14 +91,14 @@ export default function EnhancedMedicalRecordUpload({
       if (acceptedFiles.length === 0) return;
 
       const file = acceptedFiles[0];
-      
+
       // Validate file
       const validation = FileUploadService.validateFile(file);
       if (!validation.isValid) {
         setUploadState((prev) => ({
           ...prev,
           status: "error",
-          error: validation.error,
+          error: validation.error || "File validation failed",
         }));
         return;
       }
@@ -153,11 +155,16 @@ export default function EnhancedMedicalRecordUpload({
             setFormData((prev) => ({
               ...prev,
               title: suggestedTitle,
-              type: docType || prev.type,
+              type:
+                (docType as "prescription" | "scan" | "lab_result" | "other") ||
+                prev.type,
             }));
           }
         } else {
-          console.log("Text extraction failed but continuing", extractionResult.error);
+          console.log(
+            "Text extraction failed but continuing",
+            extractionResult.error
+          );
         }
       } catch (error) {
         console.error("Error during text extraction:", error);
@@ -171,13 +178,12 @@ export default function EnhancedMedicalRecordUpload({
     onDrop,
     accept: {
       "application/pdf": [".pdf"],
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
-        ".docx",
-      ],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        [".docx"],
       "image/png": [".png"],
       "image/jpeg": [".jpg", ".jpeg"],
     },
-    maxSize: FileUploadService.MAX_FILE_SIZE,
+    maxSize: 10 * 1024 * 1024, // 10MB
     multiple: false,
   });
 
@@ -187,7 +193,7 @@ export default function EnhancedMedicalRecordUpload({
     value: string
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    
+
     // Clear validation error when field is edited
     if (validationErrors[field]) {
       setValidationErrors((prev) => {
@@ -340,7 +346,7 @@ export default function EnhancedMedicalRecordUpload({
       setUploadState((prev) => ({
         ...prev,
         status: "error",
-  [setUploadState, setFormData, autoDetectDocumentType, generateTitleFromExtractedText]
+        error: error instanceof Error ? error.message : "Upload failed",
       }));
     }
   };
@@ -400,13 +406,13 @@ export default function EnhancedMedicalRecordUpload({
   const generateTitleFromExtractedText = (text: string): string | null => {
     // Try to find a title in the first few lines
     const lines = text.split("\n").slice(0, 10);
-    
+
     for (const line of lines) {
       const trimmedLine = line.trim();
-      
+
       // Skip empty lines or very short lines
       if (!trimmedLine || trimmedLine.length < 5) continue;
-      
+
       // Skip lines that are clearly not titles
       if (
         trimmedLine.includes(":") ||
@@ -417,13 +423,13 @@ export default function EnhancedMedicalRecordUpload({
       ) {
         continue;
       }
-      
+
       // Found a potential title
       if (trimmedLine.length > 5 && trimmedLine.length < 60) {
         return trimmedLine;
       }
     }
-    
+
     // Fallback: use the document type as part of the title
     const docType = autoDetectDocumentType(text);
     if (docType === "prescription") {
@@ -433,7 +439,7 @@ export default function EnhancedMedicalRecordUpload({
     } else if (docType === "scan") {
       return "Medical Scan";
     }
-    
+
     // Last resort
     return "Medical Document";
   };
@@ -567,7 +573,10 @@ export default function EnhancedMedicalRecordUpload({
                     <span>Uploading...</span>
                     <span>{uploadState.uploadProgress}%</span>
                   </div>
-                  <Progress value={uploadState.uploadProgress} className="h-2" />
+                  <Progress
+                    value={uploadState.uploadProgress}
+                    className="h-2"
+                  />
                 </div>
               )}
 
@@ -631,7 +640,9 @@ export default function EnhancedMedicalRecordUpload({
             />
           </div>
           {validationErrors.title && (
-            <p className="mt-1 text-sm text-red-600">{validationErrors.title}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {validationErrors.title}
+            </p>
           )}
         </div>
 
@@ -670,7 +681,9 @@ export default function EnhancedMedicalRecordUpload({
               type="text"
               id="hospital"
               value={formData.hospital_name}
-              onChange={(e) => handleInputChange("hospital_name", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("hospital_name", e.target.value)
+              }
               className={`pl-10 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
                 validationErrors.hospital_name
                   ? "border-red-300 focus:ring-red-500"
@@ -680,7 +693,9 @@ export default function EnhancedMedicalRecordUpload({
             />
           </div>
           {validationErrors.hospital_name && (
-            <p className="mt-1 text-sm text-red-600">{validationErrors.hospital_name}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {validationErrors.hospital_name}
+            </p>
           )}
         </div>
 
@@ -707,7 +722,9 @@ export default function EnhancedMedicalRecordUpload({
             />
           </div>
           {validationErrors.visit_date && (
-            <p className="mt-1 text-sm text-red-600">{validationErrors.visit_date}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {validationErrors.visit_date}
+            </p>
           )}
         </div>
 
@@ -738,10 +755,13 @@ export default function EnhancedMedicalRecordUpload({
             uploadState.status === "processing"
           }
         >
-          {uploadState.status === "uploading" || uploadState.status === "processing" ? (
+          {uploadState.status === "uploading" ||
+          uploadState.status === "processing" ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {uploadState.status === "uploading" ? "Uploading..." : "Processing..."}
+              {uploadState.status === "uploading"
+                ? "Uploading..."
+                : "Processing..."}
             </>
           ) : (
             <>
@@ -762,7 +782,10 @@ export default function EnhancedMedicalRecordUpload({
           <li>Ensure uploaded images are clear and well-lit</li>
           <li>PDFs should be properly scanned and text-recognizable</li>
           <li>Include the hospital or doctor's name for better organization</li>
-          <li>If uploading prescriptions, double-check the dosage information is visible</li>
+          <li>
+            If uploading prescriptions, double-check the dosage information is
+            visible
+          </li>
         </ul>
       </div>
     </div>
