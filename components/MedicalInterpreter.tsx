@@ -24,6 +24,7 @@ import type {
 import { textToSpeech } from '@/lib/elevenlabs';
 import { createClient } from "@/utils/supabase/client";
 import { LoggingService } from "@/lib/services/logging-service";
+import { Card, CardContent } from "./ui/card";
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {

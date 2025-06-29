@@ -1,7 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import InterpreterInterface from "@/components/dashboard/InterpreterInterface";
-import ResultsDisplay from "@/components/dashboard/ResultsDisplay";
 import { InterpretationResult } from "@/lib/types/dashboard";
 import { useAuthStore } from "@/lib/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
@@ -51,18 +49,7 @@ export default function InterpreterPage() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
-      <InterpreterInterface
-        onResult={setResult}
-        onError={setError}
-        onLoading={setLoading}
-        isLoading={state.isLoading}
-        error={state.error}
-      />
-      <ResultsDisplay
-        result={state.currentResult}
-        isLoading={state.isLoading}
-        error={state.error}
-      />
+     
     </div>
   );
 }
