@@ -72,7 +72,7 @@ export default function CallToActionSection() {
   return (
     <section
       ref={sectionRef}
-      className="py-24 bg-gradient-to-br from-slate-900 via-sky-900 to-emerald-900 relative overflow-hidden"
+      className="py-24 bg-gradient-to-br from-sky-600 via-emerald-600 to-sky-700 relative overflow-hidden"
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
