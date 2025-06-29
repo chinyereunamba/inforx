@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
 import { useMedicalRecords } from '@/hooks/useMedicalRecordsHook';
@@ -20,21 +20,64 @@ import {
   Tag,
   Plus,
   Clock,
+  Loader2,
+  FileUp,
+  LayoutGrid,
+  CheckCircle,
+  LayoutList,
+  SortAsc,
+  SortDesc
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription,
+  DialogTrigger
+} from "@/components/ui/dialog";
 import EnhancedMedicalRecordUpload from "@/components/medical-records/EnhancedMedicalRecordUpload";
-import { MedicalRecord } from "@/lib/types/medical-records";
+import { FileUploadProgress } from "@/components/dashboard/FileUploadProgress";
+import { MedicalRecord, MedicalRecordFormData } from "@/lib/types/medical-records";
+import RecordCard from "@/components/medical-records/RecordCard";
+import { FileUploadService } from "@/lib/services/file-upload-service";
+
+// Interface for active upload file
+interface ActiveUpload {
+  id: string;
+  fileName: string;
+  fileSize?: number;
+  fileType?: string;
+  status: "uploading" | "processing" | "success" | "error";
+  progress: number;
+  processingProgress: number;
+  fileUrl?: string;
+  error?: string;
+  record?: MedicalRecord;
+}
 
 export default function MedicalVaultPage() {
   const { user } = useAuthStore();
-  const { records, loading, deleteRecord, refetch } = useMedicalRecords();
+  const { records, loading, deleteRecord, refetch, createRecord } = useMedicalRecords();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
-  const [isUploadExpanded, setIsUploadExpanded] = useState(false);
-  const [recentUploads, setRecentUploads] = useState<MedicalRecord[]>([]);
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  
+  // State for active uploads
+  const [activeUploads, setActiveUploads] = useState<ActiveUpload[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // State for expanded records
+  const [expandedRecordId, setExpandedRecordId] = useState<string | null>(null);
+  
+  // For observing upload progress
+  const uploadObserverRef = useRef<IntersectionObserver | null>(null);
 
   // Filtered records based on search and filter type
   const filteredRecords = useMemo(() => {
@@ -51,41 +94,253 @@ export default function MedicalVaultPage() {
     });
   }, [records, searchTerm, filterType]);
 
+  // Sorted records
+  const sortedRecords = useMemo(() => {
+    return [...filteredRecords].sort((a, b) => {
+      const dateA = new Date(a.visit_date).getTime();
+      const dateB = new Date(b.visit_date).getTime();
+      return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+    });
+  }, [filteredRecords, sortOrder]);
+
+  // Categories for organizing records
+  const recordsByType = useMemo(() => {
+    const grouped: Record<string, MedicalRecord[]> = {
+      prescription: [],
+      lab_result: [],
+      scan: [],
+      other: []
+    };
+    
+    sortedRecords.forEach(record => {
+      grouped[record.type].push(record);
+    });
+    
+    return grouped;
+  }, [sortedRecords]);
+  
+  // Stats for the dashboard
+  const stats = useMemo(() => {
+    return {
+      totalRecords: records.length,
+      withFiles: records.filter(r => r.file_url).length,
+      hospitals: [...new Set(records.map(r => r.hospital_name))].length,
+      typeCounts: {
+        prescription: records.filter(r => r.type === 'prescription').length,
+        lab_result: records.filter(r => r.type === 'lab_result').length,
+        scan: records.filter(r => r.type === 'scan').length,
+        other: records.filter(r => r.type === 'other').length
+      }
+    };
+  }, [records]);
+
   useEffect(() => {
     if (user) {
-      // Set recent uploads when records change
-      const recentFiles = [...records]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 3);
-      
-      setRecentUploads(recentFiles);
+      // Set up intersection observer for upload progress cards
+      uploadObserverRef.current = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              // Card is visible, keep it in view
+              entry.target.classList.add('upload-card-visible');
+            } else {
+              // Card is not visible
+              entry.target.classList.remove('upload-card-visible');
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
       
       // Log page view
       LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
         page: "medical_vault",
       });
     }
-  }, [user, records]);
+    
+    return () => {
+      // Clean up observer
+      if (uploadObserverRef.current) {
+        uploadObserverRef.current.disconnect();
+      }
+    };
+  }, [user]);
 
-  const handleRecordAdded = (newRecord: MedicalRecord) => {
-    // No need to update local state as the store will handle it via Realtime
-    // Just ensure we refresh the records list
-    refetch();
+  // Handle file upload submission
+  const handleSubmitForm = async (
+    formData: MedicalRecordFormData, 
+    file: File | null,
+    extractedText: string | null
+  ) => {
+    if (!user) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Create a unique ID for this upload
+      const uploadId = `upload-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      
+      // Add to active uploads with initial state
+      const newUpload: ActiveUpload = {
+        id: uploadId,
+        fileName: file?.name || "Medical Record",
+        fileSize: file?.size,
+        fileType: file?.type,
+        status: "uploading",
+        progress: 0,
+        processingProgress: 0
+      };
+      
+      setActiveUploads(prev => [...prev, newUpload]);
+      setIsDialogOpen(false); // Close dialog immediately after submission
+      
+      // Create the record
+      try {
+        // Update upload progress as file uploads
+        const onUploadProgress = (progress: { percentage: number }) => {
+          setActiveUploads(uploads => 
+            uploads.map(upload => 
+              upload.id === uploadId 
+                ? { ...upload, progress: progress.percentage } 
+                : upload
+            )
+          );
+        };
+        
+        // Process the upload
+        let fileUrl: string | undefined;
+        
+        // If there's a file, upload it first
+        if (file) {
+          // Update status to uploading
+          setActiveUploads(uploads => 
+            uploads.map(upload => 
+              upload.id === uploadId 
+                ? { ...upload, status: "uploading" } 
+                : upload
+            )
+          );
+          
+          // Upload the file
+          const uploadResult = await FileUploadService.uploadFile(file, user, onUploadProgress);
+          
+          if (!uploadResult.success) {
+            throw new Error(uploadResult.error || "File upload failed");
+          }
+          
+          fileUrl = uploadResult.fileUrl;
+          
+          // Update status to processing
+          setActiveUploads(uploads => 
+            uploads.map(upload => 
+              upload.id === uploadId 
+                ? { 
+                    ...upload, 
+                    status: "processing", 
+                    progress: 100,
+                    fileUrl
+                  } 
+                : upload
+            )
+          );
+          
+          // Simulate processing progress (in a real app, this would be actual processing)
+          const processingInterval = setInterval(() => {
+            setActiveUploads(uploads => {
+              const upload = uploads.find(u => u.id === uploadId);
+              if (!upload) {
+                clearInterval(processingInterval);
+                return uploads;
+              }
+              
+              const newProgress = upload.processingProgress + 10;
+              if (newProgress >= 100) {
+                clearInterval(processingInterval);
+              }
+              
+              return uploads.map(u => 
+                u.id === uploadId 
+                  ? { ...u, processingProgress: Math.min(newProgress, 100) } 
+                  : u
+              );
+            });
+          }, 200);
+        }
+        
+        // Update form with extracted text if available
+        const updatedFormData = {
+          ...formData,
+          notes: formData.notes || extractedText || undefined
+        };
+        
+        // Create the record
+        const newRecord = await createRecord(updatedFormData, file);
+        
+        // Update upload status to success
+        setActiveUploads(uploads => 
+          uploads.map(upload => 
+            upload.id === uploadId 
+              ? { 
+                  ...upload, 
+                  status: "success", 
+                  progress: 100, 
+                  processingProgress: 100,
+                  record: newRecord
+                } 
+              : upload
+          )
+        );
+        
+        // After 5 seconds, remove the success notification
+        setTimeout(() => {
+          setActiveUploads(uploads => uploads.filter(upload => upload.id !== uploadId));
+        }, 5000);
+        
+      } catch (error) {
+        console.error("Error creating record:", error);
+        
+        // Update upload status to error
+        setActiveUploads(uploads => 
+          uploads.map(upload => 
+            upload.id === uploadId 
+              ? { 
+                  ...upload, 
+                  status: "error", 
+                  error: error instanceof Error ? error.message : "Failed to upload medical record"
+                } 
+              : upload
+          )
+        );
+      }
+      
+    } catch (error) {
+      console.error("Upload error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleRecordDeleted = async (recordId: string) => {
     try {
       await deleteRecord(recordId);
-      // No need to update local state as the store will handle it via Realtime
     } catch (error) {
       console.error("Error deleting record:", error);
     }
   };
-
-  const toggleUploadSection = () => {
-    setIsUploadExpanded(!isUploadExpanded);
+  
+  // Cancel an active upload
+  const handleCancelUpload = (uploadId: string) => {
+    setActiveUploads(uploads => uploads.filter(upload => upload.id !== uploadId));
   };
-
+  
+  // Retry a failed upload
+  const handleRetryUpload = (uploadId: string) => {
+    // In a real implementation, this would restart the upload
+    // For now, we'll just remove it from the list
+    setActiveUploads(uploads => uploads.filter(upload => upload.id !== uploadId));
+  };
+  
+  // Format date for display
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -94,6 +349,7 @@ export default function MedicalVaultPage() {
     });
   };
 
+  // Get type icon for records
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "prescription":
@@ -116,16 +372,11 @@ export default function MedicalVaultPage() {
     };
     return typeLabels[type as keyof typeof typeLabels] || type;
   };
-
-  // Filter records by type for each section
-  const getRecordsByType = (type: string) => {
-    return filteredRecords.filter((record) => record.type === type);
+  
+  // Toggle expanded state for record details
+  const toggleExpandRecord = (recordId: string) => {
+    setExpandedRecordId(expandedRecordId === recordId ? null : recordId);
   };
-
-  const prescriptions = getRecordsByType("prescription");
-  const labResults = getRecordsByType("lab_result");
-  const scans = getRecordsByType("scan");
-  const others = getRecordsByType("other");
 
   return (
     <div className="min-h-screen bg-gray-50 py-6">
@@ -133,7 +384,7 @@ export default function MedicalVaultPage() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <div className="mb-4 md:mb-0">
             <h1 className="text-3xl font-bold text-gray-900 font-noto">
-              My Medical Vault
+              Medical Vault
             </h1>
             <p className="text-gray-600">
               Securely store and organize all your important medical documents
@@ -156,59 +407,124 @@ export default function MedicalVaultPage() {
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-full"
               />
             </div>
-            <Button
-              onClick={toggleUploadSection}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
-            >
-              {isUploadExpanded ? (
-                <>
-                  <X className="h-4 w-4 mr-2" />
-                  Close Upload
-                </>
-              ) : (
-                <>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Document
-                </>
-              )}
-            </Button>
+            
+            <div className="flex gap-2">
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Document
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Upload Medical Document</DialogTitle>
+                    <DialogDescription>
+                      Add a medical record to your personal health vault.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <EnhancedMedicalRecordUpload
+                    onSubmitForm={handleSubmitForm}
+                    onClose={() => setIsDialogOpen(false)}
+                    isSubmittingParent={isSubmitting}
+                  />
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
 
-        {/* Upload Section - Expandable */}
-        {isUploadExpanded && (
-          <Card className="mb-8 border border-emerald-200 shadow-md overflow-hidden">
-            <CardHeader className="bg-emerald-50 border-b border-emerald-100">
-              <CardTitle className="text-emerald-700 flex items-center">
-                <Upload className="h-5 w-5 mr-2" />
-                Upload Medical Document
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <EnhancedMedicalRecordUpload
-                onRecordAdded={handleRecordAdded}
-                onUploadComplete={() => {
-                  setIsUploadExpanded(false);
-                  refetch();
-                }}
-              />
+        {/* Upload Progress Cards */}
+        {activeUploads.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <FileUp className="h-5 w-5 text-emerald-500" />
+              Active Uploads
+            </h2>
+            <div className="space-y-3">
+              {activeUploads.map((upload) => (
+                <FileUploadProgress
+                  key={upload.id}
+                  fileName={upload.fileName}
+                  fileSize={upload.fileSize}
+                  fileType={upload.fileType}
+                  fileUrl={upload.fileUrl}
+                  uploadProgress={upload.progress}
+                  processingProgress={upload.processingProgress}
+                  status={upload.status}
+                  error={upload.error}
+                  onRetry={() => handleRetryUpload(upload.id)}
+                  onCancel={() => handleCancelUpload(upload.id)}
+                  onView={upload.fileUrl ? () => window.open(upload.fileUrl, "_blank") : undefined}
+                  onDownload={upload.fileUrl ? 
+                    () => {
+                      const a = document.createElement("a");
+                      a.href = upload.fileUrl as string;
+                      a.download = upload.fileName;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    } : undefined
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Stats Overview */}
+        <div className="grid grid-cols-4 gap-4 mb-6">
+          <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
+            <CardContent className="p-4 flex flex-col items-center text-center">
+              <div className="bg-blue-100 rounded-full p-3 mb-3">
+                <FileText className="h-5 w-5 text-blue-600" />
+              </div>
+              <div className="text-2xl font-semibold">{stats.totalRecords}</div>
+              <div className="text-xs text-slate-500">Total Records</div>
             </CardContent>
           </Card>
-        )}
-
-        {/* Filter Section */}
-        <div className="flex items-center gap-4 mb-6">
-          <div className="text-sm font-medium text-gray-700">Filter by:</div>
+          
+          <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
+            <CardContent className="p-4 flex flex-col items-center text-center">
+              <div className="bg-emerald-100 rounded-full p-3 mb-3">
+                <Calendar className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div className="text-2xl font-semibold">{stats.withFiles}</div>
+              <div className="text-xs text-slate-500">With Attachments</div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
+            <CardContent className="p-4 flex flex-col items-center text-center">
+              <div className="bg-purple-100 rounded-full p-3 mb-3">
+                <Tag className="h-5 w-5 text-purple-600" />
+              </div>
+              <div className="text-2xl font-semibold">{stats.hospitals}</div>
+              <div className="text-xs text-slate-500">Hospitals</div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
+            <CardContent className="p-4 flex flex-col items-center text-center">
+              <div className="bg-amber-100 rounded-full p-3 mb-3">
+                <FileCheck className="h-5 w-5 text-amber-600" />
+              </div>
+              <div className="text-2xl font-semibold">{Object.values(stats.typeCounts).reduce((a, b) => a + b, 0)}</div>
+              <div className="text-xs text-slate-500">Documents</div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Filter and Sort Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div className="flex flex-wrap gap-2">
             <Button
               variant={filterType === "all" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("all")}
-              className={
-                filterType === "all"
-                  ? "bg-emerald-600 hover:bg-emerald-700"
-                  : ""
-              }
+              className={filterType === "all" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
             >
               All
             </Button>
@@ -216,78 +532,94 @@ export default function MedicalVaultPage() {
               variant={filterType === "prescription" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("prescription")}
-              className={
-                filterType === "prescription"
-                  ? "bg-emerald-600 hover:bg-emerald-700"
-                  : ""
-              }
+              className={filterType === "prescription" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
             >
               <Pill className="h-4 w-4 mr-1" />
               Prescriptions
+              {stats.typeCounts.prescription > 0 && (
+                <span className="ml-1 text-xs">{stats.typeCounts.prescription}</span>
+              )}
             </Button>
             <Button
               variant={filterType === "lab_result" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("lab_result")}
-              className={
-                filterType === "lab_result"
-                  ? "bg-emerald-600 hover:bg-emerald-700"
-                  : ""
-              }
+              className={filterType === "lab_result" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
             >
               <FileCheck className="h-4 w-4 mr-1" />
               Lab Results
+              {stats.typeCounts.lab_result > 0 && (
+                <span className="ml-1 text-xs">{stats.typeCounts.lab_result}</span>
+              )}
             </Button>
             <Button
               variant={filterType === "scan" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("scan")}
-              className={
-                filterType === "scan"
-                  ? "bg-emerald-600 hover:bg-emerald-700"
-                  : ""
-              }
+              className={filterType === "scan" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
             >
               <FileImage className="h-4 w-4 mr-1" />
               Scans
+              {stats.typeCounts.scan > 0 && (
+                <span className="ml-1 text-xs">{stats.typeCounts.scan}</span>
+              )}
             </Button>
             <Button
               variant={filterType === "other" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("other")}
-              className={
-                filterType === "other"
-                  ? "bg-emerald-600 hover:bg-emerald-700"
-                  : ""
-              }
+              className={filterType === "other" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
             >
               <FileText className="h-4 w-4 mr-1" />
               Others
+              {stats.typeCounts.other > 0 && (
+                <span className="ml-1 text-xs">{stats.typeCounts.other}</span>
+              )}
+            </Button>
+          </div>
+          
+          <div className="flex gap-3">
+            {/* View Mode Switcher */}
+            <div className="flex border border-gray-200 rounded-lg overflow-hidden">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setViewMode("grid")}
+                className={viewMode === "grid" ? "bg-sky-50 text-sky-600" : ""}
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setViewMode("list")}
+                className={viewMode === "list" ? "bg-sky-50 text-sky-600" : ""}
+              >
+                <LayoutList className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            {/* Sort Order Toggle */}
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setSortOrder(sortOrder === "newest" ? "oldest" : "newest")}
+              className="gap-2"
+            >
+              {sortOrder === "newest" ? (
+                <>
+                  <SortDesc className="h-4 w-4" />
+                  Newest
+                </>
+              ) : (
+                <>
+                  <SortAsc className="h-4 w-4" />
+                  Oldest
+                </>
+              )}
             </Button>
           </div>
         </div>
-
-        {/* Recent Uploads Section */}
-        {recentUploads.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-              <Clock className="h-5 w-5 text-emerald-600 mr-2" />
-              Recent Uploads
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {recentUploads.map((record) => (
-                <RecentUploadCard
-                  key={record.id}
-                  record={record}
-                  formatDate={formatDate}
-                  getTypeIcon={getTypeIcon}
-                  getTypeLabel={getTypeLabel}
-                  onDelete={() => handleRecordDeleted(record.id)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
 
         {loading ? (
           <div className="flex justify-center items-center py-20">
@@ -300,18 +632,17 @@ export default function MedicalVaultPage() {
           </div>
         ) : (
           <>
-            {filteredRecords.length === 0 ? (
+            {sortedRecords.length === 0 ? (
               <div className="bg-white rounded-lg shadow-md p-8 text-center">
                 <FolderOpen className="h-16 w-16 mx-auto text-gray-400 mb-4" />
                 <h3 className="text-xl font-medium text-gray-900 mb-2">
                   No medical records found
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Start by uploading your first medical document using the
-                  upload button above.
+                  Start by uploading your first medical record using the upload button above.
                 </p>
                 <Button
-                  onClick={() => setIsUploadExpanded(true)}
+                  onClick={() => setIsDialogOpen(true)}
                   className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -320,69 +651,150 @@ export default function MedicalVaultPage() {
               </div>
             ) : (
               <div className="space-y-8">
-                {/* Prescriptions Section */}
-                {filterType === "all" && prescriptions.length > 0 && (
-                  <RecordSection
-                    title="Prescriptions"
-                    icon={<Pill className="h-5 w-5 text-blue-500" />}
-                    records={prescriptions}
-                    formatDate={formatDate}
-                    getTypeIcon={getTypeIcon}
-                    getTypeLabel={getTypeLabel}
-                    onDelete={handleRecordDeleted}
-                  />
+                {/* Grid View */}
+                {viewMode === "grid" && (
+                  filterType === "all" ? (
+                    // Show by categories when "All" is selected
+                    Object.entries(recordsByType).map(([type, typeRecords]) => 
+                      typeRecords.length > 0 ? (
+                        <div key={type}>
+                          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            {getTypeIcon(type)}
+                            <span>{getTypeLabel(type)}</span>
+                            <Badge variant="outline" className="ml-2 text-xs">
+                              {typeRecords.length}
+                            </Badge>
+                          </h2>
+                          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {typeRecords.map((record) => (
+                              <RecordCard
+                                key={record.id}
+                                record={record}
+                                onDelete={() => handleRecordDeleted(record.id)}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ) : null
+                    )
+                  ) : (
+                    // When filtering by type, show all matching records
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        {getTypeIcon(filterType)}
+                        <span>{getTypeLabel(filterType)} Records</span>
+                        <Badge variant="outline" className="ml-2 text-xs">
+                          {sortedRecords.length}
+                        </Badge>
+                      </h2>
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {sortedRecords.map((record) => (
+                          <RecordCard
+                            key={record.id}
+                            record={record}
+                            onDelete={() => handleRecordDeleted(record.id)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )
                 )}
-
-                {/* Lab Results Section */}
-                {filterType === "all" && labResults.length > 0 && (
-                  <RecordSection
-                    title="Lab Results"
-                    icon={<FileCheck className="h-5 w-5 text-amber-500" />}
-                    records={labResults}
-                    formatDate={formatDate}
-                    getTypeIcon={getTypeIcon}
-                    getTypeLabel={getTypeLabel}
-                    onDelete={handleRecordDeleted}
-                  />
-                )}
-
-                {/* Scans Section */}
-                {filterType === "all" && scans.length > 0 && (
-                  <RecordSection
-                    title="Scans"
-                    icon={<FileImage className="h-5 w-5 text-purple-500" />}
-                    records={scans}
-                    formatDate={formatDate}
-                    getTypeIcon={getTypeIcon}
-                    getTypeLabel={getTypeLabel}
-                    onDelete={handleRecordDeleted}
-                  />
-                )}
-
-                {/* Other Documents Section */}
-                {filterType === "all" && others.length > 0 && (
-                  <RecordSection
-                    title="Other Documents"
-                    icon={<FileText className="h-5 w-5 text-gray-500" />}
-                    records={others}
-                    formatDate={formatDate}
-                    getTypeIcon={getTypeIcon}
-                    getTypeLabel={getTypeLabel}
-                    onDelete={handleRecordDeleted}
-                  />
-                )}
-
-                {/* When filtered, show all matching records */}
-                {filterType !== "all" && (
-                  <RecordSection
-                    title={`${getTypeLabel(filterType)} Records`}
-                    icon={getTypeIcon(filterType)}
-                    records={filteredRecords}
-                    formatDate={formatDate}
-                    getTypeIcon={getTypeIcon}
-                    getTypeLabel={getTypeLabel}
-                    onDelete={handleRecordDeleted}
-                  />
+                
+                {/* List View */}
+                {viewMode === "list" && (
+                  <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Record</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hospital</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {sortedRecords.map((record, index) => (
+                            <tr 
+                              key={record.id} 
+                              className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                              onClick={() => toggleExpandRecord(record.id)}
+                            >
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="flex items-center">
+                                  <div className="flex-shrink-0">
+                                    {getTypeIcon(record.type)}
+                                  </div>
+                                  <div className="ml-4">
+                                    <div className="text-sm font-medium text-gray-900">{record.title}</div>
+                                    {record.file_name && <div className="text-xs text-gray-500">{record.file_name}</div>}
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <Badge className="text-xs">{getTypeLabel(record.type)}</Badge>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {record.hospital_name}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {formatDate(record.visit_date)}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div className="flex justify-end space-x-2">
+                                  {record.file_url && (
+                                    <>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          window.open(record.file_url, "_blank");
+                                        }}
+                                        className="h-8 w-8 p-0"
+                                      >
+                                        <Eye className="h-4 w-4 text-gray-500" />
+                                      </Button>
+                                      
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          const a = document.createElement("a");
+                                          a.href = record.file_url as string;
+                                          a.download = record.file_name || record.title;
+                                          document.body.appendChild(a);
+                                          a.click();
+                                          document.body.removeChild(a);
+                                        }}
+                                        className="h-8 w-8 p-0"
+                                      >
+                                        <Download className="h-4 w-4 text-gray-500" />
+                                      </Button>
+                                    </>
+                                  )}
+                                  
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRecordDeleted(record.id);
+                                    }}
+                                    className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 )}
               </div>
             )}
@@ -390,309 +802,5 @@ export default function MedicalVaultPage() {
         )}
       </div>
     </div>
-  );
-}
-
-// Recent Upload Card Component
-interface RecentUploadCardProps {
-  record: MedicalRecord;
-  formatDate: (date: string) => string;
-  getTypeIcon: (type: string) => JSX.Element;
-  getTypeLabel: (type: string) => string;
-  onDelete: () => void;
-}
-
-function RecentUploadCard({
-  record,
-  formatDate,
-  getTypeIcon,
-  getTypeLabel,
-  onDelete,
-}: RecentUploadCardProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const handleDelete = async () => {
-    if (window.confirm(`Are you sure you want to delete "${record.title}"?`)) {
-      setIsDeleting(true);
-      try {
-        await onDelete();
-      } finally {
-        setIsDeleting(false);
-      }
-    }
-  };
-
-  return (
-    <Card className="border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all duration-200">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            {getTypeIcon(record.type)}
-            <Badge variant="outline" className="text-xs">
-              {getTypeLabel(record.type)}
-            </Badge>
-          </div>
-          <div className="flex items-center gap-1">
-            {record.file_url && (
-              <>
-                <a
-                  href={record.file_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
-                  title="View document"
-                >
-                  <Eye className="h-3.5 w-3.5 text-gray-600" />
-                </a>
-                <a
-                  href={record.file_url}
-                  download={record.file_name || record.title}
-                  className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
-                  title="Download document"
-                >
-                  <Download className="h-3.5 w-3.5 text-gray-600" />
-                </a>
-              </>
-            )}
-            <button
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="p-1.5 hover:bg-red-100 hover:text-red-500 rounded-full transition-colors disabled:opacity-50"
-              title="Delete document"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        </div>
-        <h3
-          className="font-medium text-gray-900 mb-1 truncate"
-          title={record.title}
-        >
-          {record.title}
-        </h3>
-        <div className="flex items-center gap-2 text-xs text-gray-500">
-          <Calendar className="h-3 w-3" />
-          <span>{formatDate(record.visit_date)}</span>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-          <Tag className="h-3 w-3" />
-          <span className="truncate">{record.hospital_name}</span>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// Record Section Component
-interface RecordSectionProps {
-  title: string;
-  icon: JSX.Element;
-  records: MedicalRecord[];
-  formatDate: (date: string) => string;
-  getTypeIcon: (type: string) => JSX.Element;
-  getTypeLabel: (type: string) => string;
-  onDelete: (id: string) => void;
-}
-
-function RecordSection({
-  title,
-  icon,
-  records,
-  formatDate,
-  getTypeIcon,
-  getTypeLabel,
-  onDelete,
-}: RecordSectionProps) {
-  return (
-    <div>
-      <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-        {icon}
-        <span className="ml-2">{title}</span>
-        <Badge variant="outline" className="ml-2 text-xs">
-          {records.length}
-        </Badge>
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {records.map((record) => (
-          <RecordCard
-            key={record.id}
-            record={record}
-            formatDate={formatDate}
-            getTypeIcon={getTypeIcon}
-            getTypeLabel={getTypeLabel}
-            onDelete={() => onDelete(record.id)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Record Card Component
-interface RecordCardProps {
-  record: MedicalRecord;
-  formatDate: (date: string) => string;
-  getTypeIcon: (type: string) => JSX.Element;
-  getTypeLabel: (type: string) => string;
-  onDelete: () => void;
-}
-
-function RecordCard({
-  record,
-  formatDate,
-  getTypeIcon,
-  getTypeLabel,
-  onDelete,
-}: RecordCardProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-
-  const formatFileSize = (bytes?: number) => {
-    if (!bytes) return "";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
-
-  const handleDelete = async () => {
-    if (window.confirm(`Are you sure you want to delete "${record.title}"?`)) {
-      setIsDeleting(true);
-      try {
-        await onDelete();
-      } finally {
-        setIsDeleting(false);
-      }
-    }
-  };
-
-  return (
-    <Card className="border border-gray-200 hover:shadow-md transition-all duration-300">
-      <CardContent className="p-4">
-        <div className="flex justify-between items-start mb-2">
-          <div className="flex items-center gap-2">
-            {getTypeIcon(record.type)}
-            <h3
-              className="font-semibold text-gray-900 truncate max-w-[200px]"
-              title={record.title}
-            >
-              {record.title}
-            </h3>
-          </div>
-          <Badge variant="outline" className="text-xs font-normal">
-            {getTypeLabel(record.type)}
-          </Badge>
-        </div>
-
-        <div className="space-y-2 mb-3">
-          <div className="flex items-center text-xs text-gray-500">
-            <Calendar className="h-3.5 w-3.5 mr-1.5" />
-            <span>{formatDate(record.visit_date)}</span>
-          </div>
-
-          <div className="flex items-center text-xs text-gray-500">
-            <Tag className="h-3.5 w-3.5 mr-1.5" />
-            <span className="truncate">{record.hospital_name}</span>
-          </div>
-
-          {record.file_name && (
-            <div className="flex items-center text-xs text-gray-500">
-              <FileText className="h-3.5 w-3.5 mr-1.5" />
-              <span className="truncate">{record.file_name}</span>
-              {record.file_size && (
-                <span className="ml-1">
-                  ({formatFileSize(record.file_size)})
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-
-        {record.notes && (
-          <div className="mb-3">
-            <p className="text-xs text-gray-600 line-clamp-2">{record.notes}</p>
-          </div>
-        )}
-
-        <div className="flex justify-end gap-2">
-          {record.file_url && (
-            <>
-              <Button variant="outline" size="sm" className="h-8" asChild>
-                <a
-                  href={record.file_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Eye className="h-3.5 w-3.5 mr-1" />
-                  View
-                </a>
-              </Button>
-
-              <Button variant="outline" size="sm" className="h-8" asChild>
-                <a
-                  href={record.file_url}
-                  download={record.file_name || record.title}
-                >
-                  <Download className="h-3.5 w-3.5 mr-1" />
-                  Download
-                </a>
-              </Button>
-            </>
-          )}
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="h-8 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-          >
-            <X className="h-3.5 w-3.5 mr-1" />
-            Delete
-          </Button>
-        </div>
-
-        {/* File Preview Modal (simplified) */}
-        {showPreview && record.file_url && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-auto p-4">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-lg">{record.title}</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowPreview(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-
-              <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-center min-h-[300px]">
-                {record.file_type?.includes("image") ? (
-                  <img
-                    src={record.file_url}
-                    alt={record.title}
-                    className="max-w-full max-h-[500px] object-contain"
-                  />
-                ) : (
-                  <div className="text-center">
-                    <FileText className="h-16 w-16 text-gray-400 mx-auto mb-2" />
-                    <p>Preview not available</p>
-                    <a
-                      href={record.file_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-emerald-600 hover:underline mt-2 inline-block"
-                    >
-                      Open document in new tab
-                    </a>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
   );
 }
