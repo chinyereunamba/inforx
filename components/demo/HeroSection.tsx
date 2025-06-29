@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ArrowDown, Play, FileText, Bot, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link'
 
 interface HeroSectionProps {
   onStartDemo: () => void;
@@ -209,7 +210,7 @@ export default function HeroSection({ onStartDemo }: HeroSectionProps) {
                 className="border-2 border-blue-500 text-blue-500 hover:bg-blue-50 hover:text-blue-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 bg-transparent"
                 asChild
               >
-                <a href="/interpreter">Try AI Interpreter</a>
+                <Link href="/interpreter">Try AI Interpreter</Link>
               </Button>
             </div>
 
