@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { FileUploadService } from "@/lib/services/file-upload-service";
 import { TextExtractor } from "@/lib/utils/text-extraction";
-import { useAuthStore } from "@/lib/stores/auth-store";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
@@ -29,19 +28,25 @@ import {
   MedicalRecord,
   MedicalRecordFormData,
 } from "@/lib/types/medical-records";
-import { useMedicalRecords } from '@/hooks/useMedicalRecordsHook';
 
 interface EnhancedMedicalRecordUploadProps {
-  onRecordAdded: (record: MedicalRecord) => void;
-  onUploadComplete: () => void;
+  // Callback to submit the form data and file to the parent
+  onSubmitForm: (
+    formData: MedicalRecordFormData,
+    file: File | null,
+    extractedText: string | null
+  ) => void;
+  // Callback to close the dialog/modal after submission
+  onClose: () => void;
+  // Indicates if the parent is currently processing the submission
+  isSubmittingParent: boolean;
 }
 
 export default function EnhancedMedicalRecordUpload({
-  onRecordAdded,
-  onUploadComplete,
+  onSubmitForm,
+  onClose,
+  isSubmittingParent,
 }: EnhancedMedicalRecordUploadProps) {
-  const { user } = useAuthStore();
-  const { createRecord } = useMedicalRecords();
   const [formData, setFormData] = useState<MedicalRecordFormData>({
     title: "",
     type: "prescription",
@@ -50,23 +55,11 @@ export default function EnhancedMedicalRecordUpload({
     notes: "",
   });
 
-  const [uploadState, setUploadState] = useState<{
-    status: "idle" | "uploading" | "processing" | "success" | "error";
-    file: File | null;
-    uploadProgress: number;
-    processingProgress: number;
-    error: string | null;
-    filePreviewUrl: string | null;
-    extractedText: string | null;
-  }>({
-    status: "idle",
-    file: null,
-    uploadProgress: 0,
-    processingProgress: 0,
-    error: null,
-    filePreviewUrl: null,
-    extractedText: null,
-  });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [extractedText, setExtractedText] = useState<string | null>(null);
+  const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
+  const [fileProcessingProgress, setFileProcessingProgress] = useState(0);
+  const [isFileProcessing, setIsFileProcessing] = useState(false);
 
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
@@ -81,11 +74,7 @@ export default function EnhancedMedicalRecordUpload({
         const errors = rejectedFiles.map(
           (reject) => `${reject.file.name}: ${reject.errors[0].message}`
         );
-        setUploadState((prev) => ({
-          ...prev,
-          status: "error",
-          error: errors.join(", "),
-        }));
+        setValidationErrors((prev) => ({ ...prev, file: errors.join(", ") }));
         return;
       }
 
@@ -96,55 +85,43 @@ export default function EnhancedMedicalRecordUpload({
       // Validate file
       const validation = FileUploadService.validateFile(file);
       if (!validation.isValid) {
-        setUploadState((prev) => ({
+        setValidationErrors((prev) => ({
           ...prev,
-          status: "error",
-          error: validation.error || "File validation failed",
+          file: validation.error || "File validation failed",
         }));
         return;
       }
 
+      // Clear previous file-related errors
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.file;
+        return newErrors;
+      });
+
       // Create file preview URL for images
-      let filePreviewUrl = null;
+      let newFilePreviewUrl = null;
       if (file.type.startsWith("image/")) {
-        filePreviewUrl = URL.createObjectURL(file);
+        newFilePreviewUrl = URL.createObjectURL(file);
       }
 
-      // Update state with selected file
-      setUploadState({
-        status: "idle",
-        file,
-        uploadProgress: 0,
-        processingProgress: 0,
-        error: null,
-        filePreviewUrl,
-        extractedText: null,
-      });
+      setSelectedFile(file);
+      setFilePreviewUrl(newFilePreviewUrl);
+      setExtractedText(null); // Clear previous extracted text
+      setIsFileProcessing(true);
+      setFileProcessingProgress(0);
 
       // Try to extract text from the file for title suggestion
       try {
-        setUploadState((prev) => ({
-          ...prev,
-          status: "processing",
-        }));
-
         const extractionResult = await TextExtractor.extractText(
           file,
           (progress) => {
-            setUploadState((prev) => ({
-              ...prev,
-              processingProgress: progress,
-            }));
+            setFileProcessingProgress(progress);
           }
         );
 
         if (extractionResult.success) {
-          // Set extracted text
-          setUploadState((prev) => ({
-            ...prev,
-            status: "idle",
-            extractedText: extractionResult.text,
-          }));
+          setExtractedText(extractionResult.text);
 
           // Try to auto-detect document type and suggest a title
           const docType = autoDetectDocumentType(extractionResult.text);
@@ -152,24 +129,36 @@ export default function EnhancedMedicalRecordUpload({
             extractionResult.text
           );
 
-          if (suggestedTitle) {
-            setFormData((prev) => ({
-              ...prev,
-              title: suggestedTitle,
-              type:
-                (docType as "prescription" | "scan" | "lab_result" | "other") ||
-                prev.type,
-            }));
-          }
+          setFormData((prev) => ({
+            ...prev,
+            title: suggestedTitle || prev.title,
+            type:
+              (docType as "prescription" | "scan" | "lab_result" | "other") ||
+              prev.type,
+          }));
         } else {
-          console.log(
-            "Text extraction failed but continuing",
+          console.warn(
+            "Text extraction failed for preview, but continuing:",
             extractionResult.error
           );
+          setValidationErrors((prev) => ({
+            ...prev,
+            file: `Text extraction failed: ${
+              extractionResult.error || "Unknown error"
+            }`,
+          }));
         }
       } catch (error) {
-        console.error("Error during text extraction:", error);
-        // Don't show error to user, just log it - we can still continue
+        console.error("Error during text extraction for preview:", error);
+        setValidationErrors((prev) => ({
+          ...prev,
+          file: `Error during text extraction: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+        }));
+      } finally {
+        setIsFileProcessing(false);
+        setFileProcessingProgress(100);
       }
     },
     []
@@ -207,23 +196,22 @@ export default function EnhancedMedicalRecordUpload({
 
   // Remove selected file
   const handleRemoveFile = () => {
-    if (uploadState.filePreviewUrl) {
-      URL.revokeObjectURL(uploadState.filePreviewUrl);
+    if (filePreviewUrl) {
+      URL.revokeObjectURL(filePreviewUrl);
     }
-
-    setUploadState({
-      status: "idle",
-      file: null,
-      uploadProgress: 0,
-      processingProgress: 0,
-      error: null,
-      filePreviewUrl: null,
-      extractedText: null,
-    });
-
+    setSelectedFile(null);
+    setFilePreviewUrl(null);
+    setExtractedText(null);
+    setIsFileProcessing(false);
+    setFileProcessingProgress(0);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+    setValidationErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors.file;
+      return newErrors;
+    });
   };
 
   // Validate form
@@ -255,101 +243,9 @@ export default function EnhancedMedicalRecordUpload({
       return;
     }
 
-    if (!user) {
-      setUploadState((prev) => ({
-        ...prev,
-        status: "error",
-        error: "You must be signed in to upload files",
-      }));
-      return;
-    }
-
-    // Check if we have a file to upload
-    const file = uploadState.file;
-
-    try {
-      // If we have a file, upload it first
-      if (file) {
-        setUploadState((prev) => ({
-          ...prev,
-          status: "uploading",
-          uploadProgress: 0,
-        }));
-
-        // Upload the file
-        const uploadResult = await FileUploadService.uploadFile(
-          file,
-          user,
-          (progress) => {
-            setUploadState((prev) => ({
-              ...prev,
-              uploadProgress: progress.percentage,
-            }));
-          }
-        );
-
-        if (!uploadResult.success) {
-          throw new Error(uploadResult.error || "File upload failed");
-        }
-
-        // Create record with file
-        const record = await createRecord(
-          {
-            ...formData,
-            // Add the extracted text as notes if we don't already have notes
-            notes: formData.notes || uploadState.extractedText || undefined,
-          },
-          file
-        );
-
-        // Update state to success
-        setUploadState({
-          status: "success",
-          file: null,
-          uploadProgress: 100,
-          processingProgress: 100,
-          error: null,
-          filePreviewUrl: null,
-          extractedText: null,
-        });
-
-        // Reset form
-        setFormData({
-          title: "",
-          type: "prescription",
-          hospital_name: "",
-          visit_date: new Date().toISOString().split("T")[0],
-          notes: "",
-        });
-
-        // Notify parent components
-        onRecordAdded(record);
-        onUploadComplete();
-      } else {
-        // Create record without file
-        const record = await createRecord(formData);
-
-        // Reset form
-        setFormData({
-          title: "",
-          type: "prescription",
-          hospital_name: "",
-          visit_date: new Date().toISOString().split("T")[0],
-          notes: "",
-        });
-
-        // Notify parent components
-        onRecordAdded(record);
-        onUploadComplete();
-      }
-    } catch (error) {
-      console.error("Upload error:", error);
-      setUploadState((prev) => ({
-        ...prev,
-        status: "error",
-        error: error instanceof Error ? error.message : "Upload failed",
-      }));
-    }
+    // Pass data to parent for submission
+    onSubmitForm(formData, selectedFile, extractedText);
+    onClose(); // Close the dialog immediately after submission
   };
 
   // Get file icon based on mime type
@@ -447,31 +343,13 @@ export default function EnhancedMedicalRecordUpload({
 
   return (
     <div className="space-y-6">
-      {/* Error display */}
-      {uploadState.error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{uploadState.error}</AlertDescription>
-        </Alert>
-      )}
-
-      {/* Success message */}
-      {uploadState.status === "success" && (
-        <Alert className="mb-4 bg-green-50 border-green-200">
-          <CheckCircle className="h-4 w-4 text-green-500" />
-          <AlertDescription className="text-green-700">
-            Medical record uploaded successfully!
-          </AlertDescription>
-        </Alert>
-      )}
-
       {/* File upload section */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Upload Medical Document
         </label>
 
-        {!uploadState.file ? (
+        {!selectedFile ? (
           <div
             {...getRootProps()}
             className={`border-2 border-dashed rounded-lg p-6 cursor-pointer transition-colors text-center ${
@@ -512,29 +390,31 @@ export default function EnhancedMedicalRecordUpload({
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  {uploadState.filePreviewUrl ? (
+                  {filePreviewUrl ? (
                     <img
-                      src={uploadState.filePreviewUrl}
+                      src={filePreviewUrl}
                       alt="Preview"
                       className="w-12 h-12 object-cover rounded-lg border border-gray-200"
                     />
                   ) : (
                     <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                      {getFileIcon(uploadState.file)}
+                      {getFileIcon(selectedFile)}
                     </div>
                   )}
                   <div>
                     <div className="font-medium text-gray-800">
-                      {uploadState.file.name}
+                      {selectedFile.name}
                     </div>
                     <div className="text-sm text-gray-500">
-                      {FileUploadService.formatFileSize(uploadState.file.size)}
+                      {FileUploadService.formatFileSize(selectedFile.size)}
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  {uploadState.status === "idle" && (
+                  {isFileProcessing ? (
+                    <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+                  ) : (
                     <>
                       <Button
                         variant="outline"
@@ -542,11 +422,11 @@ export default function EnhancedMedicalRecordUpload({
                         className="h-8 w-8 p-0"
                         title="View file"
                         onClick={() => {
-                          if (uploadState.filePreviewUrl) {
-                            window.open(uploadState.filePreviewUrl);
+                          if (filePreviewUrl) {
+                            window.open(filePreviewUrl);
                           }
                         }}
-                        disabled={!uploadState.filePreviewUrl}
+                        disabled={!filePreviewUrl}
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -561,40 +441,20 @@ export default function EnhancedMedicalRecordUpload({
                       </Button>
                     </>
                   )}
-                  {(uploadState.status === "uploading" ||
-                    uploadState.status === "processing") && (
-                    <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
-                  )}
                 </div>
               </div>
 
-              {uploadState.status === "uploading" && (
+              {isFileProcessing && (
                 <div className="mt-4">
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Uploading...</span>
-                    <span>{uploadState.uploadProgress}%</span>
+                    <span>Extracting text...</span>
+                    <span>{fileProcessingProgress}%</span>
                   </div>
-                  <Progress
-                    value={uploadState.uploadProgress}
-                    className="h-2"
-                  />
+                  <Progress value={fileProcessingProgress} className="h-2" />
                 </div>
               )}
 
-              {uploadState.status === "processing" && (
-                <div className="mt-4">
-                  <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Processing...</span>
-                    <span>{uploadState.processingProgress}%</span>
-                  </div>
-                  <Progress
-                    value={uploadState.processingProgress}
-                    className="h-2"
-                  />
-                </div>
-              )}
-
-              {uploadState.extractedText && (
+              {extractedText && (
                 <div className="mt-3 text-xs">
                   <details>
                     <summary className="cursor-pointer text-blue-600 hover:text-blue-800">
@@ -603,8 +463,8 @@ export default function EnhancedMedicalRecordUpload({
                     </summary>
                     <div className="mt-2 p-2 bg-gray-50 rounded-md max-h-32 overflow-y-auto">
                       <pre className="text-gray-700 whitespace-pre-wrap">
-                        {uploadState.extractedText.substring(0, 500)}
-                        {uploadState.extractedText.length > 500 ? "..." : ""}
+                        {extractedText.substring(0, 500)}
+                        {extractedText.length > 500 ? "..." : ""}
                       </pre>
                     </div>
                   </details>
@@ -614,6 +474,14 @@ export default function EnhancedMedicalRecordUpload({
           </Card>
         )}
       </div>
+
+      {/* Error display for file */}
+      {validationErrors.file && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{validationErrors.file}</AlertDescription>
+        </Alert>
+      )}
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -745,13 +613,15 @@ export default function EnhancedMedicalRecordUpload({
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Additional notes about this medical record..."
           />
-          {uploadState.extractedText && (
+          {extractedText && (
             <div className="text-xs text-gray-600 mt-2">
               <details>
-                <summary className="cursor-pointer">View extracted text</summary>
+                <summary className="cursor-pointer">
+                  View extracted text
+                </summary>
                 <div className="mt-2 p-2 bg-gray-50 rounded-md max-h-32 overflow-y-auto text-xs">
-                  {uploadState.extractedText.substring(0, 500)}
-                  {uploadState.extractedText.length > 500 ? "..." : ""}
+                  {extractedText.substring(0, 500)}
+                  {extractedText.length > 500 ? "..." : ""}
                 </div>
               </details>
             </div>
@@ -762,18 +632,12 @@ export default function EnhancedMedicalRecordUpload({
         <Button
           type="submit"
           className="w-full bg-sky-600 text-white hover:bg-sky-700 transition-colors"
-          disabled={
-            uploadState.status === "uploading" ||
-            uploadState.status === "processing"
-          }
+          disabled={isSubmittingParent || isFileProcessing}
         >
-          {uploadState.status === "uploading" ||
-          uploadState.status === "processing" ? (
+          {isSubmittingParent || isFileProcessing ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {uploadState.status === "uploading"
-                ? "Uploading..."
-                : "Processing..."}
+              {isFileProcessing ? "Processing File..." : "Submitting..."}
             </>
           ) : (
             <>

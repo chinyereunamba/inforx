@@ -191,7 +191,7 @@ export default function Navbar() {
             {navigationLinks.map((link) => (
               <Link
                 key={link.href}
-                href={link.href}
+                href={`/${link.href}`}
                 className="text-gray-700 hover:text-teal-600 hover:bg-teal-50 block px-3 py-2 text-base font-medium rounded-md transition-colors duration-200"
                 onClick={() => {
                   closeMobileMenu();
