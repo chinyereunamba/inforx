@@ -62,9 +62,8 @@ export default function MedicalInterpreter() {
 
   const [copiedCard, setCopiedCard] = useState<string | null>(null);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
   const [audioError, setAudioError] = useState<string | null>(null);
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
 
@@ -187,7 +186,11 @@ export default function MedicalInterpreter() {
   }, [state.isLoading]);
 
   const handleInputChange = (value: string) => {
-    setState((prev) => ({ ...prev, inputText: value, error: null }));
+    setState((prev) => ({ 
+      ...prev, 
+      inputText: value, 
+      error: null 
+    }));
   };
 
   const handleLanguageChange = (language: "english" | "pidgin") => {
@@ -452,59 +455,59 @@ export default function MedicalInterpreter() {
     return items.map((item, index) => `${index + 1}. ${item}`).join("\n");
   };
 const playAudio = async (text: string) => {
-  // If audio is already playing, stop it
-  if (isSpeaking) {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      if (audioRef.current.src) {
-        URL.revokeObjectURL(audioRef.current.src);
-      }
-      audioRef.current = null;
-    }
-    setIsSpeaking(false);
-    return;
-  }
+   // If audio is already playing, stop it
+   if (isSpeaking) {
+     if (audioRef.current) {
+       audioRef.current.pause();
+       if (audioRef.current.src) {
+         URL.revokeObjectURL(audioRef.current.src);
+       }
+       audioRef.current = null;
+     }
+     setIsSpeaking(false);
+     return;
+   }
 
-  setIsLoadingAudio(true);
-  setAudioError(null);
+   setIsLoadingAudio(true);
+   setAudioError(null);
 
-  try {
-    // Call the server-side API to get audio blob
-    const audioBlob = await textToSpeech(text);
-    const audioUrl = URL.createObjectURL(audioBlob);
-    const audio = new Audio(audioUrl);
+   try {
+     // Call the server-side API to get audio blob
+     const audioBlob = await textToSpeech(text);
+     const audioUrl = URL.createObjectURL(audioBlob);
+     const audio = new Audio(audioUrl);
 
-    // Setup event handlers
-    audio.addEventListener('play', () => {
-      setIsSpeaking(true);
-      setIsLoadingAudio(false);
-    });
+     // Setup event handlers
+     audio.addEventListener('play', () => {
+       setIsSpeaking(true);
+       setIsLoadingAudio(false);
+     });
 
-    audio.addEventListener('ended', () => {
-      setIsSpeaking(false);
-      URL.revokeObjectURL(audioUrl);
-      audioRef.current = null;
-    });
+     audio.addEventListener('ended', () => {
+       setIsSpeaking(false);
+       URL.revokeObjectURL(audioUrl);
+       audioRef.current = null;
+     });
 
-    audio.addEventListener('error', (event) => {
-      console.error('Audio playback error:', event);
-      setIsSpeaking(false);
-      setIsLoadingAudio(false);
-      setAudioError('Failed to play audio. Please try again later.');
-      URL.revokeObjectURL(audioUrl);
-      audioRef.current = null;
-    });
+     audio.addEventListener('error', (event) => {
+       console.error('Audio playback error:', event);
+       setIsSpeaking(false);
+       setIsLoadingAudio(false);
+       setAudioError('Failed to play audio. Please try again later.');
+       URL.revokeObjectURL(audioUrl);
+       audioRef.current = null;
+     });
 
-    audioRef.current = audio;
-    audio.play();
+     audioRef.current = audio;
+     audio.play();
 
-  } catch (error) {
-    console.error('Text-to-speech error:', error);
-    setIsLoadingAudio(false);
-    setAudioError(error instanceof Error 
-      ? error.message 
-      : 'Failed to generate speech. Please try again later.');
-  }
+   } catch (error) {
+     console.error('Text-to-speech error:', error);
+     setIsLoadingAudio(false);
+     setAudioError(error instanceof Error 
+       ? error.message 
+       : 'Failed to generate speech. Please try again later.');
+   }
 };
 
   // Clean up audio on unmount
@@ -522,25 +525,25 @@ const playAudio = async (text: string) => {
 
   
   return (
-    <div ref={containerRef} className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div ref={containerRef}>
+      <div>
         {/* Main Grid Layout - 2 columns on desktop, single column on mobile */}
         <div className="grid lg:grid-cols-5 gap-8">
           {/* Input Section - 40% width on desktop */}
           <div ref={inputSectionRef} className="lg:col-span-2 space-y-6">
             {/* Header */}
             <div className="header-section text-center lg:text-left">
-              <h1 className="text-3xl font-noto md:text-4xl font-bold text-gray-700 mb-4">
-                AI Health Interpreter
-              </h1>
-              <p className="text-lg text-gray-600 leading-relaxed">
-                Paste your prescription, lab result or scan summary and get a
-                clear explanation.
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                Paste Your Medical Text
+              </h2>
+              <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                Enter your prescription, lab result or scan summary below and our AI will provide a clear explanation.
               </p>
             </div>
 
             {/* Input Form Card */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 space-y-6">
+            <Card className="border border-gray-200 shadow-md space-y-6">
+              <CardContent className="pt-6 space-y-6">
               {/* Language Selector */}
               <div className="language-selector space-y-2">
                 <label
@@ -572,12 +575,12 @@ const playAudio = async (text: string) => {
               <div className="text-input-section space-y-2">
                 <label
                   className="block text-sm font-semibold text-gray-700"
-                  htmlFor="medical-text"
+                  htmlFor="medical-text-area"
                 >
                   Medical Text
                 </label>
                 <textarea
-                  id="medical-text"
+                  id="medical-text-area"
                   value={state.inputText}
                   onChange={(e) => handleInputChange(e.target.value)}
                   placeholder="Paste your medical document here (prescription, lab results, scan reports, etc.)"
@@ -610,7 +613,7 @@ const playAudio = async (text: string) => {
                 <Button
                   onClick={handleSubmit}
                   disabled={state.isLoading || !state.inputText.trim()}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label={
                     state.isLoading
                       ? "Interpreting medical text"
@@ -630,25 +633,26 @@ const playAudio = async (text: string) => {
                   )}
                 </Button>
               </div>
-            </div>
+              </CardContent>
+            </Card>
 
             {/* Example Buttons Section */}
             <div className="examples-section space-y-4">
-              <h3 className="text-lg font-semibold text-gray-700">
+              <h3 className="text-lg font-semibold text-gray-800">
                 Try These Examples
               </h3>
-              <div className="grid gap-3">
+              <div className="grid gap-3 mb-6">
                 {exampleSnippets.map((snippet) => (
                   <button
                     key={snippet.id}
                     onClick={(event) => handleExampleClick(snippet, event)}
-                    className="p-4 bg-white border border-gray-200 rounded-lg text-left hover:border-green-300 hover:bg-green-50 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] group"
+                    className="p-4 bg-white border border-gray-200 rounded-lg text-left hover:border-emerald-300 hover:bg-emerald-50 transition-all duration-300 group"
                     disabled={state.isLoading}
                     aria-label={`Load ${snippet.title} example`}
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <FileText className="h-5 w-5 text-green-600" />
-                      <span className="font-semibold text-gray-700 group-hover:text-green-700">
+                      <FileText className="h-5 w-5 text-emerald-600" />
+                      <span className="font-semibold text-gray-700 group-hover:text-emerald-700">
                         {snippet.title}
                       </span>
                     </div>
@@ -665,27 +669,27 @@ const playAudio = async (text: string) => {
           <div ref={resultsSectionRef} className="lg:col-span-3">
             {/* Loading State */}
             {state.isLoading && (
-              <div
+              <Card
                 ref={loadingRef}
-                className="flex items-center justify-center h-64 bg-white rounded-xl shadow-lg border border-gray-200"
+                className="flex items-center justify-center h-64 border border-gray-200 shadow-lg"
               >
-                <div className="text-center">
+                <CardContent className="text-center">
                   <div className="flex justify-center space-x-2 mb-4">
-                    <div className="typing-dots w-3 h-3 bg-green-500 rounded-full"></div>
-                    <div className="typing-dots w-3 h-3 bg-green-500 rounded-full"></div>
-                    <div className="typing-dots w-3 h-3 bg-green-500 rounded-full"></div>
+                    <div className="typing-dots w-3 h-3 bg-emerald-500 rounded-full"></div>
+                    <div className="typing-dots w-3 h-3 bg-emerald-500 rounded-full"></div>
+                    <div className="typing-dots w-3 h-3 bg-emerald-500 rounded-full"></div>
                   </div>
                   <p className="text-lg font-semibold text-gray-700 mb-2">
                     Analyzing your medical text...
                   </p>
-                  <div className="w-48 bg-gray-200 rounded-full h-2 mx-auto">
+                  <div className="w-48 bg-gray-200 rounded-full h-2.5 mx-auto">
                     <div
-                      className="bg-green-500 h-2 rounded-full animate-pulse"
+                      className="bg-emerald-500 h-2.5 rounded-full animate-pulse"
                       style={{ width: "70%" }}
                     ></div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             )}
 
             {/* Results Display */}
@@ -696,7 +700,7 @@ const playAudio = async (text: string) => {
                   <h2 className="text-2xl font-bold text-gray-700 mb-2">
                     Medical Interpretation Results
                   </h2>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 mb-4">
                     Generated on {state.result.timestamp.toLocaleDateString()} •
                     Language:{" "}
                     {state.result.language === "english"
@@ -765,7 +769,7 @@ const playAudio = async (text: string) => {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                          <Lightbulb className="h-6 w-6 text-yellow-600" />
+                          <Lightbulb className="h-5 w-5 text-yellow-600" />
                         </div>
                         <h3 className="text-xl font-bold text-gray-700">
                           💡 Recommended Actions
@@ -867,7 +871,7 @@ const playAudio = async (text: string) => {
                 {/* Medical Disclaimer */}
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
                   <div className="flex items-start gap-3">
-                    <AlertTriangle className="h-6 w-6 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
                     <div>
                       <h4 className="font-semibold text-amber-800 mb-2">
                         Important Medical Disclaimer
@@ -888,22 +892,22 @@ const playAudio = async (text: string) => {
 
             {/* Initial State - Placeholder */}
             {!state.isLoading && !state.result && (
-              <div className="placeholder-content flex items-center justify-center h-64 bg-white rounded-xl shadow-lg border-2 border-dashed border-gray-300">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <FileText className="h-8 w-8 text-green-600" />
+              <Card className="placeholder-content flex items-center justify-center h-80 border-2 border-dashed border-gray-300 shadow-sm">
+                <CardContent className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FileText className="h-8 w-8 text-emerald-600" />
                   </div>
-                  <p className="text-lg font-semibold text-gray-600 mb-2">
-                    Ready to interpret your medical text
+                  <p className="text-xl font-semibold text-gray-700 mb-3">
+                    Your AI medical assistant is ready
                   </p>
-                  <p className="text-sm text-gray-500">
-                    Enter your medical information on the left to get started
+                  <p className="text-gray-600 max-w-md mx-auto mb-2">
+                    Enter your medical information to receive a simple explanation, recommended actions, and important warnings
                   </p>
-                  <p className="text-gray-500 text-xs mt-2">
-                    You'll be able to read and listen to an AI-generated explanation
+                  <p className="text-gray-500 text-sm">
+                    Your information stays private and secure
                   </p>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             )}
           </div>
         </div>
