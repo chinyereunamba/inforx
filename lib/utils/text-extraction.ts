@@ -1,4 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import Tesseract from "tesseract.js";
+import mammoth from "mammoth";
+
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -207,14 +210,16 @@ async function _extractTextFromDocx(
   file: Blob,
   fileName: string
 ): Promise<ExtractedText> {
-  try {
-    // For now, return a placeholder since docx parsing requires additional setup
-    // In production, you would use a library like mammoth.js
+  try  {
+    const arrayBuffer = await file.arrayBuffer();
+    const { value: text } = await mammoth.extractRawText({ arrayBuffer });
+
     return {
-      text: `[DOCX content extracted from ${fileName}]`,
+      text,
       fileName,
       success: true,
     };
+  
   } catch (error) {
     return {
       text: "",
@@ -232,13 +237,16 @@ async function _extractTextFromImage(
   fileName: string
 ): Promise<ExtractedText> {
   try {
-    // For this implementation, we're using a placeholder
-    // In a production environment, you would:
-    // 1. Use Tesseract.js for client-side OCR
-    // 2. Or send to a server-side OCR service
+    const { data } = await Tesseract.recognize(file, "eng", {
+      logger: (m) => console.log(m), // progress
+    });
 
-    // Create preview for demonstration
-    const url = URL.createObjectURL(file);
+    return {
+      text: data.text,
+      fileName,
+      success: true,
+      confidence: data.confidence,
+    };
 
     return {
       text: `[Image content extracted from ${fileName}]`,
