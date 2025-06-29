@@ -340,7 +340,7 @@ export default function EnhancedMedicalRecordUpload({
       setUploadState((prev) => ({
         ...prev,
         status: "error",
-        error: error instanceof Error ? error.message : "An unknown error occurred",
+  [setUploadState, setFormData, autoDetectDocumentType, generateTitleFromExtractedText]
       }));
     }
   };
