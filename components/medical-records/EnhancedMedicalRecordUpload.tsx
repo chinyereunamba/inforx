@@ -29,7 +29,7 @@ import {
   MedicalRecord,
   MedicalRecordFormData,
 } from "@/lib/types/medical-records";
-import { medicalRecordsService } from "@/lib/services/medical-records";
+import { useMedicalRecords } from '@/hooks/useMedicalRecordsHook';
 
 interface EnhancedMedicalRecordUploadProps {
   onRecordAdded: (record: MedicalRecord) => void;
@@ -41,6 +41,7 @@ export default function EnhancedMedicalRecordUpload({
   onUploadComplete,
 }: EnhancedMedicalRecordUploadProps) {
   const { user } = useAuthStore();
+  const { createRecord } = useMedicalRecords();
   const [formData, setFormData] = useState<MedicalRecordFormData>({
     title: "",
     type: "prescription",
@@ -292,7 +293,7 @@ export default function EnhancedMedicalRecordUpload({
         }
 
         // Create record with file
-        const record = await medicalRecordsService.createRecord(
+        const record = await createRecord(
           {
             ...formData,
             // Add the extracted text as notes if we don't already have notes
@@ -326,7 +327,7 @@ export default function EnhancedMedicalRecordUpload({
         onUploadComplete();
       } else {
         // Create record without file
-        const record = await medicalRecordsService.createRecord(formData);
+        const record = await createRecord(formData);
 
         // Reset form
         setFormData({

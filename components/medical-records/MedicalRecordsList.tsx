@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/utils/supabase/client";
 import {
   Download,
   Eye,
@@ -15,9 +14,9 @@ import {
   File,
   CheckSquare,
   Square,
-  // FileDoc,
 } from "lucide-react";
 import { MedicalRecord } from "@/lib/types/medical-records";
+import { useMedicalRecords } from '@/hooks/useMedicalRecordsHook';
 
 interface MedicalRecordsListProps {
   records: MedicalRecord[];
@@ -36,11 +35,11 @@ export default function MedicalRecordsList({
   selectedRecordIds = [],
   onRecordSelection,
 }: MedicalRecordsListProps) {
+  const { deleteRecord: storeDeleteRecord } = useMedicalRecords();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [viewingRecord, setViewingRecord] = useState<MedicalRecord | null>(
     null
   );
-  const supabase = createClient();
 
   const getFileIcon = (fileType?: string) => {
     if (!fileType) return <FileText className="h-4 w-4" />;
@@ -87,22 +86,7 @@ export default function MedicalRecordsList({
     setDeletingId(record.id);
 
     try {
-      // Delete file from storage if it exists
-      if (record.file_url) {
-        const filePath = record.file_url.split("/").slice(-2).join("/");
-        await supabase.storage.from("vault").remove([filePath]);
-      }
-
-      // Delete record from database
-      const { error } = await supabase
-        .from("medical_records")
-        .delete()
-        .eq("id", record.id);
-
-      if (error) {
-        throw new Error(`Failed to delete record: ${error.message}`);
-      }
-
+      await storeDeleteRecord(record.id);
       onRecordDeleted(record.id);
     } catch (error: any) {
       console.error("Delete error:", error);

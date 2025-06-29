@@ -23,6 +23,7 @@ import type {
 } from "@/lib/types/medical-interpreter";
 import { textToSpeech } from '@/lib/elevenlabs';
 import { createClient } from "@/utils/supabase/client";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
 import { Card, CardContent } from "./ui/card";
 
@@ -65,6 +66,7 @@ export default function MedicalInterpreter() {
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
   const [audioError, setAudioError] = useState<string | null>(null);
+  const { user } = useAuthStore();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
 
@@ -388,7 +390,6 @@ export default function MedicalInterpreter() {
     // Log the action
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         LoggingService.logAction(user, LoggingService.actions.AI_INTERPRET, {
           language: state.selectedLanguage,

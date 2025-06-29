@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Upload,
   FileText,
@@ -14,19 +14,18 @@ import {
   MedicalRecord,
   MedicalRecordFormData,
 } from "@/lib/types/medical-records";
-import { medicalRecordsService } from "@/lib/services/medical-records";
+import { useMedicalRecords } from '@/hooks/useMedicalRecordsHook';
 
 interface MedicalRecordUploadProps {
-  userId: string;
   onRecordAdded: (record: MedicalRecord) => void;
   onUploadComplete: () => void;
 }
 
 export default function MedicalRecordUpload({
-  userId,
   onRecordAdded,
   onUploadComplete,
 }: MedicalRecordUploadProps) {
+  const { createRecord } = useMedicalRecords();
   const [formData, setFormData] = useState<MedicalRecordFormData>({
     title: "",
     type: "prescription",
@@ -52,13 +51,6 @@ export default function MedicalRecordUpload({
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Validate file using service
-      const validation = medicalRecordsService.validateFile(file);
-      if (!validation.isValid) {
-        setError(validation.error || "Invalid file");
-        return;
-      }
-
       setSelectedFile(file);
       setError(null);
     }
@@ -88,7 +80,7 @@ export default function MedicalRecordUpload({
 
     try {
       // Create record using service
-      const record = await medicalRecordsService.createRecord(
+      const record = await createRecord(
         formData,
         selectedFile || undefined
       );
@@ -249,8 +241,7 @@ export default function MedicalRecordUpload({
         {selectedFile && (
           <div className="mt-2 p-2 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-700">
-              Selected: {selectedFile.name} (
-              {medicalRecordsService.formatFileSize(selectedFile.size)})
+              Selected: {selectedFile.name}
             </p>
           </div>
         )}
