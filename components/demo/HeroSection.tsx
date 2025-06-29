@@ -196,7 +196,6 @@ export default function HeroSection({ onStartDemo }: HeroSectionProps) {
               <Button
                 size="lg"
                 className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                style={{ borderRadius: '12px' }}
                 onClick={onStartDemo}
                 aria-label="Start interactive demo"
               >
@@ -208,7 +207,6 @@ export default function HeroSection({ onStartDemo }: HeroSectionProps) {
                 variant="outline"
                 size="lg"
                 className="border-2 border-blue-500 text-blue-500 hover:bg-blue-50 hover:text-blue-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 bg-transparent"
-                style={{ borderRadius: '12px' }}
                 asChild
               >
                 <a href="/interpreter">Try AI Interpreter</a>
