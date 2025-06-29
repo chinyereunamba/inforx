@@ -9,21 +9,19 @@ export async function GET(request: Request) {
     const code = searchParams.get("code");
     const next = searchParams.get("next") ?? "/dashboard";
 
-    console.log("Auth callback received:", { code: !!code, next }); // Debug log
 
     if (code) {
       const supabase = await createClient();
       
-      console.log("Exchanging code for session..."); // Debug log
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
       
       if (error) {
-        console.error("Code exchange error:", error); // Debug log
+        
         return NextResponse.redirect(`${origin}/auth/error?error=${encodeURIComponent(error.message)}`);
       }
 
       if (data.user) {
-        console.log("Code exchange successful, user:", data.user.id); // Debug log
+        
         
         // Determine redirect URL
         const isLocalEnv = process.env.NODE_ENV === "development";
