@@ -365,7 +365,7 @@ export default function FAQPage() {
                 <p className="text-slate-600 text-sm mb-4">
                   New to InfoRx? Learn how to use our platform with our step-by-step guide.
                 </p>
-                <a href="/guide" className="text-blue-600 hover:underline text-sm font-medium">
+                <a href="/demo" className="text-blue-600 hover:underline text-sm font-medium">
                   View Guide →
                 </a>
               </div>
