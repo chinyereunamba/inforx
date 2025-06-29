@@ -207,7 +207,7 @@ export async function POST(request: NextRequest) {
           try {
             const { interpretation, error: aiError } = await aiMedicalSummaryService.interpretMedicalText(
               extractionResult.text,
-              formData.type
+              type
             );
 
             interpretationText = interpretation;
