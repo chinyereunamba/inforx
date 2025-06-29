@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+const webpack = require("webpack");
 
 const nextConfig = {
   eslint: {
@@ -24,6 +25,15 @@ const nextConfig = {
         encoding: false,
       };
     }
+
+    // Ignore the specific test file that pdf-parse tries to access
+    config.plugins.push(
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^\.\/test\/data\/05-versions-space\.pdf$/,
+        contextRegExp: /node_modules\/pdf-parse/,
+      })
+    );
+
     return config;
   },
 };

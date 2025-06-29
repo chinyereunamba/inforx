@@ -5,7 +5,7 @@ import { Inter, Noto_Sans } from "next/font/google";
 
 export const metadata: Metadata = {
   title: "InfoRx - Revolutionary Healthcare for Nigeria",
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL("https://info-rx.org"),
   description:
     "Transform your healthcare experience with AI-powered diagnostics, telemedicine, and 24/7 medical support designed specifically for Nigerian communities.",
   keywords:
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_NG",
-    url: "https://inforx.ng",
+    url: "https://info-rx.org",
     title: "InfoRx - Revolutionary Healthcare for Nigeria",
     description:
       "Transform your healthcare experience with AI-powered diagnostics, telemedicine, and 24/7 medical support designed specifically for Nigerian communities.",
@@ -35,14 +35,13 @@ export const metadata: Metadata = {
 };
 
 const inter = Inter({
-  weight: ['400',"500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 const noto = Noto_Sans({
-  weight: ['400',"500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800"],
   subsets: ["latin", "latin-ext"],
 });
-
 
 export default async function RootLayout({
   children,
