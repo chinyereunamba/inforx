@@ -107,6 +107,11 @@ export default function EnhancedDashboardLayout({
   // Handle dark mode
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+
+  useEffect(() => {
+    if (!mounted) return;
     const savedTheme = localStorage.getItem("inforx-theme");
     const prefersDark =
       savedTheme === "dark" ||
@@ -125,12 +130,7 @@ export default function EnhancedDashboardLayout({
         device: window.innerWidth < 768 ? "mobile" : "desktop",
       });
     }
-  }, [user]);
-
-  // Skip rendering until mounted to prevent hydration issues
-  if (!mounted) {
-    return null;
-  }
+  }, [mounted, user]);
 
   // Sidebar animations
   useEffect(() => {
@@ -152,6 +152,7 @@ export default function EnhancedDashboardLayout({
   }, [sidebarOpen]);
 
   const toggleTheme = () => {
+    if (!mounted) return;
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
 
@@ -229,7 +230,10 @@ export default function EnhancedDashboardLayout({
       )
     );
   };
-
+  // Skip rendering until mounted to prevent hydration issues
+  if (!mounted) {
+    return null;
+  }
   return (
     <div
       className={cn(
@@ -406,12 +410,14 @@ export default function EnhancedDashboardLayout({
       {/* Main Content */}
       <div className="lg:ml-[280px]">
         {/* Header */}
-        <header className={cn(
-          "sticky top-0 z-30 py-2 px-4 sm:px-6",
-          "bg-white border-b border-slate-200",
-          "dark:bg-slate-800 dark:border-slate-700",
-          "transition-colors duration-300"
-        )}>
+        <header
+          className={cn(
+            "sticky top-0 z-30 py-2 px-4 sm:px-6",
+            "bg-white border-b border-slate-200",
+            "dark:bg-slate-800 dark:border-slate-700",
+            "transition-colors duration-300"
+          )}
+        >
           <div className="flex items-center justify-between h-14">
             {/* Mobile Menu Button */}
             <Button
