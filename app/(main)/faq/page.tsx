@@ -339,7 +339,7 @@ export default function FAQPage() {
                 className="bg-white"
                 asChild
               >
-                <a href="https://info-rx.org/contact">
+                <a href="mailto:hello@info-rx.org">
                   <Mail className="mr-2 h-4 w-4" />
                   Contact Us
                 </a>
