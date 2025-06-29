@@ -192,7 +192,7 @@ Best regards,
     <>
       <section
         ref={sectionRef}
-        className="py-24 bg-gradient-to-br from-emerald-600 to-teal-700 relative overflow-hidden"
+        className="py-24 bg-gradient-to-br from-blue-600 via-emerald-600 to-blue-700 relative overflow-hidden"
         style={{
           background: "linear-gradient(135deg, #0A855C 0%, #0d9488 100%)",
         }}
