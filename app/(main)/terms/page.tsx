@@ -91,7 +91,7 @@ export default function TermsOfServicePage() {
         </div>
 
         {/* Quick Overview */}
-        <div
+        <div 
           ref={(el) => {
             if (el) sectionsRef.current[0] = el;
           }}
@@ -126,7 +126,7 @@ export default function TermsOfServicePage() {
         {/* Main Content */}
         <div className="prose prose-slate max-w-none">
           {/* Section 1: Acceptance */}
-          <section
+          <section 
             ref={(el) => {
               if (el) sectionsRef.current[1] = el;
             }}
@@ -150,7 +150,7 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Section 2: Account Registration */}
-          <section
+          <section 
             ref={(el) => {
               if (el) {
                 sectionsRef.current[2] = el;
@@ -161,7 +161,7 @@ export default function TermsOfServicePage() {
             <h2 className="text-2xl font-semibold text-slate-900 mb-4">
               2. Account Registration and Responsibilities
             </h2>
-
+            
             <h3 className="text-xl font-medium text-slate-800 mb-3">
               Account Creation
             </h3>
@@ -208,7 +208,7 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Section 3: Permitted Use */}
-          <section
+          <section 
             ref={(el) => {
               if (el) sectionsRef.current[3] = el;
             }}
@@ -217,7 +217,7 @@ export default function TermsOfServicePage() {
             <h2 className="text-2xl font-semibold text-slate-900 mb-4">
               3. Permitted Use of Services
             </h2>
-
+            
             <h3 className="text-xl font-medium text-slate-800 mb-3">
               Authorized Uses
             </h3>
@@ -277,7 +277,7 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Section 4: Medical Disclaimers */}
-          <section
+          <section 
             ref={(el) => {
               if (el) sectionsRef.current[4] = el;
             }}
@@ -286,7 +286,7 @@ export default function TermsOfServicePage() {
             <h2 className="text-2xl font-semibold text-slate-900 mb-4">
               4. Medical Disclaimers and Limitations
             </h2>
-
+            
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-4">
               <h3 className="text-lg font-medium text-amber-800 mb-3">
                 Not a Substitute for Professional Medical Advice
@@ -329,7 +329,7 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Section 5: User Content */}
-          <section
+          <section 
             ref={(el) => {
               if (el) sectionsRef.current[5] = el;
             }}
@@ -338,7 +338,7 @@ export default function TermsOfServicePage() {
             <h2 className="text-2xl font-semibold text-slate-900 mb-4">
               5. User Content and Medical Records
             </h2>
-
+            
             <h3 className="text-xl font-medium text-slate-800 mb-3">
               Ownership of Content
             </h3>
@@ -371,7 +371,7 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Section 6: Intellectual Property */}
-          <section
+          <section 
             ref={(el) => {
               if (el) sectionsRef.current[6] = el;
             }}
@@ -381,7 +381,7 @@ export default function TermsOfServicePage() {
               <Bookmark className="h-5 w-5 text-blue-600" />
               6. Intellectual Property Rights
             </h2>
-
+            
             <p className="text-slate-700 leading-relaxed mb-4">
               InfoRx and its original content, features, and functionality are
               owned by InfoRx and are protected by international copyright,
@@ -419,7 +419,7 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Section 7: Limitation of Liability */}
-          <section
+          <section 
             ref={(el) => {
               if (el) sectionsRef.current[7] = el;
             }}
@@ -428,7 +428,7 @@ export default function TermsOfServicePage() {
             <h2 className="text-2xl font-semibold text-slate-900 mb-4">
               7. Limitation of Liability
             </h2>
-
+            
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 mb-4">
               <h3 className="text-lg font-medium text-slate-800 mb-3">
                 To the extent permitted by law:
@@ -467,7 +467,7 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Section 8: Termination */}
-          <section
+          <section 
             ref={(el) => {
               if (el) sectionsRef.current[8] = el;
             }}
@@ -476,7 +476,7 @@ export default function TermsOfServicePage() {
             <h2 className="text-2xl font-semibold text-slate-900 mb-4">
               8. Termination of Service
             </h2>
-
+            
             <h3 className="text-xl font-medium text-slate-800 mb-3">
               User Termination
             </h3>
@@ -507,7 +507,7 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Section 9: Dispute Resolution */}
-          <section
+          <section 
             ref={(el) => {
               if (el) sectionsRef.current[9] = el;
             }}
@@ -516,7 +516,7 @@ export default function TermsOfServicePage() {
             <h2 className="text-2xl font-semibold text-slate-900 mb-4">
               9. Dispute Resolution
             </h2>
-
+            
             <h3 className="text-xl font-medium text-slate-800 mb-3">
               Informal Resolution
             </h3>
@@ -537,7 +537,7 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Section 10: Changes to Terms */}
-          <section
+          <section 
             ref={(el) => {
               if (el) sectionsRef.current[10] = el;
             }}
@@ -566,7 +566,7 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Section 11: Governing Law */}
-          <section
+          <section 
             ref={(el) => {
               if (el) sectionsRef.current[11] = el;
             }}
@@ -588,7 +588,7 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Contact Information */}
-          <section
+          <section 
             ref={(el) => {
               if (el) sectionsRef.current[12] = el;
             }}

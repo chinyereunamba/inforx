@@ -30,10 +30,10 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  user: User;
 }
 
 interface NavigationItem {
@@ -93,34 +93,36 @@ const navigationItems: NavigationItem[] = [
 
 export default function EnhancedDashboardLayout({
   children,
-  user,
 }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(2);
   const [mounted, setMounted] = useState(false);
-  
+
   const sidebarRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const { user } = useAuth();
 
   // Handle dark mode
   useEffect(() => {
     setMounted(true);
     const savedTheme = localStorage.getItem("inforx-theme");
-    const prefersDark = savedTheme === "dark" || 
-      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
-      
+    const prefersDark =
+      savedTheme === "dark" ||
+      (!savedTheme &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches);
+
     if (prefersDark) {
       setDarkMode(true);
       document.documentElement.classList.add("dark");
     }
-    
+
     // Log user login event if user just arrived
     if (user) {
       LoggingService.logAction(user, LoggingService.actions.LOGIN, {
-        theme: prefersDark ? 'dark' : 'light',
-        device: window.innerWidth < 768 ? 'mobile' : 'desktop'
+        theme: prefersDark ? "dark" : "light",
+        device: window.innerWidth < 768 ? "mobile" : "desktop",
       });
     }
   }, [user]);
@@ -139,7 +141,7 @@ export default function EnhancedDashboardLayout({
         { x: "-100%" },
         { x: 0, duration: 0.3, ease: "power2.out" }
       );
-      
+
       // Animate overlay
       gsap.fromTo(
         overlayRef.current,
@@ -161,13 +163,13 @@ export default function EnhancedDashboardLayout({
       localStorage.setItem("inforx-theme", "light");
     }
   };
-  
+
   const handleSignOut = async () => {
     try {
       if (user) {
         // Log sign out action before signing out
         await LoggingService.logAction(user, LoggingService.actions.LOGOUT, {
-          theme: darkMode ? 'dark' : 'light'
+          theme: darkMode ? "dark" : "light",
         });
       }
       await signOut();
@@ -182,11 +184,11 @@ export default function EnhancedDashboardLayout({
     }
     return pathname.startsWith(href);
   };
-  
+
   const handleNavigationClick = (route: string) => {
     if (user) {
       LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
-        page: route.replace("/dashboard/", "").replace("/", "")
+        page: route.replace("/dashboard/", "").replace("/", ""),
       });
     }
     setSidebarOpen(false);
@@ -199,13 +201,13 @@ export default function EnhancedDashboardLayout({
         x: "-100%",
         duration: 0.3,
         ease: "power2.out",
-        onComplete: () => setSidebarOpen(false)
+        onComplete: () => setSidebarOpen(false),
       });
-      
+
       // Fade out overlay
-      gsap.to(overlayRef.current, { 
-        opacity: 0, 
-        duration: 0.3 
+      gsap.to(overlayRef.current, {
+        opacity: 0,
+        duration: 0.3,
       });
     }
   };
@@ -213,24 +215,29 @@ export default function EnhancedDashboardLayout({
   // Render the overlay using createPortal to ensure proper z-index behavior
   const renderOverlay = () => {
     if (typeof window === "undefined") return null;
-    
-    return sidebarOpen && createPortal(
-      <div
-        ref={overlayRef}
-        className="fixed inset-0 bg-slate-900/50 dark:bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
-        onClick={handleSidebarClose}
-        aria-hidden="true"
-      />,
-      document.body
+
+    return (
+      sidebarOpen &&
+      createPortal(
+        <div
+          ref={overlayRef}
+          className="fixed inset-0 bg-slate-900/50 dark:bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+          onClick={handleSidebarClose}
+          aria-hidden="true"
+        />,
+        document.body
+      )
     );
   };
 
   return (
-    <div className={cn(
-      "min-h-screen transition-colors duration-300",
-      "bg-slate-50 text-slate-900",
-      "dark:bg-slate-900 dark:text-white"
-    )}>
+    <div
+      className={cn(
+        "min-h-screen transition-colors duration-300",
+        "bg-slate-50 text-slate-900",
+        "dark:bg-slate-900 dark:text-white"
+      )}
+    >
       {renderOverlay()}
 
       {/* Sidebar */}
@@ -247,8 +254,8 @@ export default function EnhancedDashboardLayout({
         {/* Logo / Brand */}
         <div className="p-4 border-b border-slate-200 dark:border-slate-700">
           <div className="flex items-center justify-between">
-            <Link 
-              href="/dashboard" 
+            <Link
+              href="/dashboard"
               className="flex items-center gap-3"
               onClick={() => handleNavigationClick("/dashboard")}
             >
@@ -279,7 +286,10 @@ export default function EnhancedDashboardLayout({
         {/* Search Bar */}
         <div className="p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" strokeWidth={1.5} />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500"
+              strokeWidth={1.5}
+            />
             <input
               type="text"
               placeholder="Search..."
@@ -316,9 +326,9 @@ export default function EnhancedDashboardLayout({
                     )}
                     aria-current={isActive ? "page" : undefined}
                   >
-                    <IconComponent 
-                      className="h-5 w-5 flex-shrink-0" 
-                      strokeWidth={1.5} 
+                    <IconComponent
+                      className="h-5 w-5 flex-shrink-0"
+                      strokeWidth={1.5}
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
@@ -326,27 +336,34 @@ export default function EnhancedDashboardLayout({
                           {item.label}
                         </span>
                         {item.badge && (
-                          <span className={cn(
-                            "ml-2 px-2 py-1 text-xs font-medium rounded-full",
-                            isActive
-                              ? "bg-white/20 text-white"
-                              : "bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300"
-                          )}>
+                          <span
+                            className={cn(
+                              "ml-2 px-2 py-1 text-xs font-medium rounded-full",
+                              isActive
+                                ? "bg-white/20 text-white"
+                                : "bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300"
+                            )}
+                          >
                             {item.badge}
                           </span>
                         )}
                       </div>
-                      <p className={cn(
-                        "text-xs truncate",
-                        isActive 
-                          ? "text-white/80" 
-                          : "text-slate-500 dark:text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
-                      )}>
+                      <p
+                        className={cn(
+                          "text-xs truncate",
+                          isActive
+                            ? "text-white/80"
+                            : "text-slate-500 dark:text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                        )}
+                      >
                         {item.description}
                       </p>
                     </div>
                     {isActive && (
-                      <ChevronRight className="h-4 w-4 text-white/80 flex-shrink-0" strokeWidth={1.5} />
+                      <ChevronRight
+                        className="h-4 w-4 text-white/80 flex-shrink-0"
+                        strokeWidth={1.5}
+                      />
                     )}
                   </Link>
                 </li>
@@ -360,7 +377,9 @@ export default function EnhancedDashboardLayout({
           <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors cursor-pointer">
             <div className="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center">
               <span className="text-white font-medium">
-                {user?.user_metadata?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || "U"}
+                {user?.user_metadata?.full_name?.[0] ||
+                  user?.email?.[0]?.toUpperCase() ||
+                  "U"}
               </span>
             </div>
             <div className="flex-1 min-w-0">
@@ -371,9 +390,9 @@ export default function EnhancedDashboardLayout({
                 {user?.email}
               </p>
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleSignOut}
               className="h-8 w-8 p-0 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
               aria-label="Sign out"
@@ -408,7 +427,8 @@ export default function EnhancedDashboardLayout({
             {/* Page Title - Desktop */}
             <div className="hidden lg:block">
               <h2 className="text-xl font-medium text-slate-900 dark:text-white font-inter">
-                {navigationItems.find((item) => isActiveRoute(item.href))?.label || "Dashboard"}
+                {navigationItems.find((item) => isActiveRoute(item.href))
+                  ?.label || "Dashboard"}
               </h2>
             </div>
 
@@ -420,7 +440,9 @@ export default function EnhancedDashboardLayout({
                 size="sm"
                 onClick={toggleTheme}
                 className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg"
-                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+                aria-label={
+                  darkMode ? "Switch to light mode" : "Switch to dark mode"
+                }
               >
                 {darkMode ? (
                   <Sun className="h-5 w-5" strokeWidth={1.5} />

@@ -46,6 +46,6 @@ export default function DashboardLayout({ children }: DashboardProps) {
   }
 
   return (
-    <EnhancedDashboardLayout user={user}>{children}</EnhancedDashboardLayout>
+    <EnhancedDashboardLayout>{children}</EnhancedDashboardLayout>
   );
 }

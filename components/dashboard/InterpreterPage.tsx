@@ -1,9 +1,8 @@
 "use client";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import InterpreterInterface from "@/components/dashboard/InterpreterInterface";
 import ResultsDisplay from "@/components/dashboard/ResultsDisplay";
 import { InterpretationResult } from "@/lib/types/dashboard";
-import React, { useState } from "react";
 import { useAuthStore } from "@/lib/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
 
