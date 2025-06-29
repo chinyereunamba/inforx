@@ -12,7 +12,7 @@ type DashboardProps = {
 };
 
 export default function DashboardLayout({ children }: DashboardProps) {
-  const { user, loading, initialized, initialize, isRedirecting } = useAuthStore();
+  const { user, loading, initialized, initialize } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -38,17 +38,6 @@ export default function DashboardLayout({ children }: DashboardProps) {
         </div>
       </div>
     );
-  }
-
-  if (isRedirecting){
-    return(
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-slate-600">Redirecting...</p>
-        </div>
-      </div>
-    )
   }
 
 
