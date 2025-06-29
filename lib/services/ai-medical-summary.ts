@@ -119,7 +119,7 @@ export class AIMedicalSummaryService {
           "X-Title": "InfoRx Medical Summary",
         },
         body: JSON.stringify({
-          model: "anthropic/claude-3-h",
+          model: "anthropic/claude-3-haiku",
           messages: [
             {
               role: "system",
@@ -140,7 +140,7 @@ export class AIMedicalSummaryService {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
           `AI API error: ${response.status} - ${
-            errorData.error?.message || "Unknown error"
+            errorData.error?.message || errorData.message || "Unknown error"
           }`
         );
       }

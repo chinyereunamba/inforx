@@ -277,7 +277,7 @@ export async function extractTextFromMultipleFiles(
       });
     }
 
-    extractTextFromFile(url, fileNames[index]);
+    return extractTextFromFile(url, fileNames[index]);
   });
 
   // Use Promise.allSettled to handle failures gracefully

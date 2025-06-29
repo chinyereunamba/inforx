@@ -24,11 +24,14 @@ export class LoggingService {
     try {
       const supabase = createClient();
       
+      // Sanitize metadata to prevent circular references
+      const safeMetadata = metadata ? JSON.parse(JSON.stringify(metadata)) : {};
+      
       const { error } = await supabase.from('logs').insert([
         {
           user_id: user.id,
           action,
-          metadata: metadata || {},
+          metadata: safeMetadata,
         },
       ]);
       

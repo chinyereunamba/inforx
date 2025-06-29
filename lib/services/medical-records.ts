@@ -196,8 +196,8 @@ class MedicalRecordsService {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to fetch statistics");
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || "Failed to fetch statistics");
     }
 
     return await response.json();
