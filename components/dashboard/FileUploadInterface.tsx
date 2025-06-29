@@ -274,7 +274,7 @@ export default function FileUploadInterface() {
       {/* Results Section */}
       <div ref={resultsRef} className="space-y-4">
         {uploadedFiles
-          .filter((f) => f.status === "completed" && f.result)
+          .filter((f) => f.status === "completed" && f.result) 
           .map((uploadedFile, index) => (
             <ResultCard
               key={`result-${uploadedFile.file.name}-${index}`}
@@ -301,15 +301,15 @@ const FileUploadZone = React.forwardRef<
     <Card className="overflow-hidden">
       <CardContent className="p-0">
         <div
-          {...getRootProps()}
+          {...getRootProps()} 
           ref={ref}
           className={`
             aspect-square max-h-80 border-2 border-dashed transition-all duration-300 cursor-pointer
             flex flex-col items-center justify-center p-6 space-y-4
             ${
               isDragActive
-                ? "border-sky-500 bg-sky-50"
-                : "border-sky-300 hover:border-sky-500 hover:bg-sky-25"
+                ? "border-emerald-500 bg-emerald-50"
+                : "border-emerald-300 hover:border-emerald-500 hover:bg-emerald-25"
             }
           `}
           role="button"
@@ -327,21 +327,21 @@ const FileUploadZone = React.forwardRef<
           <div
             className={`
             w-16 h-16 rounded-full flex items-center justify-center transition-colors duration-300
-            ${isDragActive ? "bg-sky-500" : "bg-sky-100"}
+            ${isDragActive ? "bg-emerald-500" : "bg-emerald-100"}
           `}
           >
             <Upload
-              className={`h-8 w-8 ${
-                isDragActive ? "text-white" : "text-sky-600"
+              className={`h-8 w-8 ${  
+                isDragActive ? "text-white" : "text-emerald-600"
               }`}
             />
           </div>
 
           <div className="text-center space-y-2">
             <h3 className="text-lg font-semibold text-slate-900">
-              {isDragActive ? "Drop files here" : "Upload Medical Documents"}
+              {isDragActive ? "Drop files here" : "Upload Medical Documents"} 
             </h3>
-            <p id="upload-description" className="text-slate-600 max-w-sm">
+            <p id="upload-description" className="text-slate-600 max-w-sm"> 
               Drag and drop your files here, or click to browse. Supports PDF,
               DOCX, JPG, and PNG files up to 10MB.
             </p>
@@ -366,7 +366,7 @@ const FileUploadZone = React.forwardRef<
               type="button"
               variant="outline"
               size="sm"
-              className="md:hidden bg-sky-500 hover:bg-sky-600 text-white border-sky-500"
+              className="md:hidden bg-sky-500 hover:bg-sky-600 text-white border-sky-500" 
               onClick={(e) => {
                 e.stopPropagation();
                 onCameraClick();

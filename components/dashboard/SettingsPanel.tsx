@@ -37,7 +37,7 @@ import { Switch } from "@/components/ui/switch";
 // Sidebar items
 const sidebarItems = [
   { id: "profile", icon: User, label: "Profile" },
-  { id: "theme", icon: Palette, label: "Theme" },
+  { id: "theme", icon: Palette, label: "Theme" }, 
   { id: "notifications", icon: Bell, label: "Notifications" },
   { id: "security", icon: Lock, label: "Security" },
   { id: "logout", icon: LogOut, label: "Logout", danger: true },
@@ -152,7 +152,7 @@ export default function SettingsPanel() {
               onClick={() => handleSidebarClick(item.id)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-left ${
                 activeSection === item.id
-                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                  ? "bg-sky-50 text-sky-700 border border-sky-200" 
                   : item.danger
                   ? "text-red-600 hover:bg-red-50"
                   : "text-slate-700 hover:bg-slate-100"
@@ -160,7 +160,7 @@ export default function SettingsPanel() {
               aria-current={activeSection === item.id ? "page" : undefined}
             >
               <item.icon className={`h-5 w-5 ${
-                item.danger ? "text-red-500" : activeSection === item.id ? "text-emerald-600" : "text-slate-500"
+                item.danger ? "text-red-500" : activeSection === item.id ? "text-sky-600" : "text-slate-500"
               }`} />
               <span className="font-medium">{item.label}</span>
             </button>
@@ -171,12 +171,12 @@ export default function SettingsPanel() {
         <div className="flex-1 space-y-6">
           {/* Theme Settings */}
           {activeSection === "theme" && (
-            <Card className="settings-card border border-slate-200">
+            <Card className="settings-card border border-slate-200"> 
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className="flex items-center gap-2 text-2xl">
-                      <Palette className="h-6 w-6 text-emerald-600" />
+                      <Palette className="h-6 w-6 text-sky-600" />
                       Theme Settings
                     </CardTitle>
                     <CardDescription>
@@ -185,7 +185,7 @@ export default function SettingsPanel() {
                   </div>
                   {saveSuccess && (
                     <Badge className="bg-emerald-100 text-emerald-800 border-0">
-                      <CheckCircle className="h-3 w-3 mr-1" />
+                      <CheckCircle className="h-3 w-3 mr-1" /> 
                       Saved
                     </Badge>
                   )}
@@ -239,12 +239,12 @@ export default function SettingsPanel() {
               </CardContent>
             </Card>
           )}
-          
+
           {/* Profile Info */}
-          <Card className="settings-card border border-slate-200">
+          <Card className="settings-card border border-slate-200"> 
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-blue-600" />
+                <User className="h-5 w-5 text-sky-600" />
                 Basic Profile Information
               </CardTitle>
               <CardDescription>
@@ -297,7 +297,7 @@ export default function SettingsPanel() {
           {/* Security Note */}
           <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-3 px-6 text-center text-sm text-slate-600">
             <div className="flex justify-center items-center gap-2">
-              <Shield className="h-4 w-4 text-emerald-600" />
+              <Shield className="h-4 w-4 text-emerald-600" /> 
               Your data is encrypted and secure with InfoRx.
             </div>
           </div>

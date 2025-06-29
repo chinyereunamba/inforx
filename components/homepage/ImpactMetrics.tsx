@@ -24,9 +24,9 @@ const impactStats: ImpactStat[] = [
     id: "patients",
     icon: Users,
     value: "50K+",
-    label: "Patients Helped",
+    label: "Patients Helped", 
     description: "Nigerians trust InfoRx",
-    color: "text-blue-600",
+    color: "text-sky-600",
   },
   {
     id: "response-time",
@@ -41,7 +41,7 @@ const impactStats: ImpactStat[] = [
     icon: Globe,
     value: "Nationwide",
     label: "Access",
-    description: "Available across Nigeria",
+    description: "Available across Nigeria", 
     color: "text-blue-600",
   },
   {
@@ -204,12 +204,12 @@ export default function ImpactMetrics() {
               <div
                 key={stat.id}
                 ref={(el) => {
-                  if (el) statsRef.current[index] = el;
+                  if (el) statsRef.current[index] = el; 
                 }}
                 className="bg-white rounded-2xl p-6 md:p-8 hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-center border border-slate-100"
               >
                 <div
-                  className={`inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-white to-slate-50 mb-4 md:mb-6 ${stat.color}`}
+                  className={`inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-white to-slate-50 mb-4 md:mb-6 ${stat.color.replace('blue', 'sky')}`}
                 >
                   <IconComponent className="h-6 w-6 md:h-8 md:w-8" />
                 </div>
