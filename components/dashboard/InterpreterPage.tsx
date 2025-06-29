@@ -15,6 +15,8 @@ export default function InterpreterPage() {
     error: null as string | null,
   });
 
+
+
   const setResult = (result: InterpretationResult | null) => {
     setState((prev) => {
       // Log result generation if there's a user and a result
