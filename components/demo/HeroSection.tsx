@@ -177,7 +177,7 @@ export default function HeroSection({ onStartDemo }: HeroSectionProps) {
               className="text-4xl md:text-5xl lg:text-7xl font-bold font-noto text-gray-800 mb-6 leading-tight"
             >
               See InfoRx in
-              <span className="text-emerald-600 block">Action</span>
+              <span className="text-blue-500 block">Action</span>
             </h1>
 
             <p
