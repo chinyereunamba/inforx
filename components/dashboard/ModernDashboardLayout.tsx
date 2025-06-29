@@ -89,7 +89,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     id: "activity",
-    label: "Activity",
+    label: "Activity Logs",
     href: "/dashboard/activity",
     icon: Activity,
     description: "Track your health journey",
@@ -441,7 +441,7 @@ export default function ModernDashboardLayout({
               <p>
                 {
                   navigationItems.find((item) => isActiveRoute(item.href))
-                    ?.description
+                    ?.subTitle
                 }
               </p>
             </div>
