@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import {
   Search,
@@ -15,7 +15,6 @@ import {
   Plus,
   FileText,
 } from "lucide-react";
-import { signOut } from "@/app/(auth)/auth/auth";
 import { User as UserType } from "@supabase/supabase-js";
 
 interface NavigationSidebarProps {
@@ -66,8 +65,9 @@ export default function NavigationSidebar({
   isOpen,
   onClose,
   user,
-}: NavigationSidebarProps) { 
+}: NavigationSidebarProps) {
   const { signOut } = useAuthStore();
+  const router = useRouter();
   const sidebarRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const navItemsRef = useRef<HTMLDivElement[]>([]);
@@ -76,8 +76,8 @@ export default function NavigationSidebar({
 
   const handleSignOut = async () => {
     try {
-      await signOut(); 
-      // The auth state change will automatically redirect to login
+      await signOut();
+      router.replace("/auth/signin");
     } catch (error) {
       console.error("Sign out failed:", error);
     }
@@ -180,7 +180,9 @@ export default function NavigationSidebar({
           >
             <MedicalCrossIcon />
             <div>
-              <h1 className="text-xl font-bold font-noto text-gray-900">InfoRx</h1>
+              <h1 className="text-xl font-bold font-noto text-gray-900">
+                InfoRx
+              </h1>
               <p className="text-sm text-gray-500">Healthcare AI</p>
             </div>
           </div>

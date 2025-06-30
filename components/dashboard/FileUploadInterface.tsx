@@ -49,6 +49,7 @@ const ACCEPTED_FILE_TYPES = {
   ],
   "image/jpeg": [".jpg", ".jpeg"],
   "image/png": [".png"],
+  'text/plain':['.txt']
 };
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB

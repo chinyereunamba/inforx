@@ -101,7 +101,7 @@ export class FileUploadService {
       const timestamp = Date.now();
       const randomId = Math.random().toString(36).substring(2, 10);
       const fileName = `${timestamp}_${randomId}${fileExt}`;
-      const filePath = `${user.id}/${fileName}`;
+      const filePath = `medical-records/${user.id}/${fileName}`;
 
       // Create Supabase client
       const supabase = createClient();

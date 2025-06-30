@@ -11,22 +11,22 @@ import {
   CheckCircle,
   AlertTriangle,
 } from "lucide-react";
-import { useAuthStore } from "@/lib/stores/auth-store";
 import { useMedicalRecords } from '@/hooks/useMedicalRecordsHook';
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardSummaryStats() {
   const { stats, loadingStats: loading, statsError: error } = useMedicalRecords();
-  const { user } = useAuthStore();
+
 
   if (loading) {
     return (
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <Card key={i} className="animate-none">
+          <Card key={i} className="animate-none rounded-xl">
             <CardContent className="p-6">
-              <div className="w-12 h-12 rounded-full bg-slate-200 mb-4"></div>
-              <div className="h-7 bg-slate-200 rounded w-1/2 mb-2"></div>
-              <div className="h-4 bg-slate-200 rounded w-full"></div>
+              <Skeleton className="w-12 h-12 rounded-full bg-slate-200 mb-4" />
+              <Skeleton className="h-7 bg-slate-200 rounded w-1/2 mb-2" />
+              <Skeleton className="h-4 bg-slate-200 rounded w-full" />
             </CardContent>
           </Card>
         ))}

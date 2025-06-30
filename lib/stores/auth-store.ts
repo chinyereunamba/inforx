@@ -30,13 +30,18 @@ export const useAuthStore = create<AuthState>((set: any, get: any) => ({
     const {
       data: { session },
     } = await supabase.auth.getSession();
-    
+
     console.log("Initial session:", !!session?.user, session?.user?.id); // Debug log
     set({ user: session?.user || null, loading: false, initialized: true });
 
     // Listen for auth changes
     supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, !!session?.user, session?.user?.id); // Debug log
+      console.log(
+        "Auth state changed:",
+        event,
+        !!session?.user,
+        session?.user?.id
+      ); // Debug log
       set({ user: session?.user || null, loading: false });
     });
   },

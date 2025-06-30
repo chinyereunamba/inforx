@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { User } from "@supabase/supabase-js";
 import { gsap } from "gsap";
@@ -29,6 +29,10 @@ import {
   HelpCircle,
   ChevronRight,
   Vault,
+  ChevronDown,
+  LayoutDashboard,
+  MessageSquare,
+  BarChart2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -98,17 +102,20 @@ export default function EnhancedDashboardLayout({
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(2);
   const [mounted, setMounted] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const sidebarRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const router = useRouter();
   const { user, signOut } = useAuthStore();
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Handle dark mode
   useEffect(() => {
     setMounted(true);
   }, []);
-
 
   useEffect(() => {
     if (!mounted) return;
@@ -174,6 +181,7 @@ export default function EnhancedDashboardLayout({
         });
       }
       await signOut();
+      router.replace("/auth/signin");
     } catch (error) {
       console.error("Sign out failed:", error);
     }
@@ -192,7 +200,7 @@ export default function EnhancedDashboardLayout({
         page: route.replace("/dashboard/", "").replace("/", ""),
       });
     }
-    setSidebarOpen(false);
+    setSidebarOpen(!sidebarOpen);
   };
 
   const handleSidebarClose = () => {
@@ -278,7 +286,7 @@ export default function EnhancedDashboardLayout({
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleSidebarClose}
+              onClick={()=>handleSidebarClose}
               className="lg:hidden text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
               aria-label="Close sidebar"
             >
@@ -380,7 +388,7 @@ export default function EnhancedDashboardLayout({
         <div className="p-4 border-t border-slate-200 dark:border-slate-700 mt-auto">
           <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors cursor-pointer">
             <div className="w-10 h-10 bg-gradient-to-br from-sky-100 to-emerald-100 rounded-full flex items-center justify-center">
-              <span className="text-white font-medium">
+              <span className="text-blue-500 font-medium">
                 {user?.user_metadata?.full_name?.[0] ||
                   user?.email?.[0]?.toUpperCase() ||
                   "U"}

@@ -239,59 +239,7 @@ export default function MedicalVaultPage() {
     setIsDialogOpen(false); // Close dialog immediately after submission
 
     try {
-      let fileUrl: string | undefined;
-      let finalFileName: string | undefined;
-      let finalFileSize: number | undefined;
-      let finalFileType: string | undefined;
-
-      // If there's a file, upload it first
-      if (file) {
-        // Update status to uploading
-        setActiveUploads((uploads) =>
-          uploads.map((upload) =>
-            upload.id === uploadId ? { ...upload, status: "uploading" } : upload
-          )
-        );
-
-        // Upload the file
-        const uploadResult = await FileUploadService.uploadFile(
-          file,
-          user,
-          (progress) => {
-            setActiveUploads((uploads) =>
-              uploads.map((upload) =>
-                upload.id === uploadId
-                  ? { ...upload, progress: progress.percentage }
-                  : upload
-              )
-            );
-          }
-        );
-
-        if (!uploadResult.success) {
-          throw new Error(uploadResult.error || "File upload failed");
-        }
-
-        fileUrl = uploadResult.fileUrl;
-        finalFileName = uploadResult.fileName;
-        finalFileSize = uploadResult.fileSize;
-        finalFileType = uploadResult.fileType;
-
-        // Update status to processing (for AI interpretation/text extraction)
-        setActiveUploads((uploads) =>
-          uploads.map((upload) =>
-            upload.id === uploadId
-              ? {
-                  ...upload,
-                  status: "processing",
-                  progress: 100, // File upload complete
-                  fileUrl,
-                }
-              : upload
-          )
-        );
-      }
-
+      // No direct upload here; let the API handle it
       // Create the record in the database
       const recordDataToCreate: MedicalRecordFormData = {
         ...formData,

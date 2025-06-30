@@ -231,6 +231,7 @@ export default function EnhancedMedicalRecordUpload({
         [".docx"],
       "image/png": [".png"],
       "image/jpeg": [".jpg", ".jpeg"],
+      "text/plain": [".txt"],
     },
     maxSize: 10 * 1024 * 1024, // 10MB
     multiple: false,
@@ -322,7 +323,7 @@ export default function EnhancedMedicalRecordUpload({
         {!selectedFile ? (
           <div
             {...getRootProps()}
-            onClick={open}
+            onClick={() => open}
             className={`border-2 border-dashed rounded-lg p-6 cursor-pointer transition-colors text-center ${
               isDragActive
                 ? "border-blue-400 bg-blue-50"
