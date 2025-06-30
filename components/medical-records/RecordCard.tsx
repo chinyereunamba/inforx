@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge"; 
+import { Badge } from "@/components/ui/badge";
 import {
   FileText,
   Calendar,
@@ -15,18 +15,28 @@ import {
   FileCheck,
   Pill,
   AlertTriangle, 
+  AlertCircle,
   Lightbulb,
   BookOpen,
+  Check,
 } from "lucide-react";
 import { MedicalRecord } from "@/lib/types/medical-records";
 
 interface RecordCardProps {
   record: MedicalRecord;
   onDelete: () => void;
+  onSelect?: (isSelected: boolean) => void;
+  isSelected?: boolean;
   onView?: () => void;
 }
 
-export default function RecordCard({ record, onDelete, onView }: RecordCardProps) {
+export default function RecordCard({ 
+  record, 
+  onDelete, 
+  onSelect, 
+  isSelected = false, 
+  onView 
+}: RecordCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -100,29 +110,79 @@ export default function RecordCard({ record, onDelete, onView }: RecordCardProps
     if (window.confirm(`Are you sure you want to delete "${record.title}"?`)) {
       setIsDeleting(true);
       try {
-        await onDelete();
+        await onDelete(); 
       } finally {
         setIsDeleting(false);
       }
     }
   };
 
+  // Parse AI interpretation
+  const parseInterpretation = (text?: string) => {
+    if (!text) return null;
+    
+    const sections = {
+      explanation: '',
+      whatToDo: '',
+      whenToSeeDoctor: ''
+    };
+    
+    // Extract sections using regex
+    const explanationMatch = text.match(/📘.*?Explanation:\s*([\s\S]*?)(?=💡|⚠️|$)/i);
+    if (explanationMatch) sections.explanation = explanationMatch[1].trim();
+    
+    const whatToDoMatch = text.match(/💡.*?What to Do:\s*([\s\S]*?)(?=⚠️|$)/i);
+    if (whatToDoMatch) sections.whatToDo = whatToDoMatch[1].trim();
+    
+    const whenToDoctorMatch = text.match(/⚠️.*?When to See a Doctor:\s*([\s\S]*?)$/i);
+    if (whenToDoctorMatch) sections.whenToSeeDoctor = whenToDoctorMatch[1].trim();
+    
+    return sections;
+  };
+  
+  const parsedInterpretation = record.interpretation_text 
+    ? parseInterpretation(record.interpretation_text) 
+    : null;
+  
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
   return (
-    <Card className="border border-gray-200 hover:shadow-md transition-all duration-300">
+    <Card 
+      className={`border hover:shadow-md transition-all duration-300 ${
+        isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+      }`}
+    >
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-2">
-          <div className="flex items-center gap-2">
-            {getTypeIcon(record.type)}
-            <h3
-              className="font-semibold text-gray-900 truncate max-w-[200px]"
-              title={record.title}
-            >
-              {record.title}
-            </h3>
+          <div className="flex items-start gap-2">
+            {onSelect && (
+              <div 
+                className="mt-1 cursor-pointer" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelect(!isSelected);
+                }}
+              >
+                <div className={`w-5 h-5 flex items-center justify-center rounded border ${
+                  isSelected 
+                    ? 'bg-blue-500 border-blue-500' 
+                    : 'border-gray-300 hover:border-blue-300'
+                }`}>
+                  {isSelected && <Check className="h-3 w-3 text-white" />}
+                </div>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              {getTypeIcon(record.type)}
+              <h3
+                className="font-semibold text-gray-900 truncate max-w-[180px]"
+                title={record.title}
+              >
+                {record.title}
+              </h3>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="text-xs font-normal">
@@ -163,7 +223,7 @@ export default function RecordCard({ record, onDelete, onView }: RecordCardProps
         {/* Extracted text section - only shown when expanded */}
         {isExpanded && record.text_content && (
           <div className="mb-3 mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-            <div className="flex items-center justify-between mb-2"> 
+            <div className="flex items-center justify-between mb-2">
               <h4 className="text-xs font-medium text-gray-700">Extracted Text</h4> 
               {record.processed_at && (
                 <span className="text-xs text-gray-500">
@@ -179,21 +239,70 @@ export default function RecordCard({ record, onDelete, onView }: RecordCardProps
         
         {/* AI Interpretation section - only shown when expanded */}
         {isExpanded && record.interpretation_text && (
-          <div className="mb-3 mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-blue-600" />
-                <h4 className="text-xs font-medium text-blue-700">AI Interpretation</h4>
-              </div>
+          <div className="mb-3 mt-2">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-xs font-medium text-gray-700">AI Interpretation</h4>
               {record.processed_at && (
-                <span className="text-xs text-blue-500">
-                  Generated {new Date(record.processed_at).toLocaleString()}
+                <span className="text-xs text-gray-500">
+                  {new Date(record.processed_at).toLocaleString()}
                 </span>
               )}
             </div>
-            <div className="text-xs text-blue-800 whitespace-pre-line">
-              {record.interpretation_text}
-            </div>
+            
+            {parsedInterpretation ? (
+              <div className="space-y-3">
+                {/* Explanation Section */}
+                {parsedInterpretation.explanation && (
+                  <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex items-start gap-2 mb-1">
+                      <BookOpen className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <h5 className="text-xs font-medium text-blue-700">📘 Explanation</h5>
+                    </div>
+                    <p className="text-xs text-blue-800 whitespace-pre-line ml-6">
+                      {parsedInterpretation.explanation}
+                    </p>
+                  </div>
+                )}
+                
+                {/* What To Do Section */}
+                {parsedInterpretation.whatToDo && (
+                  <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                    <div className="flex items-start gap-2 mb-1">
+                      <Lightbulb className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                      <h5 className="text-xs font-medium text-emerald-700">💡 What to Do</h5>
+                    </div>
+                    <p className="text-xs text-emerald-800 whitespace-pre-line ml-6">
+                      {parsedInterpretation.whatToDo}
+                    </p>
+                  </div>
+                )}
+                
+                {/* When to See a Doctor Section */}
+                {parsedInterpretation.whenToSeeDoctor && (
+                  <div className="p-3 bg-red-50 rounded-lg border border-red-200">
+                    <div className="flex items-start gap-2 mb-1">
+                      <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
+                      <h5 className="text-xs font-medium text-red-700">⚠️ When to See a Doctor</h5>
+                    </div>
+                    <p className="text-xs text-red-800 whitespace-pre-line ml-6">
+                      {parsedInterpretation.whenToSeeDoctor}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-start gap-2">
+                  <BookOpen className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h5 className="text-xs font-medium text-blue-700">AI Interpretation</h5>
+                    <p className="text-xs text-blue-800 whitespace-pre-line mt-1">
+                      {record.interpretation_text}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
