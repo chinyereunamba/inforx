@@ -1,8 +1,8 @@
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import { TextExtractor } from "@/lib/utils/text-extraction";
+import { TextExtractor } from "@/lib/utils/text-extraction.client";
 import { aiMedicalSummaryService } from "@/lib/services/ai-medical-summary";
 import { MedicalRecord } from "@/lib/types/medical-records";
 

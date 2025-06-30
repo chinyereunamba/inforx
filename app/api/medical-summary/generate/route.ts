@@ -1,13 +1,14 @@
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { extractTextFromMultipleFiles } from "@/lib/utils/text-extraction";
+import { extractTextFromMultipleFiles } from "@/lib/utils/text-extraction.server";
 import {
   GenerateSummaryRequest,
   GenerateSummaryResponse,
   AIExtractionResult,
 } from "@/lib/types/medical-summaries";
+import { v4 as uuidv4 } from "uuid";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -176,21 +177,25 @@ Medical Records:
 ${combinedText}`;
 
   try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-        "X-Title": "InfoRx Medical Summary",
-      },
-      body: JSON.stringify({
-        model: "anthropic/claude-3.5-sonnet",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.1,
-        max_tokens: 2000,
-      }),
-    });
+    const response = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer":
+            process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+          "X-Title": "InfoRx Medical Summary",
+        },
+        body: JSON.stringify({
+          model: "anthropic/claude-3.5-sonnet",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.1,
+          max_tokens: 2000,
+        }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`AI API error: ${response.status}`);
