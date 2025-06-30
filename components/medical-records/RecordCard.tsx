@@ -141,36 +141,36 @@ export default function RecordCard({
 
   return (
     <Dialog>
-    <Card 
+      <Card
         className={`border hover:shadow-md transition-all duration-300 rounded-lg overflow-hidden ${
           isSelected
             ? "border-blue-500 ring-2 ring-blue-500"
             : "border-gray-200"
         }`}
         onClick={handleCardClick}
-    >
-      <CardContent className="p-4">
+      >
+        <CardContent className="p-4">
           <div className="flex justify-between items-start mb-3">
             <div className="flex items-start gap-3 flex-1 min-w-0">
-            {onSelect && (
+              {onSelect && (
                 <div className="mt-1">
                   <CheckSquare
                     className={`h-5 w-5 ${
                       isSelected ? "text-blue-600" : "text-gray-400"
                     }`}
                   />
-              </div>
-            )}
+                </div>
+              )}
               <div className="flex items-center gap-2 flex-1 min-w-0">
-              {getTypeIcon(record.type)}
-              <h3
+                {getTypeIcon(record.type)}
+                <h3
                   className="font-semibold text-gray-900 truncate"
-                title={record.title}
-              >
-                {record.title}
-              </h3>
+                  title={record.title}
+                >
+                  {record.title}
+                </h3>
+              </div>
             </div>
-          </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild onClick={handleActionClick}>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -187,7 +187,7 @@ export default function RecordCard({
                 <DialogTrigger asChild>
                   <DropdownMenuItem>
                     <BrainCircuit className="mr-2 h-4 w-4" />
-                    AI Interpretation
+                    AI Summary
                   </DropdownMenuItem>
                 </DialogTrigger>
                 {record.file_url && (
@@ -212,17 +212,17 @@ export default function RecordCard({
             <div className="flex items-center">
               <Hospital className="h-4 w-4 mr-2" />
               <span className="truncate">{record.hospital_name}</span>
-              </div>
+            </div>
             <div className="flex items-center">
               <Calendar className="h-4 w-4 mr-2" />
               <span>{formatDate(record.visit_date)}</span>
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>AI Interpretation: {record.title}</DialogTitle>
+          <DialogTitle>AI Summary: {record.title}</DialogTitle>
         </DialogHeader>
         <InterpretationView recordId={record.id} />
       </DialogContent>

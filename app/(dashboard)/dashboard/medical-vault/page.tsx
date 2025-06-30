@@ -56,6 +56,7 @@ import { FileUploadService } from "@/lib/services/file-upload-service";
 import { TextExtractor } from "@/lib/utils/text-extraction.client"; // Import TextExtractor
 import RecordCard from "@/components/medical-records/RecordCard";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const EnhancedMedicalRecordUpload = dynamic(
   () => import("@/components/medical-records/EnhancedMedicalRecordUpload"),
@@ -601,7 +602,7 @@ export default function MedicalVaultPage() {
         )}
 
         {/* Stats Overview */}
-        {stats && (
+        {stats ? (
           <div className="grid grid-cols-4 gap-4 mb-6">
             <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
               <CardContent className="p-4 flex flex-col items-center text-center">
@@ -649,6 +650,48 @@ export default function MedicalVaultPage() {
                 </div>
                 <div className="text-2xl font-semibold">{records.length}</div>
                 <div className="text-xs text-slate-500">Documents</div>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
+              <div className="p-4 flex flex-col items-center text-center">
+                <div className="bg-blue-100 rounded-full p-3 mb-3">
+                  <FileText className="h-5 w-5 text-blue-600" />
+                </div>
+                <Skeleton className="text-2xl font-semibold" />
+                <Skeleton className="text-xs text-slate-500" />
+              </div>
+            </Card>
+
+            <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
+              <CardContent className="p-4 flex flex-col items-center text-center">
+                <div className="bg-emerald-100 rounded-full p-3 mb-3">
+                  <Calendar className="h-5 w-5 text-emerald-600" />
+                </div>
+                <Skeleton className="text-2xl font-semibold" />
+                <Skeleton className="text-xs text-slate-500" />
+              </CardContent>
+            </Card>
+
+            <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
+              <CardContent className="p-4 flex flex-col items-center text-center">
+                <div className="bg-purple-100 rounded-full p-3 mb-3">
+                  <Tag className="h-5 w-5 text-purple-600" />
+                </div>
+                <Skeleton className="text-2xl font-semibold" />
+                <Skeleton className="text-xs text-slate-500" />
+              </CardContent>
+            </Card>
+
+            <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
+              <CardContent className="p-4 flex flex-col items-center text-center">
+                <div className="bg-amber-100 rounded-full p-3 mb-3">
+                  <FileCheck className="h-5 w-5 text-amber-600" />
+                </div>
+                <Skeleton className="text-2xl font-semibold" />
+                <Skeleton className="text-xs text-slate-500" />
               </CardContent>
             </Card>
           </div>

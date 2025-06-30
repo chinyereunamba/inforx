@@ -349,7 +349,7 @@ export default function ActivityLogs() {
   ];
 
   return (
-    <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
+    <Card className="bg-none hover:shadow-md">
       <CardHeader>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>

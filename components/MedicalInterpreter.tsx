@@ -615,7 +615,7 @@ const playAudio = async (text: string) => {
                 <Button
                   onClick={handleSubmit}
                   disabled={state.isLoading || !state.inputText.trim()}
-                  className="w-full bg-sky-500 hover:bg-sky-600 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label={
                     state.isLoading
                       ? "Interpreting medical text"
