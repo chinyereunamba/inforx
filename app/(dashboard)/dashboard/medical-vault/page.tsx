@@ -5,6 +5,7 @@ import { useAuthStore } from "@/lib/stores/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
 import { useMedicalRecords } from "@/hooks/useMedicalRecordsHook";
 import {
+  CheckSquare,
   Upload,
   FileText,
   FolderOpen,
@@ -27,6 +28,11 @@ import {
   LayoutList,
   SortAsc,
   SortDesc,
+  Trash2,
+  AlertTriangle,
+  FileQuestion,
+  Brain,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,6 +55,8 @@ import {
 import { FileUploadService } from "@/lib/services/file-upload-service";
 import { TextExtractor } from "@/lib/utils/text-extraction"; // Import TextExtractor
 import RecordCard from "@/components/medical-records/RecordCard";
+import { MedicalSummary } from '@/components/medical-records/MedicalSummary';
+import { toast } from 'sonner';
 
 // Interface for active upload file
 interface ActiveUpload {
@@ -72,6 +80,12 @@ export default function MedicalVaultPage() {
   const [filterType, setFilterType] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  
+  // State for selected records
+  const [selectedRecordIds, setSelectedRecordIds] = useState<string[]>([]);
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   // State for active uploads
   const [activeUploads, setActiveUploads] = useState<ActiveUpload[]>([]);
@@ -105,6 +119,16 @@ export default function MedicalVaultPage() {
       return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
     });
   }, [filteredRecords, sortOrder]);
+
+  // Effect to show/hide bulk actions based on selection
+  useEffect(() => {
+    setShowBulkActions(selectedRecordIds.length > 0);
+    
+    // Close summary panel when selection changes to empty
+    if (selectedRecordIds.length === 0) {
+      setShowSummary(false);
+    }
+  }, [selectedRecordIds]);
 
   // Categories for organizing records
   const recordsByType = useMemo(() => {
@@ -300,9 +324,79 @@ export default function MedicalVaultPage() {
   const handleRecordDeleted = async (recordId: string) => {
     try {
       await deleteRecord(recordId);
+      // Also remove from selected records if it was selected
+      setSelectedRecordIds(prev => prev.filter(id => id !== recordId));
     } catch (error) {
       console.error("Error deleting record:", error);
     }
+  };
+  
+  // Handle record selection
+  const toggleRecordSelection = (recordId: string, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedRecordIds(prev => [...prev, recordId]);
+    } else {
+      setSelectedRecordIds(prev => prev.filter(id => id !== recordId));
+    }
+  };
+  
+  // Handle bulk delete
+  const handleBulkDelete = async () => {
+    if (selectedRecordIds.length === 0) return;
+    
+    setConfirmingDelete(true);
+  };
+  
+  // Confirm and execute bulk delete
+  const confirmBulkDelete = async () => {
+    try {
+      // Create a copy to avoid state mutation during the operation
+      const recordsToDelete = [...selectedRecordIds];
+      
+      // Show loading toast
+      toast.loading(`Deleting ${recordsToDelete.length} records...`);
+      
+      // Delete each record
+      for (const recordId of recordsToDelete) {
+        await deleteRecord(recordId);
+      }
+      
+      // Show success toast
+      toast.success(`Successfully deleted ${recordsToDelete.length} records`);
+      
+      // Clear selection and close confirmation
+      setSelectedRecordIds([]);
+      setConfirmingDelete(false);
+    } catch (error) {
+      console.error("Error during bulk delete:", error);
+      toast.error("An error occurred while deleting records");
+    }
+  };
+  
+  // Toggle all records selection
+  const toggleSelectAll = () => {
+    if (selectedRecordIds.length === sortedRecords.length) {
+      // If all are selected, deselect all
+      setSelectedRecordIds([]);
+    } else {
+      // Otherwise, select all
+      setSelectedRecordIds(sortedRecords.map(record => record.id));
+    }
+  };
+  
+  // Handle generate summary click
+  const handleGenerateSummary = () => {
+    if (selectedRecordIds.length === 0) {
+      toast.error("Please select at least one record for the summary");
+      return;
+    }
+    
+    setShowSummary(true);
+  };
+  
+  // Handle summary generation completion
+  const handleSummaryGenerated = () => {
+    toast.success("Health summary generated successfully");
   };
 
   // Cancel an active upload (just removes from list for now)
@@ -453,6 +547,83 @@ export default function MedicalVaultPage() {
           </div>
         )}
 
+        {/* Bulk Actions Floating Bar */}
+        {showBulkActions && (
+          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-20 bg-white rounded-full shadow-xl border border-gray-200 py-2 px-4 animate-fade-in">
+            <div className="flex items-center gap-3">
+              <span className="font-medium text-sm text-gray-700">
+                {selectedRecordIds.length} {selectedRecordIds.length === 1 ? 'record' : 'records'} selected
+              </span>
+              
+              <div className="h-4 border-r border-gray-300"></div>
+              
+              <Button
+                variant="outline" 
+                size="sm"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                onClick={handleBulkDelete}
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                Delete
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200"
+                onClick={handleGenerateSummary}
+              >
+                <Brain className="h-4 w-4 mr-1" />
+                Generate Summary
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-gray-500"
+                onClick={() => setSelectedRecordIds([])}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        {/* Delete Confirmation Dialog */}
+        {confirmingDelete && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+              <div className="flex items-start mb-4">
+                <div className="bg-red-100 p-2 rounded-full mr-4">
+                  <AlertTriangle className="h-6 w-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">Confirm Deletion</h3>
+                  <p className="text-gray-600">
+                    Are you sure you want to delete {selectedRecordIds.length} {selectedRecordIds.length === 1 ? 'record' : 'records'}? 
+                    This action cannot be undone.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex justify-end space-x-3 mt-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setConfirmingDelete(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={confirmBulkDelete}
+                >
+                  Delete {selectedRecordIds.length} {selectedRecordIds.length === 1 ? 'record' : 'records'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Stats Overview */}
         {stats && (
           <div className="grid grid-cols-4 gap-4 mb-6">
@@ -504,6 +675,40 @@ export default function MedicalVaultPage() {
                 <div className="text-xs text-slate-500">Documents</div>
               </CardContent>
             </Card>
+          </div>
+        )}
+
+        {/* Medical Summary Section - Only shown when records are selected for summary */}
+        {showSummary && selectedRecordIds.length > 0 && (
+          <div className="mb-8">
+            <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-200">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <Brain className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-gray-900">Health Summary</h2>
+                    <p className="text-sm text-gray-600">
+                      Generated from {selectedRecordIds.length} selected record{selectedRecordIds.length !== 1 && 's'}
+                    </p>
+                  </div>
+                </div>
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setShowSummary(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <MedicalSummary 
+                selectedRecordIds={selectedRecordIds}
+                onSummaryGenerated={handleSummaryGenerated}
+              />
+            </div>
           </div>
         )}
 
@@ -692,6 +897,8 @@ export default function MedicalVaultPage() {
                                 key={record.id}
                                 record={record}
                                 onDelete={() => handleRecordDeleted(record.id)}
+                                onSelect={(isSelected) => toggleRecordSelection(record.id, isSelected)}
+                                isSelected={selectedRecordIds.includes(record.id)}
                               />
                             ))}
                           </div>
@@ -714,6 +921,8 @@ export default function MedicalVaultPage() {
                             key={record.id}
                             record={record}
                             onDelete={() => handleRecordDeleted(record.id)}
+                            onSelect={(isSelected) => toggleRecordSelection(record.id, isSelected)}
+                            isSelected={selectedRecordIds.includes(record.id)}
                           />
                         ))}
                       </div>
@@ -726,7 +935,23 @@ export default function MedicalVaultPage() {
                     <div className="overflow-x-auto">
                       <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
-                          <tr>
+                          <tr className="group">
+                            <th className="pl-6 pr-3 py-3 text-left">
+                              <div 
+                                className="flex items-center cursor-pointer"
+                                onClick={toggleSelectAll}
+                              >
+                                <div className={`w-5 h-5 rounded border flex items-center justify-center ${
+                                  selectedRecordIds.length === sortedRecords.length && sortedRecords.length > 0
+                                    ? 'bg-blue-500 border-blue-500' 
+                                    : 'border-gray-300 group-hover:border-blue-300'
+                                }`}>
+                                  {selectedRecordIds.length === sortedRecords.length && sortedRecords.length > 0 && 
+                                    <Check className="h-3 w-3 text-white" />
+                                  }
+                                </div>
+                              </div>
+                            </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               Record
                             </th>
@@ -748,10 +973,31 @@ export default function MedicalVaultPage() {
                           {sortedRecords.map((record, index) => (
                             <tr
                               key={record.id}
-                              className={
+                              className={`${
                                 index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                              }
+                              } ${
+                                selectedRecordIds.includes(record.id) ? "bg-blue-50" : ""
+                              }`}
                             >
+                              <td className="pl-6 pr-3 py-4">
+                                <div 
+                                  className="cursor-pointer"
+                                  onClick={() => toggleRecordSelection(
+                                    record.id, 
+                                    !selectedRecordIds.includes(record.id)
+                                  )}
+                                >
+                                  <div className={`w-5 h-5 rounded border flex items-center justify-center ${
+                                    selectedRecordIds.includes(record.id)
+                                      ? 'bg-blue-500 border-blue-500' 
+                                      : 'border-gray-300 hover:border-blue-300'
+                                  }`}>
+                                    {selectedRecordIds.includes(record.id) && 
+                                      <Check className="h-3 w-3 text-white" />
+                                    }
+                                  </div>
+                                </div>
+                              </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
                                   <div className="flex-shrink-0">
