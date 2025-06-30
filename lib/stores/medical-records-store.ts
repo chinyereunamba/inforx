@@ -47,13 +47,17 @@ export const useMedicalRecordsStore = create<MedicalRecordsState>((set, get) => 
 
   // Initialize the store
   initialize: async () => {
-    // Only fetch records if not already initialized
-    if (!get().initialized) {
-      await get().fetchRecords();
-      get().subscribeToChanges();
-      set({ initialized: true });
-    }
-  },
+  if (get().initialized) return;
+
+  try {
+    await get().fetchRecords();
+    get().subscribeToChanges();
+    set({ initialized: true });
+  } catch (error) {
+    console.error("Error initializing medical records store:", error);
+    set({ error: "Failed to initialize medical records", loading: false });
+  }
+},
 
   // Fetch all records for the current user
   fetchRecords: async (refresh = false) => {
