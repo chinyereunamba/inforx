@@ -20,7 +20,10 @@ export const metadata: Metadata = {
 
 export default function InterpreterPage() {
   return (
-    <main className="min-h-screen">
+    <main
+      className="min-h-screen bg-white py-12 px-4"
+      aria-label="InfoRx Interpreter demonstration"
+    >
       <MedicalInterpreter />
     </main>
   );

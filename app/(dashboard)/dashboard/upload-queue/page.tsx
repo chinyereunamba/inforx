@@ -137,7 +137,30 @@ export default function UploadQueuePage() {
             </CardHeader>
             <CardContent>
               <EnhancedMedicalRecordUpload
-                onSubmitForm={async () => {}}
+                onSubmitForm={async (formData, file, extractedText) => {
+                  const now = new Date().toISOString();
+                  const newRecord = {
+                    id: Date.now().toString(),
+                    user_id: user?.id || "mock-user",
+                    title: formData.title,
+                    type: formData.type,
+                    hospital_name: formData.hospital_name,
+                    visit_date: formData.visit_date,
+                    notes: formData.notes,
+                    file_url: file ? URL.createObjectURL(file) : undefined,
+                    file_name: file ? file.name : undefined,
+                    file_size: file ? file.size : undefined,
+                    file_type: file ? file.type : undefined,
+                    text_content: undefined,
+                    interpretation_text: undefined,
+                    processing_status: undefined,
+                    processed_at: undefined,
+                    processing_error: undefined,
+                    created_at: now,
+                    updated_at: now,
+                  };
+                  handleRecordAdded(newRecord);
+                }}
                 onClose={() => {}}
               />
             </CardContent>

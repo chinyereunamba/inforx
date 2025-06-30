@@ -1,17 +1,12 @@
-@@ .. @@
- import ModernDashboardLayout from "@/components/dashboard/ModernDashboardLayout";
-+import { Toaster } from "sonner";
- 
- type DashboardProps = {
-@@ .. @@
-     </div>
-   );
- 
--  return <EnhancedDashboardLayout>{children}</EnhancedDashboardLayout>;
-+  return (
-+    <>
-+      <Toaster position="top-right" richColors />
-+      <EnhancedDashboardLayout>{children}</EnhancedDashboardLayout>
-+    </>
-+  );
- }
+import EnhancedDashboardLayout from "@/components/dashboard/EnhancedDashboardLayout";
+import { Toaster } from "sonner";
+
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <EnhancedDashboardLayout>
+      <Toaster />
+      {children}
+    </EnhancedDashboardLayout>
+  );
+}
