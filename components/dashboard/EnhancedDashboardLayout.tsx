@@ -82,6 +82,13 @@ const navigationItems: NavigationItem[] = [
     icon: Activity,
     description: "Track your health journey",
   },
+  {
+    id: "settings",
+    label: "Settings",
+    href: "/dashboard/settings",
+    icon: Settings,
+    description: "Your settings here",
+  },
 ];
 
 export default function EnhancedDashboardLayout({
