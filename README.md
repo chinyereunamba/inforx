@@ -18,7 +18,7 @@
 
 ## 📦 Tech Stack
 
-- **Frontend**: Next.js 14, TailwindCSS, Shadcn UI
+- **Frontend**: Next.js 13, TailwindCSS, Shadcn UI
 - **Backend**: Supabase (Auth, DB, Storage, Realtime)
 - **State Management**: Zustand
 - **AI Integration**: ElevenLabs, Openrouter
