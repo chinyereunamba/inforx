@@ -388,7 +388,6 @@ export default function DashboardPage() {
       <DashboardSummaryStats />
 
       <ModernDashboardOverview />
-      <MedicalSummary />
     </div>
   );
 }
