@@ -58,6 +58,12 @@ const currentFeatures: FeatureStatus[] = [
     description: "Enhanced record organization",
   },
   {
+    name: "Summaries",
+    status: "in-progress",
+    description:
+      "AI-generated summaries for interpreted medical content and suggestions",
+  },
+  {
     name: "Bulk Record Operations",
     status: "planned",
     description: "Multi-select and batch actions",
@@ -66,33 +72,6 @@ const currentFeatures: FeatureStatus[] = [
     name: "Export Functionality",
     status: "planned",
     description: "PDF and CSV export options",
-  },
-
-  // Additional roadmap features
-  {
-    name: "User Feedback System",
-    status: "planned",
-    description: "Allow users to rate or flag interpretations",
-  },
-  {
-    name: "Multi-user Roles",
-    status: "planned",
-    description: "Doctor and caregiver roles with role-based access control",
-  },
-  {
-    name: "Offline Mode",
-    status: "planned",
-    description: "Fallback UI and action queuing when offline",
-  },
-  {
-    name: "End-to-End Encryption",
-    status: "planned",
-    description: "Client-side encryption for medical files and AI output",
-  },
-  {
-    name: "Localization Support",
-    status: "planned",
-    description: "Language support for Pidgin, Hausa, Igbo, Yoruba, and more",
   },
 ];
 

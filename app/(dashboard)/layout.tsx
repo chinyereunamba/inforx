@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 import EnhancedDashboardLayout from "@/components/dashboard/EnhancedDashboardLayout";
-import ModernDashboardLayout from "@/components/dashboard/ModernDashboardLayout";
+import { Toaster } from "sonner";
 
 type DashboardProps = {
   children: React.ReactNode;
@@ -41,5 +41,10 @@ export default function DashboardLayout({ children }: DashboardProps) {
     );
   }
 
-  return <EnhancedDashboardLayout>{children}</EnhancedDashboardLayout>;
+  return (
+    <EnhancedDashboardLayout>
+      <Toaster />
+      {children}
+    </EnhancedDashboardLayout>
+  );
 }
