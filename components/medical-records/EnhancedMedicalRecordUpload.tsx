@@ -223,7 +223,7 @@ export default function EnhancedMedicalRecordUpload({
     []
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     accept: {
       "application/pdf": [".pdf"],
@@ -322,6 +322,7 @@ export default function EnhancedMedicalRecordUpload({
         {!selectedFile ? (
           <div
             {...getRootProps()}
+            onClick={open}
             className={`border-2 border-dashed rounded-lg p-6 cursor-pointer transition-colors text-center ${
               isDragActive
                 ? "border-blue-400 bg-blue-50"

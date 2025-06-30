@@ -61,27 +61,12 @@ const navigationItems: NavigationItem[] = [
     description: "Medical document analysis",
   },
   {
-    id: "records",
-    label: "Medical Records",
-    href: "/dashboard/records",
-    icon: FileText,
-    badge: 3,
-    description: "Manage your health records",
-  },
-  {
     id: "vault",
     label: "Medical Vault",
     href: "/dashboard/medical-vault",
     icon: Store,
     // badge: 3,
     description: "Manage your health records",
-  },
-  {
-    id: "upload",
-    label: "Upload",
-    href: "/dashboard/upload",
-    icon: Upload,
-    description: "Add new documents",
   },
   // {
   //   id: "analytics",

@@ -393,22 +393,6 @@ export default function ModernDashboardOverview() {
 
   return (
     <div ref={containerRef} className="space-y-6">
-      {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-sky-500 to-emerald-500 rounded-2xl p-6 text-white"> 
-        <h1 className="text-2xl font-bold font-noto mb-2">Welcome to InfoRx! 👋</h1>
-        <p className="text-sky-100">
-          Your health records and AI-powered summaries are now in one secure place.
-          <span className="font-medium"> Start by adding your first medical record!</span>
-        </p>
-      </div>
-
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {metrics.map((metric, index) => (
-          <MetricCard key={metric.title} {...metric} delay={index} />
-        ))}
-      </div>
-
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <HealthProgress />

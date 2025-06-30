@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
+import dynamic from "next/dynamic";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
 import { useMedicalRecords } from "@/hooks/useMedicalRecordsHook";
@@ -46,7 +47,6 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import EnhancedMedicalRecordUpload from "@/components/medical-records/EnhancedMedicalRecordUpload";
 import { FileUploadProgress } from "@/components/dashboard/FileUploadProgress";
 import {
   MedicalRecord,
@@ -57,6 +57,18 @@ import { TextExtractor } from "@/lib/utils/text-extraction.client"; // Import Te
 import RecordCard from "@/components/medical-records/RecordCard";
 import { MedicalSummary } from "@/components/medical-records/MedicalSummary";
 import { toast } from "sonner";
+
+const EnhancedMedicalRecordUpload = dynamic(
+  () => import("@/components/medical-records/EnhancedMedicalRecordUpload"),
+  {
+    loading: () => (
+      <div className="flex justify-center items-center p-10">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    ),
+    ssr: false,
+  }
+);
 
 // Interface for active upload file
 interface ActiveUpload {
