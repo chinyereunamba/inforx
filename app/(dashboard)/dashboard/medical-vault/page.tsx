@@ -55,11 +55,25 @@ import {
 import { FileUploadService } from "@/lib/services/file-upload-service";
 import { TextExtractor } from "@/lib/utils/text-extraction.client"; // Import TextExtractor
 import RecordCard from "@/components/medical-records/RecordCard";
-import { MedicalSummary } from "@/components/medical-records/MedicalSummary";
 import { toast } from "sonner";
 
 const EnhancedMedicalRecordUpload = dynamic(
   () => import("@/components/medical-records/EnhancedMedicalRecordUpload"),
+  {
+    loading: () => (
+      <div className="flex justify-center items-center p-10">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    ),
+    ssr: false,
+  }
+);
+
+const MedicalSummary = dynamic(
+  () =>
+    import("@/components/medical-records/MedicalSummary").then(
+      (mod) => mod.MedicalSummary
+    ),
   {
     loading: () => (
       <div className="flex justify-center items-center p-10">
@@ -461,7 +475,7 @@ export default function MedicalVaultPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-6">
-      <div className="px-4 sm:px-6 lg:px-8">
+      <div className="">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <div className="mb-4 md:mb-0">
             <h1 className="text-3xl font-bold text-gray-900 font-noto">

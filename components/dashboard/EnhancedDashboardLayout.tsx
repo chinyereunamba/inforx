@@ -19,7 +19,6 @@ import {
   Sun,
   Home,
   FileText,
-  Store,
   Upload,
   BarChart3,
   Heart,
@@ -29,6 +28,7 @@ import {
   User as UserIcon,
   HelpCircle,
   ChevronRight,
+  Vault,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -64,7 +64,7 @@ const navigationItems: NavigationItem[] = [
     id: "vault",
     label: "Medical Vault",
     href: "/dashboard/medical-vault",
-    icon: Store,
+    icon: Vault,
     // badge: 3,
     description: "Manage your health records",
   },

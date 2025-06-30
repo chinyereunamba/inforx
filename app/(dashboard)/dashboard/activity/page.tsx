@@ -25,12 +25,7 @@ export default function ActivityPage() {
 
       // In a real app, we would fetch these statistics from an API
       // For this demo, we'll just set some placeholder values
-      setActivityStats({
-        today: 5,
-        thisWeek: 18,
-        thisMonth: 42,
-        total: 138,
-      });
+      
     }
   }, [user]);
 
@@ -47,7 +42,7 @@ export default function ActivityPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 flex flex-col items-center text-center">
             <div className="bg-blue-100 rounded-full p-3 mb-3">
@@ -91,7 +86,7 @@ export default function ActivityPage() {
             <div className="text-sm text-slate-500">Total Activities</div>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
 
       <ActivityLogs />
     </div>
