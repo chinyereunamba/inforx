@@ -5,7 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   ArrowRight,
-  ChartBarIncreasing,
+  ChartLine,
   Github,
   Heart,
   Mail,
@@ -123,7 +123,7 @@ export default function CallToActionSection() {
             </div>
             <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 border border-white border-opacity-20">
               <h3 className="text-xl font-bold text-white mb-3 flex items-center justify-center gap-2">
-                <ChartBarIncreasing /> Growing Platform
+                <ChartLine /> Growing Platform
               </h3>
               <p className="text-sky-100 text-sm">
                 Join a rapidly growing platform with ambitious goals and clear
