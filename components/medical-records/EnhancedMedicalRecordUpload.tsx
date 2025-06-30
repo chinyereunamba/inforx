@@ -42,20 +42,12 @@ interface EnhancedMedicalRecordUploadProps {
   ) => Promise<void>;
   onClose: () => void;
   isSubmittingParent?: boolean;
-    formData: MedicalRecordFormData,
-    file: File | null,
-    extractedText: string | null
-  // Callback to close the dialog/modal after submission
-  onClose: () => void;
-  // Indicates if the parent is currently processing the submission
-  isSubmittingParent: boolean;
 }
 
 export default function EnhancedMedicalRecordUpload({
   onSubmitForm,
   onClose,
   isSubmittingParent = false,
-  isSubmittingParent,
 }: EnhancedMedicalRecordUploadProps) {
   const [formData, setFormData] = useState<MedicalRecordFormData>({
     title: "",
@@ -124,9 +116,7 @@ export default function EnhancedMedicalRecordUpload({
 
       // Try to extract text from the file for title suggestion
       try {
-        const extractionResult = await TextExtractor.extractText(
-          disabled={isSubmitting || isSubmittingParent}
-        );
+        const extractionResult = await TextExtractor.extractText(file);
 
         if (extractionResult.success) {
           setExtractedText(extractionResult.text);
@@ -251,21 +241,13 @@ export default function EnhancedMedicalRecordUpload({
       return;
     }
 
-      return <FileCheck className="h-6 w-6 text-blue-600" />;
+    try {
       setIsSubmitting(true);
-      await onSubmitForm(formData, uploadState.file, uploadState.extractedText);
+      await onSubmitForm(formData, selectedFile, extractedText);
       onClose();
-      return "Prescription";
-    } else if (docType === "lab_result") {
-      return "Laboratory Results";
-    } else if (docType === "scan") {
-      return "Medical Scan";
     } finally {
       setIsSubmitting(false);
     }
-
-    // Last resort
-    return "Medical Document";
   };
 
   return (
@@ -325,7 +307,7 @@ export default function EnhancedMedicalRecordUpload({
                     />
                   ) : (
                     <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                      {getFileIcon(selectedFile)}
+                      <FileIcon className="h-6 w-6 text-gray-400" />
                     </div>
                   )}
                   <div>
@@ -562,13 +544,16 @@ export default function EnhancedMedicalRecordUpload({
           disabled={isSubmittingParent || isFileProcessing}
         >
           {isSubmitting || isSubmittingParent ? (
+            <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               {isFileProcessing ? "Processing File..." : "Submitting..."}
             </>
           ) : (
             <>
               <Upload className="mr-2 h-4 w-4" />
-              Uploading...
+              Upload Record
+            </>
+          )}
         </Button>
       </form>
 
