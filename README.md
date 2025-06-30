@@ -30,7 +30,7 @@
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/inforx.git
+git clone https://github.com/chinyereunamba/inforx.git
 cd inforx
 ```
 
@@ -97,7 +97,6 @@ To test authentication and vault uploads locally, make sure you're connected to 
 - [Supabase](https://supabase.com)
 - [TailwindCSS](https://tailwindcss.com)
 - [ElevenLabs](https://elevenlabs.io)
-- [LingoDev](https://www.lingo.dev/)
 - [Openrouter](https://openrouter.ai/)
 
 ---
