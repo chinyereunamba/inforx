@@ -14,7 +14,7 @@ import {
   FileImage,
   FileCheck as FileCheckIcon,
   Pill,
-  AlertTriangle,
+  AlertTriangle, 
   AlertCircle,
   Lightbulb,
   BookOpen,
@@ -49,10 +49,10 @@ interface RecordCardProps {
   isSelected?: boolean;
 }
 
-export default function RecordCard({
-  record,
-  onDelete,
-  onSelect,
+export default function RecordCard({ 
+  record, 
+  onDelete, 
+  onSelect, 
   isSelected,
 }: RecordCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -141,36 +141,36 @@ export default function RecordCard({
 
   return (
     <Dialog>
-      <Card
+    <Card 
         className={`border hover:shadow-md transition-all duration-300 rounded-lg overflow-hidden ${
           isSelected
             ? "border-blue-500 ring-2 ring-blue-500"
             : "border-gray-200"
         }`}
         onClick={handleCardClick}
-      >
-        <CardContent className="p-4">
+    >
+      <CardContent className="p-4">
           <div className="flex justify-between items-start mb-3">
             <div className="flex items-start gap-3 flex-1 min-w-0">
-              {onSelect && (
+            {onSelect && (
                 <div className="mt-1">
                   <CheckSquare
                     className={`h-5 w-5 ${
                       isSelected ? "text-blue-600" : "text-gray-400"
                     }`}
                   />
-                </div>
-              )}
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                {getTypeIcon(record.type)}
-                <h3
-                  className="font-semibold text-gray-900 truncate"
-                  title={record.title}
-                >
-                  {record.title}
-                </h3>
               </div>
+            )}
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+              {getTypeIcon(record.type)}
+              <h3
+                  className="font-semibold text-gray-900 truncate"
+                title={record.title}
+              >
+                {record.title}
+              </h3>
             </div>
+          </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild onClick={handleActionClick}>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -212,14 +212,14 @@ export default function RecordCard({
             <div className="flex items-center">
               <Hospital className="h-4 w-4 mr-2" />
               <span className="truncate">{record.hospital_name}</span>
-            </div>
+              </div>
             <div className="flex items-center">
               <Calendar className="h-4 w-4 mr-2" />
               <span>{formatDate(record.visit_date)}</span>
-            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </CardContent>
+    </Card>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>AI Interpretation: {record.title}</DialogTitle>

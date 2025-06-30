@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/client";
 import { LoggingService } from "./logging-service";
 import { User } from "@supabase/supabase-js";
+import { MedicalRecordFormData } from "../types/medical-records";
 
 export interface FileValidationResult {
   isValid: boolean;
@@ -79,13 +80,14 @@ export class FileUploadService {
   }
 
   /**
-   * Upload file to Supabase Storage
+   * Upload file to Supabase Storage and create medical record
    */
   public static async uploadFile(
+    formData: MedicalRecordFormData,
     file: File,
     user: User,
     onProgress?: (progress: UploadProgressEvent) => void
-  ): Promise<UploadResult> {
+  ): Promise<{ success: boolean; record?: any; error?: string }> {
     try {
       // Validate file before upload
       const validation = this.validateFile(file);
@@ -113,7 +115,6 @@ export class FileUploadService {
           cacheControl: "3600",
           upsert: false,
           contentType: file.type,
-          // Custom upload handler for progress tracking
           ...(onProgress && {
             onUploadProgress: (progress: {
               loaded: number;
@@ -131,14 +132,12 @@ export class FileUploadService {
         });
 
       if (error) {
-        // Log upload error
         await LoggingService.logAction(user, "file_upload_error", {
           error: error.message,
           file_name: file.name,
           file_size: file.size,
           file_type: file.type,
         });
-
         return {
           success: false,
           error: `Upload failed: ${error.message}`,
@@ -150,7 +149,6 @@ export class FileUploadService {
         .from("vault")
         .getPublicUrl(filePath);
 
-      // Log successful upload
       await LoggingService.logAction(user, LoggingService.actions.UPLOAD_FILE, {
         file_name: file.name,
         file_size: file.size,
@@ -158,22 +156,42 @@ export class FileUploadService {
         file_path: filePath,
       });
 
+      // Now create the record via the API
+      const recordData = {
+        ...formData,
+        file_url: urlData.publicUrl,
+        file_name: file.name,
+        file_size: file.size,
+        file_type: file.type,
+      };
+
+      const response = await fetch("/api/medical-records", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(recordData),
+      });
+
+      if (!response.ok) {
+        const apiError = await response.json();
+        return {
+          success: false,
+          error: apiError.error || "Failed to create medical record",
+        };
+      }
+
+      const result = await response.json();
       return {
         success: true,
-        fileUrl: urlData.publicUrl,
-        fileName: file.name,
-        fileSize: file.size,
-        fileType: file.type,
-        filePath: filePath,
+        record: result.record,
       };
     } catch (error) {
-      console.error("File upload error:", error);
+      console.error("File upload or record creation error:", error);
       return {
         success: false,
         error:
           error instanceof Error
             ? error.message
-            : "Unknown error during upload",
+            : "Unknown error during upload or record creation",
       };
     }
   }

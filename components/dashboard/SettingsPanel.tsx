@@ -141,7 +141,7 @@ export default function SettingsPanel() {
 
   return (
     <div ref={containerRef} className="py-6">
-      <h1 className="text-3xl font-bold font-noto mb-6">Settings</h1>
+      <h1 className="text-3xl block max-md:hidden font-bold font-noto mb-6">Settings</h1>
 
       <div className="flex flex-col md:flex-row gap-6">
         {/* Sidebar */}
@@ -256,68 +256,104 @@ export default function SettingsPanel() {
           )}
 
           {/* Profile Info */}
-          <Card className="settings-card border border-slate-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-sky-600" />
-                Basic Profile Information
-              </CardTitle>
-              <CardDescription>
-                Your account details and session information
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg">
-                  <Mail className="h-5 w-5 text-slate-500" />
-                  <div>
-                    <div className="text-xs text-slate-500 mb-1">Email</div>
-                    <div className="font-medium">
-                      {user?.email || "Not available"}
+          {activeSection === "profile" && (
+            <Card className="settings-card border border-slate-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5 text-sky-600" />
+                  Basic Profile Information
+                </CardTitle>
+                <CardDescription>
+                  Your account details and session information
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg">
+                    <Mail className="h-5 w-5 text-slate-500" />
+                    <div>
+                      <div className="text-xs text-slate-500 mb-1">Email</div>
+                      <div className="font-medium">
+                        {user?.email || "Not available"}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg">
-                  <Calendar className="h-5 w-5 text-slate-500" />
-                  <div>
-                    <div className="text-xs text-slate-500 mb-1">
-                      Last Sign In
-                    </div>
-                    <div className="font-medium">
-                      {formatDate(user?.last_sign_in_at)}
+                  <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg">
+                    <Calendar className="h-5 w-5 text-slate-500" />
+                    <div>
+                      <div className="text-xs text-slate-500 mb-1">
+                        Last Sign In
+                      </div>
+                      <div className="font-medium">
+                        {formatDate(user?.last_sign_in_at)}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg">
-                  {deviceType === "Mobile" ? (
-                    <Smartphone className="h-5 w-5 text-slate-500" />
-                  ) : (
-                    <Laptop className="h-5 w-5 text-slate-500" />
-                  )}
-                  <div>
-                    <div className="text-xs text-slate-500 mb-1">
-                      Device Type
+                  <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg">
+                    {deviceType === "Mobile" ? (
+                      <Smartphone className="h-5 w-5 text-slate-500" />
+                    ) : (
+                      <Laptop className="h-5 w-5 text-slate-500" />
+                    )}
+                    <div>
+                      <div className="text-xs text-slate-500 mb-1">
+                        Device Type
+                      </div>
+                      <div className="font-medium">{deviceType}</div>
                     </div>
-                    <div className="font-medium">{deviceType}</div>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg">
-                  <Info className="h-5 w-5 text-slate-500" />
-                  <div>
-                    <div className="text-xs text-slate-500 mb-1">
-                      Account Type
-                    </div>
-                    <div className="font-medium">
-                      {user?.user_metadata?.role || "Standard User"}
+                  <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg">
+                    <Info className="h-5 w-5 text-slate-500" />
+                    <div>
+                      <div className="text-xs text-slate-500 mb-1">
+                        Account Type
+                      </div>
+                      <div className="font-medium">
+                        {user?.user_metadata?.role || "Standard User"}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
+          {activeSection === "notification" && (
+            <Card className="settings-card border border-slate-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  Notifications
+                </CardTitle>
+                <CardDescription>
+                  Your notification information
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <h2 className="font-noto font-semibold text-2xl">Coming soon</h2>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {activeSection === "security" && (
+            <Card className="settings-card border border-slate-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  Security
+                </CardTitle>
+                <CardDescription>
+                  Your security information
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <h2 className="font-noto font-semibold text-2xl">Coming soon</h2>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Security Note */}
           <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-3 px-6 text-center text-sm text-slate-600">

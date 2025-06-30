@@ -116,6 +116,7 @@ export async function POST(request: NextRequest) {
         "image/png",
         "image/jpeg",
         "image/jpg",
+        "plain/text",
       ];
 
       if (!allowedTypes.includes(file.type)) {
