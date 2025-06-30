@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Calendar, Users, Stethoscope, Brain, Shield, Globe } from 'lucide-react';
+import { Users, Stethoscope, Brain, Shield, Globe, Zap } from 'lucide-react';
 
 // Register ScrollTrigger plugin
 if (typeof window !== 'undefined') {
@@ -226,12 +226,13 @@ export default function PhaseTimeline() {
             id="timeline-heading"
             ref={titleRef}
             className="text-3xl md:text-4xl font-bold text-slate-900 mb-6"
-            style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+            style={{ fontFamily: "Inter, system-ui, sans-serif" }}
           >
             Development Timeline
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Our strategic roadmap from MVP launch to advanced healthcare technology platform
+            Our strategic roadmap from MVP launch to advanced healthcare
+            technology platform
           </p>
         </div>
 
@@ -244,7 +245,7 @@ export default function PhaseTimeline() {
             {phases.map((phase, index) => {
               const IconComponent = phase.icon;
               const isEven = index % 2 === 0;
-              
+
               return (
                 <div
                   key={phase.id}
@@ -252,38 +253,65 @@ export default function PhaseTimeline() {
                     if (el) phaseRefs.current[index] = el;
                   }}
                   className={`flex flex-col lg:flex-row items-center gap-8 ${
-                    isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'
+                    isEven ? "lg:flex-row" : "lg:flex-row-reverse"
                   }`}
                 >
                   {/* Content Card */}
-                  <div className={`flex-1 ${isEven ? 'lg:text-right' : 'lg:text-left'}`}>
-                    <div className={`bg-gradient-to-br ${getStatusColor(phase.status, phase.color)} rounded-2xl p-8 shadow-lg border-2 transition-all duration-300 hover:shadow-xl hover:scale-105`}>
-                      <div className={`flex items-center gap-4 mb-4 ${isEven ? 'lg:justify-end' : 'lg:justify-start'} justify-center`}>
+                  <div
+                    className={`flex-1 ${
+                      isEven ? "lg:text-right" : "lg:text-left"
+                    } text-left`}
+                  >
+                    <div
+                      className={`bg-gradient-to-br ${getStatusColor(
+                        phase.status,
+                        phase.color
+                      )} rounded-2xl p-8 shadow-lg border-2 transition-all duration-300 hover:shadow-xl hover:scale-105`}
+                    >
+                      <div
+                        className={`flex items-center gap-4 mb-4 ${
+                          isEven ? "lg:justify-end" : "lg:justify-start"
+                        } justify-between`}
+                      >
                         <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
                           <IconComponent className="h-6 w-6" />
                         </div>
                         <div>
-                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${getStatusBadge(phase.status)}`}>
-                            {phase.status === 'current' ? 'CURRENT' : 
-                             phase.status === 'upcoming' ? 'UPCOMING' : 'FUTURE'}
+                          <span
+                            className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${getStatusBadge(
+                              phase.status
+                            )}`}
+                          >
+                            {phase.status === "current"
+                              ? "CURRENT"
+                              : phase.status === "upcoming"
+                              ? "UPCOMING"
+                              : "FUTURE"}
                           </span>
-                          <div className="text-lg font-bold opacity-90">{phase.period}</div>
+                          <div className="text-lg font-bold opacity-90">
+                            {phase.period}
+                          </div>
                         </div>
                       </div>
-                      
-                      <h3 className="text-2xl font-bold mb-4">
-                        {phase.title}
-                      </h3>
-                      
+
+                      <h3 className="text-2xl font-bold mb-4">{phase.title}</h3>
+
                       <p className="opacity-90 mb-6 leading-relaxed">
                         {phase.description}
                       </p>
 
                       <ul className="space-y-2">
                         {phase.features.map((feature, featureIndex) => (
-                          <li key={featureIndex} className={`flex items-center gap-2 ${isEven ? 'lg:flex-row-reverse' : 'flex-row'} justify-center lg:justify-start`}>
+                          <li
+                            key={featureIndex}
+                            className={`flex items-center gap-2 ${
+                              isEven ? "lg:flex-row-reverse" : "flex-row"
+                            } justify-start lg:justify-start`}
+                          >
                             <div className="w-2 h-2 bg-current rounded-full opacity-60" />
-                            <span className="text-sm opacity-90">{feature}</span>
+                            <span className="text-sm opacity-90">
+                              {feature}
+                            </span>
                           </li>
                         ))}
                       </ul>
@@ -292,10 +320,15 @@ export default function PhaseTimeline() {
 
                   {/* Timeline Node */}
                   <div className="hidden lg:flex relative">
-                    <div className={`w-8 h-8 rounded-full shadow-lg border-4 border-white ${
-                      phase.status === 'current' ? 'bg-emerald-500' :
-                      phase.status === 'upcoming' ? 'bg-sky-500' : 'bg-slate-400'
-                    }`} />
+                    <div
+                      className={`w-8 h-8 rounded-full shadow-lg border-4 border-white ${
+                        phase.status === "current"
+                          ? "bg-emerald-500"
+                          : phase.status === "upcoming"
+                          ? "bg-sky-500"
+                          : "bg-slate-400"
+                      }`}
+                    />
                   </div>
 
                   {/* Spacer for alternating layout */}
@@ -309,15 +342,18 @@ export default function PhaseTimeline() {
         {/* Timeline Summary */}
         <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
           <div className="text-center">
-            <h3 className="text-2xl font-bold text-slate-900 mb-4">
-              🚀 Accelerated Timeline
+            <h3 className="text-2xl font-bold text-slate-900 mb-4 flex gap-2 items-center justify-center">
+              <Zap className='w-8 text-emerald-600'/> Accelerated Timeline
             </h3>
             <p className="text-lg text-slate-600 mb-6">
-              Thanks to our efficient development approach, we're ahead of the original schedule
+              Thanks to our efficient development approach, we're ahead of the
+              original schedule
             </p>
             <div className="grid md:grid-cols-3 gap-6 text-center">
               <div>
-                <div className="text-2xl font-bold text-emerald-600 mb-2">60%</div>
+                <div className="text-2xl font-bold text-emerald-600 mb-2">
+                  60%
+                </div>
                 <div className="text-slate-600">Ahead of MVP Phase 1</div>
               </div>
               <div>
@@ -325,7 +361,9 @@ export default function PhaseTimeline() {
                 <div className="text-slate-600">Features Already Live</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-emerald-600 mb-2">July 2025</div>
+                <div className="text-2xl font-bold text-emerald-600 mb-2">
+                  July 2025
+                </div>
                 <div className="text-slate-600">Target MVP Launch</div>
               </div>
             </div>

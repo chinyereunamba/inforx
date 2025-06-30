@@ -261,12 +261,12 @@ export default function FAQPage() {
 
         {/* Categories Navigation */}
         <div ref={categoriesRef} className="mb-10">
-          <div className="flex overflow-x-auto gap-2 pb-2 hide-scrollbar">
+          <div className="flex flex-auto overflow-x-auto hide-scrollbar gap-2 pb-2 w-full">
             {faqCategories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setCategory(category.id)}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
+                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors !w-fit ${
                   expandedCategory === category.id
                     ? "bg-emerald-500 text-white"
                     : "bg-slate-100 text-slate-700 hover:bg-slate-200"

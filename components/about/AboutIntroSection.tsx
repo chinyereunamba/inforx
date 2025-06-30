@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Heart, Users, Target } from "lucide-react";
+import { Heart, Users, Target, Activity } from "lucide-react";
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
@@ -87,7 +87,7 @@ export default function AboutIntroSection() {
 
   const values = [
     {
-      icon: Heart,
+      icon: Activity,
       title: "Health Equity",
       description:
         "Making quality healthcare accessible to every Nigerian, regardless of location or economic status",

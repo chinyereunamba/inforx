@@ -8,7 +8,7 @@ export default function Badge() {
       href={"https://bolt.new"}
       rel="noopener noreferrer"
       target="_blank"
-      className="fixed bottom-4 right-4 z-50 backdrop-blur-sm rounded-full p-1"
+      className="w-16 md:w-20 fixed bottom-4 right-4 z-50 backdrop-blur-sm rounded-full p-1"
       role="bolt.new badge"
     >
       <Image

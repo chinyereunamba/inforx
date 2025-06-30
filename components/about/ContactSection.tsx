@@ -113,6 +113,7 @@ Best regards,
       description: "General inquiries and partnerships",
       contact: "hello@info-rx.org",
       action: "Send Email",
+      click: handleContactEmail,
     },
     {
       icon: Phone,
@@ -183,7 +184,10 @@ Best regards,
                         <p className="text-slate-800 font-semibold mb-3">
                           {method.contact}
                         </p>
-                        <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1 transition-colors duration-200">
+                        <button
+                          onClick={method?.click ?? undefined}
+                          className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1 transition-colors duration-200"
+                        >
                           {method.action}
                           <ArrowRight className="h-4 w-4" />
                         </button>

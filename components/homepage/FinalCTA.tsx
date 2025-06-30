@@ -141,19 +141,19 @@ export default function FinalCTA() {
         >
           <Button
             size="lg"
-            className="bg-white text-blue-700 hover:bg-blue-50 px-10 py-5 text-xl font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 min-w-[240px]"
+            className="bg-white text-blue-700 hover:bg-blue-50 px-10 py-5 text-xl font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 min-w-[240px]"
             asChild
           >
             <Link href="/demo">
               <Play className="mr-3 h-6 w-6" />
-              Start Free
+              Try Demo
             </Link>
           </Button>
 
           <Button
             variant="outline"
             size="lg"
-            className="border-3 border-white text-white hover:bg-white hover:text-blue-700 px-10 py-5 text-xl font-bold rounded-2xl bg-transparent transition-all duration-300 min-w-[240px] [&>*]:text-white hover:[&>*]:text-blue-700"
+            className="border-3 border-white text-white hover:bg-white hover:text-blue-700 px-10 py-5 text-xl font-semibold rounded-xl bg-transparent transition-all duration-300 min-w-[240px] [&>*]:text-white hover:[&>*]:text-blue-700"
             asChild
           >
             <Link href="/dashboard">

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
+import { handleContactEmail } from "@/lib/fnc";
 
 export default function Footer() {
   return (
@@ -23,17 +24,17 @@ export default function Footer() {
 
           {/* Secondary Footer Links */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0 text-center sm:text-left">
-            <Link
-              href="mailto:cunamba2@gmail.com"
+            <span
+              onClick={handleContactEmail}
               className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors duration-200"
             >
               Contact
-            </Link>
+            </span>
             <Link
               href="https://github.com/chinyereunamba/inforx"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors duration-200 inline-flex items-center gap-1"
+              className="self-center text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors duration-200 inline-flex items-center gap-1"
             >
               GitHub Repository
               <ExternalLink className="h-3 w-3" />

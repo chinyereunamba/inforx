@@ -5,10 +5,12 @@ import { gsap } from 'gsap';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Home, ArrowLeft, HelpCircle, FileSearch } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function NotFoundPage() {
   const pageRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const router = useRouter()
 
   useEffect(() => {
     const ctx = gsap.context(() => {

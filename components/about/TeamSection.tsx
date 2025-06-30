@@ -126,6 +126,15 @@ export default function TeamSection() {
   const teamMembers = [
     {
       id: "founder-ceo",
+      name: "Chinyere Unamba",
+      role: "Founder & CEO",
+      bio: "Medical Student and hobby programer. Passionate about the future and advancement of technology in Healthcare",
+      image: "CU",
+      color: "from-emerald-500 to-emerald-600",
+      quote: "Building the healthcare platform Nigeria deserves.",
+    },
+    {
+      id: "co-founder",
       name: "Dr. Adaora Okafor",
       role: "Founder & CEO",
       bio: "Medical doctor with 10+ years experience in Nigerian healthcare. Former consultant at Lagos University Teaching Hospital.",
@@ -150,15 +159,6 @@ export default function TeamSection() {
       image: "FA",
       color: "from-blue-500 to-blue-600",
       quote: "Every Nigerian deserves quality healthcare information.",
-    },
-    {
-      id: "head-product",
-      name: "Emeka Nwankwo",
-      role: "Head of Product",
-      bio: "Product designer with deep understanding of Nigerian user needs. Specializes in creating inclusive healthcare experiences.",
-      image: "EN",
-      color: "from-emerald-500 to-emerald-600",
-      quote: "Design with empathy, build with purpose.",
     },
   ];
 
@@ -238,7 +238,7 @@ export default function TeamSection() {
                 </div>
                 {/* Back Face */}
                 <div
-                  className="flip-card-back rounded-2xl p-6 flex flex-col justify-center items-center"
+                  className="flip-card-back rounded-2xl p-6 flex bg-white flex-col justify-center items-center"
                   style={{
                     backfaceVisibility: "hidden",
                     transform: "rotateY(180deg)",

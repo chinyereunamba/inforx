@@ -1,14 +1,23 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, MessageSquare, Github, Mail } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  ArrowRight,
+  ChartBarIncreasing,
+  Github,
+  Heart,
+  Mail,
+  Play,
+  Rocket,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { handleContactEmail } from "@/lib/fnc";
 
 // Register ScrollTrigger plugin
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
@@ -30,16 +39,16 @@ export default function CallToActionSection() {
           opacity: 1,
           y: 0,
           duration: 0.8,
-          ease: 'power2.out',
+          ease: "power2.out",
           overwrite: true,
           scrollTrigger: {
             trigger: contentRef.current,
-            start: 'top 85%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
+            start: "top 85%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
             once: true,
-            onEnter: () => setHasAnimated(true)
-          }
+            onEnter: () => setHasAnimated(true),
+          },
         }
       );
 
@@ -52,16 +61,16 @@ export default function CallToActionSection() {
           scale: 1,
           y: 0,
           duration: 0.6,
-          ease: 'back.out(1.7)',
+          ease: "back.out(1.7)",
           overwrite: true,
           scrollTrigger: {
             trigger: actionsRef.current,
-            start: 'top 85%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
-            once: true
+            start: "top 85%",
+            end: "bottom 20%",
+            toggleActions: "play none none none",
+            once: true,
           },
-          delay: 0.2
+          delay: 0.2,
         }
       );
     }, sectionRef);
@@ -87,30 +96,38 @@ export default function CallToActionSection() {
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 leading-tight">
             Ready to join our mission?
           </h2>
-          
+
           <p className="text-xl md:text-2xl text-sky-100 leading-relaxed max-w-4xl mx-auto mb-12">
-            InfoRx is transforming healthcare technology in Nigeria. 
-            Be part of the journey as we build the future of accessible medical care.
+            InfoRx is transforming healthcare technology in Nigeria. Be part of
+            the journey as we build the future of accessible medical care.
           </p>
 
           {/* Value propositions */}
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 border border-white border-opacity-20">
-              <h3 className="text-xl font-bold text-white mb-3">🚀 Cutting-Edge Technology</h3>
+              <h3 className="text-xl font-bold text-white mb-3 flex items-center justify-center gap-2">
+                <Rocket /> Cutting-Edge Technology
+              </h3>
               <p className="text-sky-100 text-sm">
-                Work with the latest AI and healthcare technologies to solve real-world problems
+                Work with the latest AI and healthcare technologies to solve
+                real-world problems
               </p>
             </div>
             <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 border border-white border-opacity-20">
-              <h3 className="text-xl font-bold text-white mb-3">💝 Social Impact</h3>
+              <h3 className="text-xl font-bold text-white mb-3 flex items-center justify-center gap-2">
+                <Heart /> Social Impact
+              </h3>
               <p className="text-sky-100 text-sm">
                 Directly improve healthcare outcomes for millions of Nigerians
               </p>
             </div>
             <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 border border-white border-opacity-20">
-              <h3 className="text-xl font-bold text-white mb-3">📈 Growing Platform</h3>
+              <h3 className="text-xl font-bold text-white mb-3 flex items-center justify-center gap-2">
+                <ChartBarIncreasing /> Growing Platform
+              </h3>
               <p className="text-sky-100 text-sm">
-                Join a rapidly growing platform with ambitious goals and clear roadmap
+                Join a rapidly growing platform with ambitious goals and clear
+                roadmap
               </p>
             </div>
           </div>
@@ -121,24 +138,24 @@ export default function CallToActionSection() {
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Button
               size="lg"
-              className="bg-white text-slate-900 hover:bg-sky-50 px-10 py-5 text-xl font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 min-w-[240px]"
+              className="cta-button bg-white text-emerald-700 hover:bg-emerald-50 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               asChild
             >
               <Link href="/demo">
-                <MessageSquare className="mr-3 h-6 w-6" />
-                Try InfoRx Now
+                <Play className="mr-3 h-6 w-6 text-emerald-700" />
+                Try Demo Now
               </Link>
             </Button>
-            
+
             <Button
               variant="outline"
               size="lg"
-              className="border-3 border-white text-white hover:bg-white hover:text-slate-900 px-10 py-5 text-xl font-bold rounded-2xl bg-transparent transition-all duration-300 min-w-[240px] [&>*]:text-white hover:[&>*]:text-slate-900"
+              className="border-2 border-white text-white hover:bg-white hover:text-emerald-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 bg-transparent [&>*]:text-white hover:[&>*]:text-emerald-700"
               asChild
             >
               <Link href="/about">
                 Learn More
-                <ArrowRight className="ml-3 h-6 w-6" />
+                <ArrowRight className="ml-3 h-6 w-6 hover:bg-emerald-700" />
               </Link>
             </Button>
           </div>
@@ -147,9 +164,9 @@ export default function CallToActionSection() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center text-sky-100">
             <div className="flex items-center gap-2">
               <Github className="h-5 w-5" />
-              <a 
-                href="https://github.com/chinyereunamba/inforx-app" 
-                target="_blank" 
+              <a
+                href="https://github.com/chinyereunamba/inforx"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-white transition-colors duration-200"
               >
@@ -158,17 +175,17 @@ export default function CallToActionSection() {
             </div>
             <div className="flex items-center gap-2">
               <Mail className="h-5 w-5" />
-              <a 
-                href="/contact" 
+              <span
+                onClick={handleContactEmail}
                 className="hover:text-white transition-colors duration-200"
               >
                 Contact Team
-              </a>
+              </span>
             </div>
           </div>
 
           {/* Timeline CTA */}
-          <div className="bg-gradient-to-r from-emerald-500 to-sky-500 rounded-2xl p-8 mt-12 border border-white border-opacity-20">
+          {/* <div className="bg-gradient-to-r from-emerald-500 to-sky-500 rounded-2xl p-8 mt-12 border border-white border-opacity-20">
             <h3 className="text-2xl font-bold text-white mb-4">
               📅 Stay Updated on Our Progress
             </h3>
@@ -181,7 +198,7 @@ export default function CallToActionSection() {
               <span className="bg-white bg-opacity-20 px-4 py-2 rounded-full">Beta Access</span>
               <span className="bg-white bg-opacity-20 px-4 py-2 rounded-full">Community Feedback</span>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

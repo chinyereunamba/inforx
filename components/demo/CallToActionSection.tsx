@@ -169,30 +169,13 @@ export default function CallToActionSection() {
     window.location.href = "/interpreter";
   };
 
-  const handleContactEmail = () => {
-    const subject = encodeURIComponent(
-      "Partnership Inquiry - InfoRx Healthcare Platform"
-    );
-    const body = encodeURIComponent(`Hello InfoRx Team,
-
-I'm interested in learning more about InfoRx and potential collaboration opportunities.
-
-Please provide more information about:
-- Partnership opportunities
-- Product demonstrations
-- Implementation in our organization
-
-Best regards,
-`);
-
-    window.location.href = `mailto:hello@info-rx.org?subject=${subject}&body=${body}`;
-  };
+ 
 
   return (
     <>
       <section
         ref={sectionRef}
-        className="py-24 bg-gradient-to-br from-blue-600 via-emerald-600 to-blue-700 relative overflow-hidden"
+        className="py-24 bg-gradient-to-r from-emerald-500 to-sky-500 relative overflow-hidden"
         style={{
           background: "linear-gradient(135deg, #0A855C 0%, #0d9488 100%)",
         }}
@@ -272,7 +255,7 @@ Best regards,
                 asChild
               >
                 <a href="/interpreter">
-                  <Play className="mr-2 h-6 w-6" />
+                  <Play className="mr-2 h-6 w-6 hover:text-emerald-700" />
                   Try Demo Now
                 </a>
               </Button>
@@ -313,10 +296,10 @@ Best regards,
               </div>
             </div>
 
-            <p className="text-lg text-slate-600 mb-8">
+            {/* <p className="text-lg text-slate-100 mb-8 py-4">
               Don&apos;t just read about the future of healthcare &mdash;
               experience it firsthand with our interactive demo.
-            </p>
+            </p> */}
           </div>
         </div>
       </section>
@@ -335,7 +318,7 @@ Best regards,
           </Button>
         )}
       </div> */}
-      
+
       {/* Sticky CTA for Mobile */}
       {/*<div className="lg:hidden fixed bottom-4 left-4 right-4 z-50">
         {!isVisible && (

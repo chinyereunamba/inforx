@@ -120,7 +120,7 @@ export default function HeroSection() {
             className="text-4xl md:text-5xl lg:text-6xl font-bold font-noto text-slate-900 leading-tight"
           >
             Simplifying Healthcare Through
-            <span className="text-blue-500 block mt-2 font-noto">
+            <span className="text-sky-500 block mt-2 font-noto">
               Intelligent Innovation
             </span>
           </h1>
@@ -141,7 +141,7 @@ export default function HeroSection() {
           >
             <Button
               size="lg"
-              className="bg-sky-500 hover:bg-sky-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               asChild
             >
               <Link href="/demo">
@@ -153,7 +153,7 @@ export default function HeroSection() {
             <Button
               variant="outline"
               size="lg"
-              className="border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"
+              className="border-2 border-sky-500 text-sky-600 hover:bg-emerald-50 hover:text-sky-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"
               asChild
             >
               <Link href="/dashboard">
@@ -171,7 +171,7 @@ export default function HeroSection() {
         >
           <div className="relative w-full max-w-lg">
             {/* Main AI Interface Circle */}
-            <div className="w-80 h-80 md:w-96 md:h-96 bg-gradient-to-br from-blue-400 via-emerald-400 to-blue-500 rounded-full relative mx-auto shadow-2xl">
+            <div className="w-72 h-72 md:w-96 md:h-96 bg-gradient-to-br from-blue-400 via-emerald-400 to-blue-500 rounded-full relative mx-auto shadow-2xl">
               {/* Floating UI elements around the main circle */}
               <div
                 ref={(el) => {

@@ -241,7 +241,7 @@ export default function SolutionFeatures() {
 
           {/* Right Column - CTA Section */}
           <div ref={rightContentRef} className="text-center lg:text-left">
-            <div className="bg-white rounded-2xl p-8 border border-slate-200">
+            {/* <div className="bg-white rounded-2xl p-8 border border-slate-200"> */}
               <h3 className="text-2xl font-bold text-slate-900 mb-4">
                 Experience the difference AI makes
               </h3>
@@ -253,7 +253,7 @@ export default function SolutionFeatures() {
               <div ref={ctaRef} className="space-y-4">
                 <Button
                   size="lg"
-                  className="w-full bg-sky-500 hover:bg-sky-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform"
+                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform"
                   asChild
                 >
                   <Link href="/demo">See How It Works</Link>
@@ -262,7 +262,7 @@ export default function SolutionFeatures() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"
+                  className="w-full border-2 border-sky-500 text-sky-600 hover:bg-emerald-50 hover:text-sky-700 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"
                   asChild
                 >
                   <Link href="/interpreter">Explore Features</Link>
@@ -271,7 +271,7 @@ export default function SolutionFeatures() {
 
               {/* Trust indicator */}
               <div className="mt-6 pt-6 border-t border-slate-200">
-                <p className="text-sm text-slate-600 mb-2">
+                <p className="text-sm text-center text-slate-600 mb-2">
                   Trusted by healthcare professionals across Nigeria
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 text-xs text-slate-500">
@@ -281,7 +281,7 @@ export default function SolutionFeatures() {
                 </div>
               </div>
             </div>
-          </div>
+          {/* </div> */}
         </div>
       </div>
     </section>

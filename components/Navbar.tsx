@@ -92,7 +92,7 @@ export default function Navbar() {
         aria-label="Main navigation"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link
@@ -128,12 +128,12 @@ export default function Navbar() {
 
             {/* Right Side - Contact Button and Language Selector */}
             <div className="hidden lg:flex items-center space-x-4">
-              {/* <Button
-              asChild
-              className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
-            >
-              <Link href="/contact">Contact us</Link>
-            </Button> */}
+              <Button
+                asChild
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
+              >
+                <Link href="/auth/signup">Get started</Link>
+              </Button>
 
               {/* Language Selector */}
               <div className="flex items-center justify-start space-x-2 text-slate-700 hover:text-teal-600 cursor-pointer transition-colors duration-200">
@@ -204,14 +204,14 @@ export default function Navbar() {
           </div>
 
           <div className="border-t border-gray-100 px-4 py-4 space-y-3">
-            {/* <Button
-                asChild
-                className="w-full bg-green-500 hover:bg-green-600 text-white text-center py-3 px-4 rounded-lg font-medium transition-colors duration-200"
-              >
-                <Link href="/contact" onClick={closeMobileMenu}>
-                  Contact us
-                </Link>
-              </Button> */}
+            <Button
+              asChild
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-center py-3 px-4 rounded-lg font-medium transition-colors duration-200"
+            >
+              <Link href="/auth/signup" onClick={closeMobileMenu}>
+                Get started
+              </Link>
+            </Button>
 
             {/* Mobile Language Selector */}
             <div className="flex items-center justify-center space-x-2 text-slate-700 py-2">
