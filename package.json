@@ -40,10 +40,8 @@
     "@radix-ui/react-tooltip": "^1.1.2",
     "@supabase/ssr": "^0.1.0",
     "@supabase/supabase-js": "^2.39.5",
-    "@types/node": "20.6.2",
-    "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
-    "autoprefixer": "10.4.15", 
+    "autoprefixer": "10.4.15",
     "bufferutil": "^4.0.9",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -73,13 +71,15 @@
     "tailwindcss": "^3.3.3",
     "tailwindcss-animate": "^1.0.7",
     "tesseract.js": "^6.0.1",
-    "typescript": "5.2.2",
     "utf-8-validate": "^6.0.5",
     "vaul": "^0.9.9",
     "zod": "^3.23.8",
     "zustand": "^5.0.5"
   },
   "devDependencies": {
-    "@types/pdf-parse": "^1.1.5"
+    "@types/node": "24.0.7",
+    "@types/pdf-parse": "^1.1.5",
+    "@types/react": "19.1.8",
+    "typescript": "5.8.3"
   }
 }
