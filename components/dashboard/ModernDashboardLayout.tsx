@@ -85,15 +85,15 @@ export default function InterpreterPage() {
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                 <Lightbulb className="h-5 w-5 text-blue-600" />
-          </div>
+              </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">
                   Simple Explanations
                 </h3>
                 <p className="text-sm text-gray-600">
                   Easy to understand terms
-                    </p>
-                  </div>
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -110,8 +110,8 @@ export default function InterpreterPage() {
                 </h3>
                 <p className="text-sm text-gray-600">
                   Clear next steps & warnings
-              </p>
-            </div>
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>

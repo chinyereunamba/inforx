@@ -141,7 +141,7 @@ export default function SettingsPanel() {
 
   return (
     <div ref={containerRef} className="py-6">
-      <h1 className="text-3xl block max-md:hidden font-bold font-noto mb-6">
+      <h1 className="text-3xl block md:hidden font-bold font-noto mb-6">
         Settings
       </h1>
 

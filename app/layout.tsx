@@ -58,7 +58,9 @@ export default async function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className={`${inter.className} ${noto.className} antialiased`}>
+      <body
+        className={`${inter.className} ${noto.className} antialiased bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100`}
+      >
         {children}
         <Badge />
       </body>

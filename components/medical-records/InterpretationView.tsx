@@ -25,22 +25,56 @@ export default function InterpretationView({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // useEffect(() => {
+  //   async function fetchInterpretation() {
+  //     if (!recordId) return;
+  //     setLoading(true);
+  //     setError(null);
+
+  //     try {
+  //       const response = await fetch(
+  //         `/api/medical-records/${recordId}/interpretation`
+  //       );
+  //       if (!response.ok) {
+  //         const errorData = await response.json();
+  //         throw new Error(errorData.error || "Failed to fetch interpretation");
+  //       }
+  //       const data = await response.json();
+  //       setInterpretation(data);
+  //     } catch (err) {
+  //       setError(
+  //         err instanceof Error ? err.message : "An unknown error occurred"
+  //       );
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+
+  //   fetchInterpretation();
+  // }, [recordId]);
+
   useEffect(() => {
-    async function fetchInterpretation() {
+    async function fetchSummary() {
       if (!recordId) return;
       setLoading(true);
       setError(null);
 
       try {
-        const response = await fetch(
-          `/api/medical-records/${recordId}/interpretation`
-        );
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to fetch interpretation");
-        }
+        const response = await fetch("/api/medical-summary/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ recordIds: [recordId] }),
+        });
         const data = await response.json();
-        setInterpretation(data);
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || "Failed to generate summary");
+        }
+        setInterpretation({
+          id: data.summary.id,
+          interpretation_text: data.summary.summary_text,
+          processing_status: "complete",
+          processing_error: null,
+        });
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
@@ -50,7 +84,7 @@ export default function InterpretationView({
       }
     }
 
-    fetchInterpretation();
+    fetchSummary();
   }, [recordId]);
 
   if (loading) {
