@@ -25,6 +25,12 @@ const dependencies: Dependency[] = [
     status: 'completed'
   },
   {
+    from: 'Summary Generation',
+    to: 'Algorand Trust Layer',
+    description: 'Summaries are hashed and stored on Algorand to prove authenticity and prevent tampering',
+    status: 'pending'
+  },
+  {
     from: 'Authentication Fixes',
     to: 'Dashboard Features',
     description: 'Stable auth system enables advanced dashboard functionality',
