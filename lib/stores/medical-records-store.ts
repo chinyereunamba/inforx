@@ -74,6 +74,7 @@ export const useMedicalRecordsStore = create<MedicalRecordsState>((set, get) => 
       
       if (!user) {
         throw new Error("User is not authenticated");
+set({ loading: false, error: "User not authenticated yet" });
       }
       
       const { data, error } = await supabase
