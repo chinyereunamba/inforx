@@ -17,17 +17,85 @@ interface FeatureStatus {
 }
 
 const currentFeatures: FeatureStatus[] = [
-  { name: 'Dashboard Record Management', status: 'completed', description: 'Upload UI, record viewer, and preview components' },
-  { name: 'Authentication System', status: 'completed', description: 'Supabase-powered auth with role-based access' },
-  { name: 'AI Medical Summaries', status: 'completed', description: 'OpenRouter-powered medical document analysis' },
-  { name: 'Mobile Responsive Design', status: 'completed', description: 'Fully responsive across all devices' },
-  { name: 'Medical Document Upload', status: 'completed', description: 'PDF, DOCX, and image upload with validation' },
-  { name: 'Real-time AI Interpretation', status: 'completed', description: 'Instant medical text analysis and explanation' },
-  { name: 'Authentication Persistence', status: 'in-progress', description: 'Session management improvements' },
-  { name: 'Advanced Search & Filtering', status: 'in-progress', description: 'Enhanced record organization' },
-  { name: 'Bulk Record Operations', status: 'planned', description: 'Multi-select and batch actions' },
-  { name: 'Export Functionality', status: 'planned', description: 'PDF and CSV export options' }
+  {
+    name: "Dashboard Record Management",
+    status: "completed",
+    description: "Upload UI, record viewer, and preview components",
+  },
+  {
+    name: "Authentication System",
+    status: "completed",
+    description: "Supabase-powered auth with role-based access",
+  },
+  {
+    name: "AI Medical Summaries",
+    status: "completed",
+    description: "OpenRouter-powered medical document analysis",
+  },
+  {
+    name: "Mobile Responsive Design",
+    status: "completed",
+    description: "Fully responsive across all devices",
+  },
+  {
+    name: "Medical Document Upload",
+    status: "completed",
+    description: "PDF, DOCX, and image upload with validation",
+  },
+  {
+    name: "Real-time AI Interpretation",
+    status: "completed",
+    description: "Instant medical text analysis and explanation",
+  },
+  {
+    name: "Authentication Persistence",
+    status: "in-progress",
+    description: "Session management improvements",
+  },
+  {
+    name: "Advanced Search & Filtering",
+    status: "in-progress",
+    description: "Enhanced record organization",
+  },
+  {
+    name: "Bulk Record Operations",
+    status: "planned",
+    description: "Multi-select and batch actions",
+  },
+  {
+    name: "Export Functionality",
+    status: "planned",
+    description: "PDF and CSV export options",
+  },
+
+  // Additional roadmap features
+  {
+    name: "User Feedback System",
+    status: "planned",
+    description: "Allow users to rate or flag interpretations",
+  },
+  {
+    name: "Multi-user Roles",
+    status: "planned",
+    description: "Doctor and caregiver roles with role-based access control",
+  },
+  {
+    name: "Offline Mode",
+    status: "planned",
+    description: "Fallback UI and action queuing when offline",
+  },
+  {
+    name: "End-to-End Encryption",
+    status: "planned",
+    description: "Client-side encryption for medical files and AI output",
+  },
+  {
+    name: "Localization Support",
+    status: "planned",
+    description: "Language support for Pidgin, Hausa, Igbo, Yoruba, and more",
+  },
 ];
+
 
 export default function CurrentStateSection() {
   const [hasAnimated, setHasAnimated] = useState(false);

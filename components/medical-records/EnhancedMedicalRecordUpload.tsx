@@ -17,10 +17,7 @@ import {
   FileIcon,
   Eye,
   Paperclip,
-  Paperclip,
 } from "lucide-react";
-import { FileUploadService } from "@/lib/services/file-upload-service";
-import { TextExtractor } from "@/lib/utils/text-extraction";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { FileUploadService } from "@/lib/services/file-upload-service";
 import { TextExtractor } from "@/lib/utils/text-extraction";
@@ -32,16 +29,80 @@ import {
   MedicalRecord,
   MedicalRecordFormData,
 } from "@/lib/types/medical-records";
-import { useMedicalRecords } from '@/hooks/useMedicalRecordsHook';
+import { useMedicalRecords } from "@/hooks/useMedicalRecordsHook";
 
 interface EnhancedMedicalRecordUploadProps {
   onSubmitForm: (
-    formData: MedicalRecordFormData, 
+    formData: MedicalRecordFormData,
     file: File | null,
     extractedText: string | null
   ) => Promise<void>;
   onClose: () => void;
   isSubmittingParent?: boolean;
+}
+
+function autoDetectDocumentType(text: string): string | null {
+  text = text.toLowerCase();
+  if (
+    text.includes("prescription") ||
+    text.includes("rx:") ||
+    text.includes("sig:") ||
+    text.includes("take") ||
+    text.includes("dose") ||
+    text.includes("tablet") ||
+    text.includes("mg")
+  ) {
+    return "prescription";
+  } else if (
+    text.includes("laboratory") ||
+    text.includes("lab report") ||
+    text.includes("results:") ||
+    text.includes("reference range") ||
+    text.includes("test:") ||
+    text.includes("specimen")
+  ) {
+    return "lab_result";
+  } else if (
+    text.includes("scan") ||
+    text.includes("x-ray") ||
+    text.includes("mri") ||
+    text.includes("ct") ||
+    text.includes("ultrasound") ||
+    text.includes("imaging") ||
+    text.includes("radiolog")
+  ) {
+    return "scan";
+  }
+  return null;
+}
+
+function generateTitleFromExtractedText(text: string): string | null {
+  const lines = text.split("\n").slice(0, 10);
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+    if (!trimmedLine || trimmedLine.length < 5) continue;
+    if (
+      trimmedLine.includes(":") ||
+      trimmedLine.includes("=") ||
+      trimmedLine.toLowerCase().startsWith("date") ||
+      trimmedLine.toLowerCase().startsWith("name") ||
+      trimmedLine.toLowerCase().includes("patient")
+    ) {
+      continue;
+    }
+    if (trimmedLine.length > 5 && trimmedLine.length < 60) {
+      return trimmedLine;
+    }
+  }
+  const docType = autoDetectDocumentType(text);
+  if (docType === "prescription") {
+    return "Prescription";
+  } else if (docType === "lab_result") {
+    return "Laboratory Results";
+  } else if (docType === "scan") {
+    return "Medical Scan";
+  }
+  return "Medical Document";
 }
 
 export default function EnhancedMedicalRecordUpload({

@@ -137,10 +137,8 @@ export default function UploadQueuePage() {
             </CardHeader>
             <CardContent>
               <EnhancedMedicalRecordUpload
-                onRecordAdded={handleRecordAdded}
-                onUploadComplete={() => {
-                  // This function is called when the upload is complete
-                }}
+                onSubmitForm={async () => {}}
+                onClose={() => {}}
               />
             </CardContent>
           </Card>

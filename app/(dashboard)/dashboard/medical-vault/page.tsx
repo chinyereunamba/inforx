@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
-import { useMedicalRecords } from '@/hooks/useMedicalRecordsHook';
+import { useMedicalRecords } from "@/hooks/useMedicalRecordsHook";
 import {
   Upload,
   FileText,
@@ -26,26 +26,29 @@ import {
   CheckCircle,
   LayoutList,
   SortAsc,
-  SortDesc
+  SortDesc,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogDescription,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import EnhancedMedicalRecordUpload from "@/components/medical-records/EnhancedMedicalRecordUpload";
 import { FileUploadProgress } from "@/components/dashboard/FileUploadProgress";
-import { MedicalRecord, MedicalRecordFormData } from "@/lib/types/medical-records";
+import {
+  MedicalRecord,
+  MedicalRecordFormData,
+} from "@/lib/types/medical-records";
+import { FileUploadService } from "@/lib/services/file-upload-service";
+import { TextExtractor } from "@/lib/utils/text-extraction"; // Import TextExtractor
 import RecordCard from "@/components/medical-records/RecordCard";
-import { FileUploadService } from "@/lib/services/file-upload-service";
-import { FileUploadService } from "@/lib/services/file-upload-service";
 
 // Interface for active upload file
 interface ActiveUpload {
@@ -54,8 +57,8 @@ interface ActiveUpload {
   fileSize?: number;
   fileType?: string;
   status: "uploading" | "processing" | "success" | "error";
-  progress: number;
-  processingProgress: number;
+  progress: number; // Overall progress (0-100)
+  processingProgress: number; // Text extraction/AI processing progress (0-100)
   fileUrl?: string;
   error?: string;
   record?: MedicalRecord;
@@ -63,34 +66,33 @@ interface ActiveUpload {
 
 export default function MedicalVaultPage() {
   const { user } = useAuthStore();
-  const { records, loading, deleteRecord, refetch, createRecord } = useMedicalRecords();
+  const { records, loading, deleteRecord, createRecord, stats, fetchStats } =
+    useMedicalRecords();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  
+
   // State for active uploads
   const [activeUploads, setActiveUploads] = useState<ActiveUpload[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // State for expanded records
-  const [expandedRecordId, setExpandedRecordId] = useState<string | null>(null);
-  
-  // For observing upload progress
+  const [isSubmitting, setIsSubmitting] = useState(false); // Indicates if a form is being submitted from the dialog
+
+  // For observing upload progress (not directly used for UI, but good practice for cleanup)
   const uploadObserverRef = useRef<IntersectionObserver | null>(null);
 
   // Filtered records based on search and filter type
   const filteredRecords = useMemo(() => {
-    return records.filter(record => {
+    return records.filter((record) => {
       // Filter by search term
-      const matchesSearch = !searchTerm || 
+      const matchesSearch =
+        !searchTerm ||
         record.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         record.hospital_name.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       // Filter by type
-      const matchesType = filterType === 'all' || record.type === filterType;
-      
+      const matchesType = filterType === "all" || record.type === filterType;
+
       return matchesSearch && matchesType;
     });
   }, [records, searchTerm, filterType]);
@@ -110,55 +112,45 @@ export default function MedicalVaultPage() {
       prescription: [],
       lab_result: [],
       scan: [],
-      other: []
+      other: [],
     };
-    
-    sortedRecords.forEach(record => {
+
+    sortedRecords.forEach((record) => {
       grouped[record.type].push(record);
     });
-    
+
     return grouped;
   }, [sortedRecords]);
-  
-  // Stats for the dashboard
-  const stats = useMemo(() => {
-    return {
-      totalRecords: records.length,
-      withFiles: records.filter(r => r.file_url).length,
-      hospitals: [...new Set(records.map(r => r.hospital_name))].length,
-      typeCounts: {
-        prescription: records.filter(r => r.type === 'prescription').length,
-        lab_result: records.filter(r => r.type === 'lab_result').length,
-        scan: records.filter(r => r.type === 'scan').length,
-        other: records.filter(r => r.type === 'other').length
-      }
-    };
-  }, [records]);
+
+  // Fetch stats on component mount and whenever records change
+  useEffect(() => {
+    fetchStats();
+  }, [records, fetchStats]);
 
   useEffect(() => {
     if (user) {
       // Set up intersection observer for upload progress cards
       uploadObserverRef.current = new IntersectionObserver(
         (entries) => {
-          entries.forEach(entry => {
+          entries.forEach((entry) => {
             if (entry.isIntersecting) {
               // Card is visible, keep it in view
-              entry.target.classList.add('upload-card-visible');
+              entry.target.classList.add("upload-card-visible");
             } else {
               // Card is not visible
-              entry.target.classList.remove('upload-card-visible');
+              entry.target.classList.remove("upload-card-visible");
             }
           });
         },
         { threshold: 0.1 }
       );
-      
+
       // Log page view
       LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
         page: "medical_vault",
       });
     }
-    
+
     return () => {
       // Clean up observer
       if (uploadObserverRef.current) {
@@ -167,307 +159,139 @@ export default function MedicalVaultPage() {
     };
   }, [user]);
 
-  // Handle file upload submission
+  // Handle file upload submission from the dialog
   const handleSubmitForm = async (
-    formData: MedicalRecordFormData, 
+    formData: MedicalRecordFormData,
     file: File | null,
     extractedText: string | null
   ) => {
     if (!user) return;
-    
+
     setIsSubmitting(true);
-    
+
+    // Create a unique ID for this upload
+    const uploadId = `upload-${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2, 9)}`;
+
+    // Add to active uploads with initial state
+    const newUpload: ActiveUpload = {
+      id: uploadId,
+      fileName: file?.name || formData.title || "Medical Record",
+      fileSize: file?.size,
+      fileType: file?.type,
+      status: "uploading",
+      progress: 0,
+      processingProgress: 0,
+    };
+
+    setActiveUploads((prev) => [...prev, newUpload]);
+    setIsDialogOpen(false); // Close dialog immediately after submission
+
     try {
-      // Create a unique ID for this upload
-      const uploadId = `upload-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-      
-      // Add to active uploads with initial state
-      const newUpload: ActiveUpload = {
-        id: uploadId,
-        fileName: file?.name || "Medical Record",
-        fileSize: file?.size,
-        fileType: file?.type,
-        status: "uploading",
-        progress: 0,
-        processingProgress: 0
-      };
-      
-      setActiveUploads(prev => [...prev, newUpload]);
-      setIsDialogOpen(false); // Close dialog immediately after submission
-      
-      // Create the record
-      try {
-        // Update upload progress as file uploads
-        const onUploadProgress = (progress: { percentage: number }) => {
-          setActiveUploads(uploads => 
-            uploads.map(upload => 
-              upload.id === uploadId 
-                ? { ...upload, progress: progress.percentage } 
-                : upload
-            )
-          );
-        };
-        
-        // Process the upload
-        let fileUrl: string | undefined;
-        
-        // If there's a file, upload it first
-        if (file) {
-          // Update status to uploading
-          setActiveUploads(uploads => 
-            uploads.map(upload => 
-              upload.id === uploadId 
-                ? { ...upload, status: "uploading" } 
-                : upload
-            )
-          );
-          
-          // Upload the file
-          const uploadResult = await FileUploadService.uploadFile(file, user, onUploadProgress);
-          
-          if (!uploadResult.success) {
-            throw new Error(uploadResult.error || "File upload failed");
-          }
-          
-          fileUrl = uploadResult.fileUrl;
-          
-          // Update status to processing
-          setActiveUploads(uploads => 
-            uploads.map(upload => 
-              upload.id === uploadId 
-                ? { 
-                    ...upload, 
-                    status: "processing", 
-                    progress: 100,
-                    fileUrl
-                  } 
-                : upload
-            )
-          );
-          
-          // Simulate processing progress (in a real app, this would be actual processing)
-          const processingInterval = setInterval(() => {
-            setActiveUploads(uploads => {
-              const upload = uploads.find(u => u.id === uploadId);
-              if (!upload) {
-                clearInterval(processingInterval);
-                return uploads;
-              }
-              
-              const newProgress = upload.processingProgress + 10;
-              if (newProgress >= 100) {
-                clearInterval(processingInterval);
-              }
-              
-              return uploads.map(u => 
-                u.id === uploadId 
-                  ? { ...u, processingProgress: Math.min(newProgress, 100) } 
-                  : u
-              );
-            });
-          }, 200);
-        }
-        
-        // Update form with extracted text if available
-        const updatedFormData = {
-          ...formData,
-          notes: formData.notes || extractedText || undefined
-        };
-        
-        // Create the record
-        const newRecord = await createRecord(updatedFormData, file);
-        
-        // Update upload status to success
-        setActiveUploads(uploads => 
-          uploads.map(upload => 
-            upload.id === uploadId 
-              ? { 
-                  ...upload, 
-                  status: "success", 
-                  progress: 100, 
-                  processingProgress: 100,
-                  record: newRecord
-                } 
-              : upload
+      let fileUrl: string | undefined;
+      let finalFileName: string | undefined;
+      let finalFileSize: number | undefined;
+      let finalFileType: string | undefined;
+
+      // If there's a file, upload it first
+      if (file) {
+        // Update status to uploading
+        setActiveUploads((uploads) =>
+          uploads.map((upload) =>
+            upload.id === uploadId ? { ...upload, status: "uploading" } : upload
           )
         );
-        
-        // After 5 seconds, remove the success notification
-        setTimeout(() => {
-          setActiveUploads(uploads => uploads.filter(upload => upload.id !== uploadId));
-        }, 5000);
-        
-      } catch (error) {
-        console.error("Error creating record:", error);
-        
-        // Update upload status to error
-        setActiveUploads(uploads => 
-          uploads.map(upload => 
-            upload.id === uploadId 
-              ? { 
-                  ...upload, 
-                  status: "error", 
-                  error: error instanceof Error ? error.message : "Failed to upload medical record"
-                } 
+
+        // Upload the file
+        const uploadResult = await FileUploadService.uploadFile(
+          file,
+          user,
+          (progress) => {
+            setActiveUploads((uploads) =>
+              uploads.map((upload) =>
+                upload.id === uploadId
+                  ? { ...upload, progress: progress.percentage }
+                  : upload
+              )
+            );
+          }
+        );
+
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || "File upload failed");
+        }
+
+        fileUrl = uploadResult.fileUrl;
+        finalFileName = uploadResult.fileName;
+        finalFileSize = uploadResult.fileSize;
+        finalFileType = uploadResult.fileType;
+
+        // Update status to processing (for AI interpretation/text extraction)
+        setActiveUploads((uploads) =>
+          uploads.map((upload) =>
+            upload.id === uploadId
+              ? {
+                  ...upload,
+                  status: "processing",
+                  progress: 100, // File upload complete
+                  fileUrl,
+                }
               : upload
           )
         );
       }
-      
-    } catch (error) {
-      console.error("Upload error:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  const handleSubmitForm = async (
-    formData: MedicalRecordFormData, 
-    file: File | null,
-    extractedText: string | null
-  ) => {
-    if (!user) return;
-    
-    setIsSubmitting(true);
-    
-    try {
-      // Create a unique ID for this upload
-      const uploadId = `upload-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-      
-      // Add to active uploads with initial state
-      const newUpload: ActiveUpload = {
-        id: uploadId,
-        fileName: file?.name || "Medical Record",
-        fileSize: file?.size,
-        fileType: file?.type,
-        status: "uploading",
-        progress: 0,
-        processingProgress: 0
+
+      // Create the record in the database
+      const recordDataToCreate: MedicalRecordFormData = {
+        ...formData,
+        notes: formData.notes || extractedText || undefined, // Use extracted text if no notes provided
       };
-      
-      setActiveUploads(prev => [...prev, newUpload]);
-      setIsDialogOpen(false); // Close dialog immediately after submission
-      
-      // Create the record
-      try {
-        // Update upload progress as file uploads
-        const onUploadProgress = (progress: { percentage: number }) => {
-          setActiveUploads(uploads => 
-            uploads.map(upload => 
-              upload.id === uploadId 
-                ? { ...upload, progress: progress.percentage } 
-                : upload
-            )
-          );
-        };
-        
-        // Process the upload
-        let fileUrl: string | undefined;
-        
-        // If there's a file, upload it first
-        if (file) {
-          // Update status to uploading
-          setActiveUploads(uploads => 
-            uploads.map(upload => 
-              upload.id === uploadId 
-                ? { ...upload, status: "uploading" } 
-                : upload
-            )
-          );
-          
-          // Upload the file
-          const uploadResult = await FileUploadService.uploadFile(file, user, onUploadProgress);
-          
-          if (!uploadResult.success) {
-            throw new Error(uploadResult.error || "File upload failed");
-          }
-          
-          fileUrl = uploadResult.fileUrl;
-          
-          // Update status to processing
-          setActiveUploads(uploads => 
-            uploads.map(upload => 
-              upload.id === uploadId 
-                ? { 
-                    ...upload, 
-                    status: "processing", 
-                    progress: 100,
-                    fileUrl
-                  } 
-                : upload
-            )
-          );
-          
-          // Simulate processing progress (in a real app, this would be actual processing)
-          const processingInterval = setInterval(() => {
-            setActiveUploads(uploads => {
-              const upload = uploads.find(u => u.id === uploadId);
-              if (!upload) {
-                clearInterval(processingInterval);
-                return uploads;
+
+      const createdRecord = await createRecord(
+        recordDataToCreate,
+        file || undefined
+      );
+
+      // Update upload status to success
+      setActiveUploads((uploads) =>
+        uploads.map((upload) =>
+          upload.id === uploadId
+            ? {
+                ...upload,
+                status: "success",
+                progress: 100,
+                processingProgress: 100, // Assuming processing is complete once record is created
+                record: createdRecord,
               }
-              
-              const newProgress = upload.processingProgress + 10;
-              if (newProgress >= 100) {
-                clearInterval(processingInterval);
-              }
-              
-              return uploads.map(u => 
-                u.id === uploadId 
-                  ? { ...u, processingProgress: Math.min(newProgress, 100) } 
-                  : u
-              );
-            });
-          }, 200);
-        }
-        
-        // Update form with extracted text if available
-        const updatedFormData = {
-          ...formData,
-          notes: formData.notes || extractedText || undefined
-        };
-        
-        // Create the record
-        const newRecord = await createRecord(updatedFormData, file);
-        
-        // Update upload status to success
-        setActiveUploads(uploads => 
-          uploads.map(upload => 
-            upload.id === uploadId 
-              ? { 
-                  ...upload, 
-                  status: "success", 
-                  progress: 100, 
-                  processingProgress: 100,
-                  record: newRecord
-                } 
-              : upload
-          )
+            : upload
+        )
+      );
+
+      // After 5 seconds, remove the success notification
+      setTimeout(() => {
+        setActiveUploads((uploads) =>
+          uploads.filter((upload) => upload.id !== uploadId)
         );
-        
-        // After 5 seconds, remove the success notification
-        setTimeout(() => {
-          setActiveUploads(uploads => uploads.filter(upload => upload.id !== uploadId));
-        }, 5000);
-        
-      } catch (error) {
-        console.error("Error creating record:", error);
-        
-        // Update upload status to error
-        setActiveUploads(uploads => 
-          uploads.map(upload => 
-            upload.id === uploadId 
-              ? { 
-                  ...upload, 
-                  status: "error", 
-                  error: error instanceof Error ? error.message : "Failed to upload medical record"
-                } 
-              : upload
-          )
-        );
-      }
-      
+      }, 5000);
     } catch (error) {
-      console.error("Upload error:", error);
+      console.error("Error creating record:", error);
+
+      // Update upload status to error
+      setActiveUploads((uploads) =>
+        uploads.map((upload) =>
+          upload.id === uploadId
+            ? {
+                ...upload,
+                status: "error",
+                error:
+                  error instanceof Error
+                    ? error.message
+                    : "Failed to upload medical record",
+              }
+            : upload
+        )
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -480,19 +304,22 @@ export default function MedicalVaultPage() {
       console.error("Error deleting record:", error);
     }
   };
-  
-  // Cancel an active upload
+
+  // Cancel an active upload (just removes from list for now)
   const handleCancelUpload = (uploadId: string) => {
-    setActiveUploads(uploads => uploads.filter(upload => upload.id !== uploadId));
+    setActiveUploads((uploads) =>
+      uploads.filter((upload) => upload.id !== uploadId)
+    );
   };
-  
-  // Retry a failed upload
+
+  // Retry a failed upload (just removes from list for now, user can re-upload)
   const handleRetryUpload = (uploadId: string) => {
-    // In a real implementation, this would restart the upload
-    // For now, we'll just remove it from the list
-    setActiveUploads(uploads => uploads.filter(upload => upload.id !== uploadId));
+    setActiveUploads((uploads) =>
+      uploads.filter((upload) => upload.id !== uploadId)
+    );
+    // In a real app, you might re-trigger the handleSubmitForm with the original data
   };
-  
+
   // Format date for display
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -525,11 +352,6 @@ export default function MedicalVaultPage() {
     };
     return typeLabels[type as keyof typeof typeLabels] || type;
   };
-  
-  // Toggle expanded state for record details
-  const toggleExpandRecord = (recordId: string) => {
-    setExpandedRecordId(expandedRecordId === recordId ? null : recordId);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-6">
@@ -560,13 +382,11 @@ export default function MedicalVaultPage() {
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-full"
               />
             </div>
-            
+
             <div className="flex gap-2">
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                  >
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
                     <Upload className="h-4 w-4 mr-2" />
                     Upload Document
                   </Button>
@@ -581,7 +401,6 @@ export default function MedicalVaultPage() {
                   <EnhancedMedicalRecordUpload
                     onSubmitForm={handleSubmitForm}
                     onClose={() => setIsDialogOpen(false)}
-                    isSubmittingParent={isSubmitting}
                     isSubmittingParent={isSubmitting}
                   />
                 </DialogContent>
@@ -611,66 +430,83 @@ export default function MedicalVaultPage() {
                   error={upload.error}
                   onRetry={() => handleRetryUpload(upload.id)}
                   onCancel={() => handleCancelUpload(upload.id)}
-                  onView={upload.fileUrl ? () => window.open(upload.fileUrl, "_blank") : undefined}
-                  onDownload={upload.fileUrl ? 
-                    () => {
-                      const a = document.createElement("a");
-                      a.href = upload.fileUrl as string;
-                      a.download = upload.fileName;
-                      document.body.appendChild(a);
-                      a.click();
-                      document.body.removeChild(a);
-                    } : undefined
+                  onView={
+                    upload.fileUrl
+                      ? () => window.open(upload.fileUrl, "_blank")
+                      : undefined
+                  }
+                  onDownload={
+                    upload.fileUrl
+                      ? () => {
+                          const a = document.createElement("a");
+                          a.href = upload.fileUrl as string;
+                          a.download = upload.fileName;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                        }
+                      : undefined
                   }
                 />
               ))}
             </div>
           </div>
         )}
-        
+
         {/* Stats Overview */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
-          <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
-            <CardContent className="p-4 flex flex-col items-center text-center">
-              <div className="bg-blue-100 rounded-full p-3 mb-3">
-                <FileText className="h-5 w-5 text-blue-600" />
-              </div>
-              <div className="text-2xl font-semibold">{stats.totalRecords}</div>
-              <div className="text-xs text-slate-500">Total Records</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
-            <CardContent className="p-4 flex flex-col items-center text-center">
-              <div className="bg-emerald-100 rounded-full p-3 mb-3">
-                <Calendar className="h-5 w-5 text-emerald-600" />
-              </div>
-              <div className="text-2xl font-semibold">{stats.withFiles}</div>
-              <div className="text-xs text-slate-500">With Attachments</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
-            <CardContent className="p-4 flex flex-col items-center text-center">
-              <div className="bg-purple-100 rounded-full p-3 mb-3">
-                <Tag className="h-5 w-5 text-purple-600" />
-              </div>
-              <div className="text-2xl font-semibold">{stats.hospitals}</div>
-              <div className="text-xs text-slate-500">Hospitals</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
-            <CardContent className="p-4 flex flex-col items-center text-center">
-              <div className="bg-amber-100 rounded-full p-3 mb-3">
-                <FileCheck className="h-5 w-5 text-amber-600" />
-              </div>
-              <div className="text-2xl font-semibold">{Object.values(stats.typeCounts).reduce((a, b) => a + b, 0)}</div>
-              <div className="text-xs text-slate-500">Documents</div>
-            </CardContent>
-          </Card>
-        </div>
-        
+        {stats && (
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
+              <CardContent className="p-4 flex flex-col items-center text-center">
+                <div className="bg-blue-100 rounded-full p-3 mb-3">
+                  <FileText className="h-5 w-5 text-blue-600" />
+                </div>
+                <div className="text-2xl font-semibold">
+                  {stats.totalRecords}
+                </div>
+                <div className="text-xs text-slate-500">Total Records</div>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
+              <CardContent className="p-4 flex flex-col items-center text-center">
+                <div className="bg-emerald-100 rounded-full p-3 mb-3">
+                  <Calendar className="h-5 w-5 text-emerald-600" />
+                </div>
+                <div className="text-2xl font-semibold">
+                  {stats.recordsWithFiles}
+                </div>
+                <div className="text-xs text-slate-500">With Attachments</div>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
+              <CardContent className="p-4 flex flex-col items-center text-center">
+                <div className="bg-purple-100 rounded-full p-3 mb-3">
+                  <Tag className="h-5 w-5 text-purple-600" />
+                </div>
+                <div className="text-2xl font-semibold">
+                  {
+                    Array.from(new Set(records.map((r) => r.hospital_name)))
+                      .length
+                  }
+                </div>
+                <div className="text-xs text-slate-500">Hospitals</div>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-slate-200 dark:border-slate-700 hover:shadow-md">
+              <CardContent className="p-4 flex flex-col items-center text-center">
+                <div className="bg-amber-100 rounded-full p-3 mb-3">
+                  <FileCheck className="h-5 w-5 text-amber-600" />
+                </div>
+                <div className="text-2xl font-semibold">{records.length}</div>
+                <div className="text-xs text-slate-500">Documents</div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {/* Filter and Sort Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div className="flex flex-wrap gap-2">
@@ -678,7 +514,11 @@ export default function MedicalVaultPage() {
               variant={filterType === "all" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("all")}
-              className={filterType === "all" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+              className={
+                filterType === "all"
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : ""
+              }
             >
               All
             </Button>
@@ -686,78 +526,104 @@ export default function MedicalVaultPage() {
               variant={filterType === "prescription" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("prescription")}
-              className={filterType === "prescription" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+              className={
+                filterType === "prescription"
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : ""
+              }
             >
               <Pill className="h-4 w-4 mr-1" />
               Prescriptions
-              {stats.typeCounts.prescription > 0 && (
-                <span className="ml-1 text-xs">{stats.typeCounts.prescription}</span>
+              {records.filter((r) => r.type === "prescription").length > 0 && (
+                <span className="ml-1 text-xs">
+                  {records.filter((r) => r.type === "prescription").length}
+                </span>
               )}
             </Button>
             <Button
               variant={filterType === "lab_result" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("lab_result")}
-              className={filterType === "lab_result" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+              className={
+                filterType === "lab_result"
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : ""
+              }
             >
               <FileCheck className="h-4 w-4 mr-1" />
               Lab Results
-              {stats.typeCounts.lab_result > 0 && (
-                <span className="ml-1 text-xs">{stats.typeCounts.lab_result}</span>
+              {records.filter((r) => r.type === "lab_result").length > 0 && (
+                <span className="ml-1 text-xs">
+                  {records.filter((r) => r.type === "lab_result").length}
+                </span>
               )}
             </Button>
             <Button
               variant={filterType === "scan" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("scan")}
-              className={filterType === "scan" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+              className={
+                filterType === "scan"
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : ""
+              }
             >
               <FileImage className="h-4 w-4 mr-1" />
               Scans
-              {stats.typeCounts.scan > 0 && (
-                <span className="ml-1 text-xs">{stats.typeCounts.scan}</span>
+              {records.filter((r) => r.type === "scan").length > 0 && (
+                <span className="ml-1 text-xs">
+                  {records.filter((r) => r.type === "scan").length}
+                </span>
               )}
             </Button>
             <Button
               variant={filterType === "other" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterType("other")}
-              className={filterType === "other" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+              className={
+                filterType === "other"
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : ""
+              }
             >
               <FileText className="h-4 w-4 mr-1" />
               Others
-              {stats.typeCounts.other > 0 && (
-                <span className="ml-1 text-xs">{stats.typeCounts.other}</span>
+              {records.filter((r) => r.type === "other").length > 0 && (
+                <span className="ml-1 text-xs">
+                  {records.filter((r) => r.type === "other").length}
+                </span>
               )}
             </Button>
           </div>
-          
+
           <div className="flex gap-3">
             {/* View Mode Switcher */}
             <div className="flex border border-gray-200 rounded-lg overflow-hidden">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setViewMode("grid")}
                 className={viewMode === "grid" ? "bg-sky-50 text-sky-600" : ""}
               >
                 <LayoutGrid className="h-4 w-4" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setViewMode("list")}
                 className={viewMode === "list" ? "bg-sky-50 text-sky-600" : ""}
               >
                 <LayoutList className="h-4 w-4" />
               </Button>
             </div>
-            
+
             {/* Sort Order Toggle */}
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
-              onClick={() => setSortOrder(sortOrder === "newest" ? "oldest" : "newest")}
+              onClick={() =>
+                setSortOrder(sortOrder === "newest" ? "oldest" : "newest")
+              }
               className="gap-2"
             >
               {sortOrder === "newest" ? (
@@ -793,7 +659,8 @@ export default function MedicalVaultPage() {
                   No medical records found
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Start by uploading your first medical record using the upload button above.
+                  Start by uploading your first medical record using the upload
+                  button above.
                 </p>
                 <Button
                   onClick={() => setIsDialogOpen(true)}
@@ -806,10 +673,10 @@ export default function MedicalVaultPage() {
             ) : (
               <div className="space-y-8">
                 {/* Grid View */}
-                {viewMode === "grid" && (
-                  filterType === "all" ? (
+                {viewMode === "grid" &&
+                  (filterType === "all" ? (
                     // Show by categories when "All" is selected
-                    Object.entries(recordsByType).map(([type, typeRecords]) => 
+                    Object.entries(recordsByType).map(([type, typeRecords]) =>
                       typeRecords.length > 0 ? (
                         <div key={type}>
                           <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -851,9 +718,8 @@ export default function MedicalVaultPage() {
                         ))}
                       </div>
                     </div>
-                  )
-                )}
-                
+                  ))}
+
                 {/* List View */}
                 {viewMode === "list" && (
                   <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -861,19 +727,30 @@ export default function MedicalVaultPage() {
                       <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                           <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Record</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hospital</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Record
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Type
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Hospital
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Date
+                            </th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Actions
+                            </th>
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                           {sortedRecords.map((record, index) => (
-                            <tr 
-                              key={record.id} 
-                              className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
-                              onClick={() => toggleExpandRecord(record.id)}
+                            <tr
+                              key={record.id}
+                              className={
+                                index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                              }
                             >
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
@@ -881,13 +758,21 @@ export default function MedicalVaultPage() {
                                     {getTypeIcon(record.type)}
                                   </div>
                                   <div className="ml-4">
-                                    <div className="text-sm font-medium text-gray-900">{record.title}</div>
-                                    {record.file_name && <div className="text-xs text-gray-500">{record.file_name}</div>}
+                                    <div className="text-sm font-medium text-gray-900">
+                                      {record.title}
+                                    </div>
+                                    {record.file_name && (
+                                      <div className="text-xs text-gray-500">
+                                        {record.file_name}
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <Badge className="text-xs">{getTypeLabel(record.type)}</Badge>
+                                <Badge className="text-xs">
+                                  {getTypeLabel(record.type)}
+                                </Badge>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {record.hospital_name}
@@ -904,13 +789,16 @@ export default function MedicalVaultPage() {
                                         size="sm"
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          window.open(record.file_url, "_blank");
+                                          window.open(
+                                            record.file_url,
+                                            "_blank"
+                                          );
                                         }}
                                         className="h-8 w-8 p-0"
                                       >
                                         <Eye className="h-4 w-4 text-gray-500" />
                                       </Button>
-                                      
+
                                       <Button
                                         variant="ghost"
                                         size="sm"
@@ -918,7 +806,8 @@ export default function MedicalVaultPage() {
                                           e.stopPropagation();
                                           const a = document.createElement("a");
                                           a.href = record.file_url as string;
-                                          a.download = record.file_name || record.title;
+                                          a.download =
+                                            record.file_name || record.title;
                                           document.body.appendChild(a);
                                           a.click();
                                           document.body.removeChild(a);
@@ -929,7 +818,7 @@ export default function MedicalVaultPage() {
                                       </Button>
                                     </>
                                   )}
-                                  
+
                                   <Button
                                     variant="ghost"
                                     size="sm"
