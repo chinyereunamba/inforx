@@ -194,14 +194,7 @@ export default function EnhancedDashboardLayout({
     return pathname.startsWith(href);
   };
 
-  const handleNavigationClick = (route: string) => {
-    if (user) {
-      LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
-        page: route.replace("/dashboard/", "").replace("/", ""),
-      });
-    }
-    setSidebarOpen(!sidebarOpen);
-  };
+
 
   const handleSidebarClose = () => {
     if (sidebarOpen && sidebarRef.current && overlayRef.current) {
@@ -219,6 +212,15 @@ export default function EnhancedDashboardLayout({
         duration: 0.3,
       });
     }
+  };
+
+  const handleNavigationClick = (route: string) => {
+    if (user) {
+      LoggingService.logAction(user, LoggingService.actions.PAGE_VIEW, {
+        page: route.replace("/dashboard/", "").replace("/", ""),
+      });
+    }
+    handleSidebarClose()
   };
 
   // Render the overlay using createPortal to ensure proper z-index behavior
@@ -286,7 +288,7 @@ export default function EnhancedDashboardLayout({
             <Button
               variant="ghost"
               size="sm"
-              onClick={()=>handleSidebarClose}
+              onClick={() => handleSidebarClose}
               className="lg:hidden text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
               aria-label="Close sidebar"
             >

@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const buffer = await file.arrayBuffer();
 
     // Dynamically import pdf-parse to avoid build-time issues
-    const pdf = (await import("pdf-parse")).default;
+    const pdf = require("pdf-parse");
     
     // Use pdf-parse to extract text
     const result = await pdf(Buffer.from(buffer));

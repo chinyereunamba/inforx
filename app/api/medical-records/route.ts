@@ -85,14 +85,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Parse request body
-    const formData = await request.formData();
-    const title = formData.get("title") as string;
-    const type = formData.get("type") as string;
-    const hospital_name = formData.get("hospital_name") as string;
-    const visit_date = formData.get("visit_date") as string;
-    const notes = formData.get("notes") as string;
-    const file = formData.get("file") as File | null;
+    // Parse JSON body
+    const body = await request.json();
+    const {
+      title,
+      type,
+      hospital_name,
+      visit_date,
+      notes,
+      file_url,
+      file_name,
+      file_size,
+      file_type,
+    } = body;
 
     // Validate required fields
     if (!title?.trim() || !type || !hospital_name?.trim() || !visit_date) {
@@ -100,71 +105,6 @@ export async function POST(request: NextRequest) {
         { error: "Missing required fields" },
         { status: 400 }
       );
-    }
-
-    let fileUrl = null;
-    let fileName = null;
-    let fileSize = null;
-    let fileType = null;
-
-    // Handle file upload if provided
-    if (file) {
-      // Validate file type
-      const allowedTypes = [
-        "application/pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "image/png",
-        "image/jpeg",
-        "image/jpg",
-        "plain/text",
-      ];
-
-      if (!allowedTypes.includes(file.type)) {
-        return NextResponse.json(
-          { error: "Invalid file type. Only PDF, DOCX, PNG, JPG are allowed" },
-          { status: 400 }
-        );
-      }
-
-      // Validate file size (10MB limit)
-      if (file.size > 10 * 1024 * 1024) {
-        return NextResponse.json(
-          { error: "File size must be less than 10MB" },
-          { status: 400 }
-        );
-      }
-
-      // Upload file to Supabase Storage
-      const fileExt = file.name.split(".").pop();
-      const fileNameWithTimestamp = `${Date.now()}-${Math.random()
-        .toString(36)
-        .substring(2)}.${fileExt}`;
-      const filePath = `medical-records/${user.id}/${fileNameWithTimestamp}`;
-
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("vault")
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-
-      if (uploadError) {
-        console.error("File upload error:", uploadError);
-        return NextResponse.json(
-          { error: "Failed to upload file" },
-          { status: 500 }
-        );
-      }
-
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from("vault")
-        .getPublicUrl(filePath);
-
-      fileUrl = urlData.publicUrl;
-      fileName = file.name;
-      fileSize = file.size;
-      fileType = file.type;
     }
 
     // Create medical record in database
@@ -177,12 +117,12 @@ export async function POST(request: NextRequest) {
         hospital_name: hospital_name.trim(),
         visit_date,
         notes: notes?.trim() || null,
-        file_url: fileUrl,
-        file_name: fileName,
-        file_size: fileSize,
-        file_type: fileType,
+        file_url: file_url || null,
+        file_name: file_name || null,
+        file_size: file_size || null,
+        file_type: file_type || null,
         text_content: null,
-        processing_status: file ? "processing" : "complete",
+        processing_status: file_url ? "processing" : "complete",
       })
       .select()
       .single();
@@ -195,85 +135,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // If there's a file, extract text from it
-    if (file && record) {
-      try {
-        // Extract text from the file
-        const extractionResult = await TextExtractor.extractText(file);
-
-        let interpretationText = null;
-        let interpretationError = null;
-
-        // If text extraction was successful, try to generate an AI interpretation
-        if (extractionResult.success && extractionResult.text) {
-          try {
-            const { interpretation, error: aiError } =
-              await aiMedicalSummaryService.interpretMedicalText(
-                extractionResult.text,
-                type
-              );
-
-            interpretationText = interpretation;
-            interpretationError = aiError;
-          } catch (aiInterpretError) {
-            console.error("AI interpretation error:", aiInterpretError);
-            interpretationError =
-              aiInterpretError instanceof Error
-                ? aiInterpretError.message
-                : "Failed to generate interpretation";
-          }
-        }
-
-        // Update record with extracted text
-        const { data: updatedRecord, error: updateError } = await supabase
-          .from("medical_records")
-          .update({
-            text_content: extractionResult.success
-              ? extractionResult.text
-              : null,
-            interpretation_text: interpretationText,
-            processing_status: extractionResult.success ? "complete" : "failed",
-            processed_at: new Date().toISOString(),
-            processing_error: extractionResult.success
-              ? interpretationError || null
-              : extractionResult.error || "Text extraction failed",
-          })
-          .eq("id", record.id)
-          .select()
-          .single();
-
-        if (updateError) {
-          console.error(
-            "Error updating record with extracted text:",
-            updateError
-          );
-        } else if (updatedRecord) {
-          record = updatedRecord;
-        }
-      } catch (extractionError) {
-        console.error("Text extraction error:", extractionError);
-
-        // Update record with error status
-        const { error: updateError } = await supabase
-          .from("medical_records")
-          .update({
-            processing_status: "failed",
-            processed_at: new Date().toISOString(),
-            processing_error:
-              extractionError instanceof Error
-                ? extractionError.message
-                : "Unknown text extraction error",
-          })
-          .eq("id", record.id);
-
-        if (updateError) {
-          console.error(
-            "Error updating record with extraction error:",
-            updateError
-          );
-        }
-      }
-    }
+    // No file to extract text from, so skip extraction
 
     return NextResponse.json(
       {

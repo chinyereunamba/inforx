@@ -141,7 +141,9 @@ export default function SettingsPanel() {
 
   return (
     <div ref={containerRef} className="py-6">
-      <h1 className="text-3xl block max-md:hidden font-bold font-noto mb-6">Settings</h1>
+      <h1 className="text-3xl block max-md:hidden font-bold font-noto mb-6">
+        Settings
+      </h1>
 
       <div className="flex flex-col md:flex-row gap-6">
         {/* Sidebar */}
@@ -320,19 +322,20 @@ export default function SettingsPanel() {
               </CardContent>
             </Card>
           )}
-          {activeSection === "notification" && (
+          {activeSection === "notifications" && (
             <Card className="settings-card border border-slate-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
+                  <Bell className="h-6 w-6 text-sky-600" />
                   Notifications
                 </CardTitle>
-                <CardDescription>
-                  Your notification information
-                </CardDescription>
+                <CardDescription>Your notification information</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h2 className="font-noto font-semibold text-2xl">Coming soon</h2>
+                  <h2 className="font-noto font-semibold text-2xl">
+                    Coming soon
+                  </h2>
                 </div>
               </CardContent>
             </Card>
@@ -341,15 +344,16 @@ export default function SettingsPanel() {
             <Card className="settings-card border border-slate-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
+                  <Lock className="h-6 w-6 text-sky-600"/>
                   Security
                 </CardTitle>
-                <CardDescription>
-                  Your security information
-                </CardDescription>
+                <CardDescription>Your security information</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h2 className="font-noto font-semibold text-2xl">Coming soon</h2>
+                  <h2 className="font-noto font-semibold text-2xl">
+                    Coming soon
+                  </h2>
                 </div>
               </CardContent>
             </Card>
