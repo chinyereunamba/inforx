@@ -17,7 +17,11 @@ import {
   FileIcon,
   Eye,
   Paperclip,
+  Paperclip,
 } from "lucide-react";
+import { FileUploadService } from "@/lib/services/file-upload-service";
+import { TextExtractor } from "@/lib/utils/text-extraction";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import { FileUploadService } from "@/lib/services/file-upload-service";
 import { TextExtractor } from "@/lib/utils/text-extraction";
 import { Button } from "@/components/ui/button";
@@ -28,14 +32,19 @@ import {
   MedicalRecord,
   MedicalRecordFormData,
 } from "@/lib/types/medical-records";
+import { useMedicalRecords } from '@/hooks/useMedicalRecordsHook';
 
 interface EnhancedMedicalRecordUploadProps {
-  // Callback to submit the form data and file to the parent
   onSubmitForm: (
+    formData: MedicalRecordFormData, 
+    file: File | null,
+    extractedText: string | null
+  ) => Promise<void>;
+  onClose: () => void;
+  isSubmittingParent?: boolean;
     formData: MedicalRecordFormData,
     file: File | null,
     extractedText: string | null
-  ) => void;
   // Callback to close the dialog/modal after submission
   onClose: () => void;
   // Indicates if the parent is currently processing the submission
@@ -45,6 +54,7 @@ interface EnhancedMedicalRecordUploadProps {
 export default function EnhancedMedicalRecordUpload({
   onSubmitForm,
   onClose,
+  isSubmittingParent = false,
   isSubmittingParent,
 }: EnhancedMedicalRecordUploadProps) {
   const [formData, setFormData] = useState<MedicalRecordFormData>({
@@ -64,6 +74,7 @@ export default function EnhancedMedicalRecordUpload({
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle file drop
@@ -114,10 +125,7 @@ export default function EnhancedMedicalRecordUpload({
       // Try to extract text from the file for title suggestion
       try {
         const extractionResult = await TextExtractor.extractText(
-          file,
-          (progress) => {
-            setFileProcessingProgress(progress);
-          }
+          disabled={isSubmitting || isSubmittingParent}
         );
 
         if (extractionResult.success) {
@@ -243,98 +251,17 @@ export default function EnhancedMedicalRecordUpload({
       return;
     }
 
-    // Pass data to parent for submission
-    onSubmitForm(formData, selectedFile, extractedText);
-    onClose(); // Close the dialog immediately after submission
-  };
-
-  // Get file icon based on mime type
-  const getFileIcon = (file: File) => {
-    if (file.type.startsWith("image/")) {
-      return <ImageIcon className="h-6 w-6 text-blue-500" />;
-    } else if (file.type.includes("pdf")) {
-      return <FileText className="h-6 w-6 text-red-500" />;
-    } else if (file.type.includes("word") || file.type.includes("document")) {
       return <FileCheck className="h-6 w-6 text-blue-600" />;
-    } else {
-      return <FileIcon className="h-6 w-6 text-gray-500" />;
-    }
-  };
-
-  // Auto-detect document type from text
-  const autoDetectDocumentType = (text: string): string | null => {
-    text = text.toLowerCase();
-
-    if (
-      text.includes("prescription") ||
-      text.includes("rx:") ||
-      text.includes("sig:") ||
-      text.includes("take") ||
-      text.includes("dose") ||
-      text.includes("tablet") ||
-      text.includes("mg")
-    ) {
-      return "prescription";
-    } else if (
-      text.includes("laboratory") ||
-      text.includes("lab report") ||
-      text.includes("results:") ||
-      text.includes("reference range") ||
-      text.includes("test:") ||
-      text.includes("specimen")
-    ) {
-      return "lab_result";
-    } else if (
-      text.includes("scan") ||
-      text.includes("x-ray") ||
-      text.includes("mri") ||
-      text.includes("ct") ||
-      text.includes("ultrasound") ||
-      text.includes("imaging") ||
-      text.includes("radiolog")
-    ) {
-      return "scan";
-    }
-
-    return null;
-  };
-
-  // Generate title from extracted text
-  const generateTitleFromExtractedText = (text: string): string | null => {
-    // Try to find a title in the first few lines
-    const lines = text.split("\n").slice(0, 10);
-
-    for (const line of lines) {
-      const trimmedLine = line.trim();
-
-      // Skip empty lines or very short lines
-      if (!trimmedLine || trimmedLine.length < 5) continue;
-
-      // Skip lines that are clearly not titles
-      if (
-        trimmedLine.includes(":") ||
-        trimmedLine.includes("=") ||
-        trimmedLine.toLowerCase().startsWith("date") ||
-        trimmedLine.toLowerCase().startsWith("name") ||
-        trimmedLine.toLowerCase().includes("patient")
-      ) {
-        continue;
-      }
-
-      // Found a potential title
-      if (trimmedLine.length > 5 && trimmedLine.length < 60) {
-        return trimmedLine;
-      }
-    }
-
-    // Fallback: use the document type as part of the title
-    const docType = autoDetectDocumentType(text);
-    if (docType === "prescription") {
+      setIsSubmitting(true);
+      await onSubmitForm(formData, uploadState.file, uploadState.extractedText);
+      onClose();
       return "Prescription";
     } else if (docType === "lab_result") {
       return "Laboratory Results";
     } else if (docType === "scan") {
       return "Medical Scan";
+    } finally {
+      setIsSubmitting(false);
     }
 
     // Last resort
@@ -634,17 +561,14 @@ export default function EnhancedMedicalRecordUpload({
           className="w-full bg-sky-600 text-white hover:bg-sky-700 transition-colors"
           disabled={isSubmittingParent || isFileProcessing}
         >
-          {isSubmittingParent || isFileProcessing ? (
-            <>
+          {isSubmitting || isSubmittingParent ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               {isFileProcessing ? "Processing File..." : "Submitting..."}
             </>
           ) : (
             <>
               <Upload className="mr-2 h-4 w-4" />
-              Upload Medical Record
-            </>
-          )}
+              Uploading...
         </Button>
       </form>
 

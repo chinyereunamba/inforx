@@ -45,6 +45,7 @@ import { FileUploadProgress } from "@/components/dashboard/FileUploadProgress";
 import { MedicalRecord, MedicalRecordFormData } from "@/lib/types/medical-records";
 import RecordCard from "@/components/medical-records/RecordCard";
 import { FileUploadService } from "@/lib/services/file-upload-service";
+import { FileUploadService } from "@/lib/services/file-upload-service";
 
 // Interface for active upload file
 interface ActiveUpload {
@@ -319,6 +320,158 @@ export default function MedicalVaultPage() {
       setIsSubmitting(false);
     }
   };
+  const handleSubmitForm = async (
+    formData: MedicalRecordFormData, 
+    file: File | null,
+    extractedText: string | null
+  ) => {
+    if (!user) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Create a unique ID for this upload
+      const uploadId = `upload-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      
+      // Add to active uploads with initial state
+      const newUpload: ActiveUpload = {
+        id: uploadId,
+        fileName: file?.name || "Medical Record",
+        fileSize: file?.size,
+        fileType: file?.type,
+        status: "uploading",
+        progress: 0,
+        processingProgress: 0
+      };
+      
+      setActiveUploads(prev => [...prev, newUpload]);
+      setIsDialogOpen(false); // Close dialog immediately after submission
+      
+      // Create the record
+      try {
+        // Update upload progress as file uploads
+        const onUploadProgress = (progress: { percentage: number }) => {
+          setActiveUploads(uploads => 
+            uploads.map(upload => 
+              upload.id === uploadId 
+                ? { ...upload, progress: progress.percentage } 
+                : upload
+            )
+          );
+        };
+        
+        // Process the upload
+        let fileUrl: string | undefined;
+        
+        // If there's a file, upload it first
+        if (file) {
+          // Update status to uploading
+          setActiveUploads(uploads => 
+            uploads.map(upload => 
+              upload.id === uploadId 
+                ? { ...upload, status: "uploading" } 
+                : upload
+            )
+          );
+          
+          // Upload the file
+          const uploadResult = await FileUploadService.uploadFile(file, user, onUploadProgress);
+          
+          if (!uploadResult.success) {
+            throw new Error(uploadResult.error || "File upload failed");
+          }
+          
+          fileUrl = uploadResult.fileUrl;
+          
+          // Update status to processing
+          setActiveUploads(uploads => 
+            uploads.map(upload => 
+              upload.id === uploadId 
+                ? { 
+                    ...upload, 
+                    status: "processing", 
+                    progress: 100,
+                    fileUrl
+                  } 
+                : upload
+            )
+          );
+          
+          // Simulate processing progress (in a real app, this would be actual processing)
+          const processingInterval = setInterval(() => {
+            setActiveUploads(uploads => {
+              const upload = uploads.find(u => u.id === uploadId);
+              if (!upload) {
+                clearInterval(processingInterval);
+                return uploads;
+              }
+              
+              const newProgress = upload.processingProgress + 10;
+              if (newProgress >= 100) {
+                clearInterval(processingInterval);
+              }
+              
+              return uploads.map(u => 
+                u.id === uploadId 
+                  ? { ...u, processingProgress: Math.min(newProgress, 100) } 
+                  : u
+              );
+            });
+          }, 200);
+        }
+        
+        // Update form with extracted text if available
+        const updatedFormData = {
+          ...formData,
+          notes: formData.notes || extractedText || undefined
+        };
+        
+        // Create the record
+        const newRecord = await createRecord(updatedFormData, file);
+        
+        // Update upload status to success
+        setActiveUploads(uploads => 
+          uploads.map(upload => 
+            upload.id === uploadId 
+              ? { 
+                  ...upload, 
+                  status: "success", 
+                  progress: 100, 
+                  processingProgress: 100,
+                  record: newRecord
+                } 
+              : upload
+          )
+        );
+        
+        // After 5 seconds, remove the success notification
+        setTimeout(() => {
+          setActiveUploads(uploads => uploads.filter(upload => upload.id !== uploadId));
+        }, 5000);
+        
+      } catch (error) {
+        console.error("Error creating record:", error);
+        
+        // Update upload status to error
+        setActiveUploads(uploads => 
+          uploads.map(upload => 
+            upload.id === uploadId 
+              ? { 
+                  ...upload, 
+                  status: "error", 
+                  error: error instanceof Error ? error.message : "Failed to upload medical record"
+                } 
+              : upload
+          )
+        );
+      }
+      
+    } catch (error) {
+      console.error("Upload error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleRecordDeleted = async (recordId: string) => {
     try {
@@ -428,6 +581,7 @@ export default function MedicalVaultPage() {
                   <EnhancedMedicalRecordUpload
                     onSubmitForm={handleSubmitForm}
                     onClose={() => setIsDialogOpen(false)}
+                    isSubmittingParent={isSubmitting}
                     isSubmittingParent={isSubmitting}
                   />
                 </DialogContent>
