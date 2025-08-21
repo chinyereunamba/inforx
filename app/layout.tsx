@@ -62,7 +62,6 @@ export default async function RootLayout({
         className={`${inter.className} ${noto.className} antialiased bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100`}
       >
         {children}
-        <Badge />
       </body>
     </html>
   );
