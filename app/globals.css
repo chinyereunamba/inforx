@@ -13,14 +13,14 @@
   --teal-300: #5eead4;
   --teal-400: #2dd4db;
   --teal-500: #14b8a6;
-  --teal-600: #0A9396;
+  --teal-600: #0a9396;
   --teal-700: #0e7490;
   --teal-800: #155e75;
   --teal-900: #134e4a;
 
   --sage-50: #f8fffe;
   --sage-100: #e9f5f2;
-  --sage-200: #94D2BD;
+  --sage-200: #94d2bd;
   --sage-300: #6bb39d;
   --sage-400: #6b9080;
   --sage-500: #5c8071;
@@ -223,7 +223,7 @@ input {
 
 /* Smooth scrolling for the entire page */
 html {
-  scroll-behavior: smooth; 
+  scroll-behavior: smooth;
 }
 
 /* Custom animations */
@@ -271,7 +271,7 @@ html {
   --inforx-blue: #0ea5e9; /* sky-500 */
   --inforx-green: #10b981; /* emerald-500 */
   --inforx-dark: #1e293b; /* slate-800 */
-  
+
   /* Secondary colors */
   --inforx-blue-light: #e0f2fe; /* sky-100 */
   --inforx-green-light: #d1fae5; /* emerald-100 */
@@ -281,4 +281,122 @@ html {
   --inforx-yellow: #fbbf24; /* amber-400 */
   --inforx-red: #ef4444; /* red-500 */
   --inforx-purple: #8b5cf6; /* violet-500 */
+}
+
+/* Mobile-specific optimizations */
+@layer utilities {
+  /* Safe area support for mobile devices */
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-inset-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-inset-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Touch manipulation optimization */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+
+  /* Performance optimizations for mobile */
+  .transform-gpu {
+    transform: translateZ(0);
+  }
+
+  .backface-visibility-hidden {
+    backface-visibility: hidden;
+  }
+
+  .rendering-optimizeSpeed {
+    image-rendering: optimizeSpeed;
+  }
+
+  /* Mobile gesture support */
+  .touch-pan-x {
+    touch-action: pan-x;
+  }
+
+  .touch-pan-y {
+    touch-action: pan-y;
+  }
+
+  .touch-pinch-zoom {
+    touch-action: pinch-zoom;
+  }
+
+  .touch-none {
+    touch-action: none;
+  }
+
+  .touch-auto {
+    touch-action: auto;
+  }
+
+  /* Mobile-optimized scrolling */
+  .scroll-smooth-mobile {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Accessibility utilities */
+  .high-contrast {
+    filter: contrast(150%);
+  }
+
+  .high-contrast .bg-white {
+    background-color: #ffffff !important;
+  }
+
+  .high-contrast .bg-slate-50 {
+    background-color: #f8fafc !important;
+  }
+
+  .high-contrast .text-slate-600 {
+    color: #1e293b !important;
+  }
+
+  .high-contrast .text-slate-500 {
+    color: #0f172a !important;
+  }
+
+  .reduce-motion,
+  .reduce-motion *,
+  .reduce-motion *:before,
+  .reduce-motion *:after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Focus indicators for keyboard navigation */
+  .focus-visible:focus-visible {
+    outline: 2px solid #0ea5e9;
+    outline-offset: 2px;
+  }
+
+  /* Skip link for screen readers */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 1000;
+  }
+
+  .skip-link:focus {
+    top: 6px;
+  }
 }

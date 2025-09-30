@@ -4,6 +4,7 @@ import HealthcareChallenges from "@/components/homepage/HealthcareChallenges";
 import SolutionFeatures from "@/components/homepage/SolutionFeatures";
 import FinalCTA from "@/components/homepage/FinalCTA";
 import type { Metadata } from "next";
+import { ArrowUp } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "InfoRx - Simplifying Healthcare Through Intelligent Innovation",
@@ -55,6 +56,8 @@ export default function HomePage() {
 
       {/* Final CTA with Nigerian-themed design */}
       <FinalCTA />
+      {/* Scroll to Top Button */}
+      
     </main>
   );
 }

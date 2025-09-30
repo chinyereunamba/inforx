@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TouchButton } from "@/components/ui/touch-button";
 import { usePathname } from "next/navigation";
+import { useScreenSize, touchTargets } from "@/lib/utils/responsive";
 
 interface NavLink {
   href: string;
@@ -21,7 +23,8 @@ const navigationLinks: NavLink[] = [
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const pathName = usePathname().split('/')[1];
+  const pathName = usePathname().split("/")[1];
+  const { isMobile } = useScreenSize();
 
   const handleNavigationClick = (route: string) => {
     // You can add analytics tracking or other functionality here
@@ -157,15 +160,17 @@ export default function Navbar() {
 
             {/* Mobile menu button */}
             <div className="lg:hidden">
-              <button
+              <TouchButton
                 onClick={(e) => {
                   e.stopPropagation();
                   toggleMobileMenu();
                 }}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-teal-600 hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500 transition-colors duration-200"
+                variant="ghost"
+                className="text-gray-700 hover:text-teal-600 hover:bg-teal-50"
                 aria-expanded={isMobileMenuOpen}
                 aria-controls="mobile-menu"
                 aria-label="Toggle main menu"
+                touchSize="comfortable"
               >
                 <span className="sr-only">Open main menu</span>
                 {isMobileMenuOpen ? (
@@ -173,7 +178,7 @@ export default function Navbar() {
                 ) : (
                   <Menu className="block h-6 w-6" aria-hidden="true" />
                 )}
-              </button>
+              </TouchButton>
             </div>
           </div>
         </div>
