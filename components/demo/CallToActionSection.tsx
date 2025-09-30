@@ -64,7 +64,6 @@ export default function CallToActionSection() {
   const ctaRef = useRef<HTMLDivElement>(null);
   const metricsRef = useRef<HTMLDivElement[]>([]);
   const floatingCTARef = useRef<HTMLDivElement>(null);
-  const scrollTopButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -130,31 +129,13 @@ export default function CallToActionSection() {
       }
 
       // Scroll to top button animation
-      gsap.fromTo(
-        scrollTopButtonRef.current,
-        { opacity: 0, scale: 0.8 },
-        {
-          opacity: 1,
-          scale: 1,
-          duration: 0.3,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: "body",
-            start: "top -200px",
-            end: "bottom bottom",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
+      
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
+  
   const handleGetStarted = () => {
     // Animation for button click
     gsap.to(".cta-button", {
@@ -334,16 +315,7 @@ export default function CallToActionSection() {
         )}
       </div> */}
 
-      {/* Scroll to Top Button */}
-      <button
-        ref={scrollTopButtonRef}
-        onClick={scrollToTop}
-        className="fixed bottom-4 right-4 lg:bottom-8 lg:right-8 w-12 h-12 bg-gray-800 hover:bg-gray-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-40 flex items-center justify-center"
-        style={{ borderRadius: "50%" }}
-        aria-label="Scroll to top"
-      >
-        <ArrowUp className="h-6 w-6" />
-      </button>
+     
     </>
   );
 }

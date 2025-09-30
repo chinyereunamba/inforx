@@ -9,6 +9,10 @@ import { gsap } from "gsap";
 import { LoggingService } from "@/lib/services/logging-service";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/lib/stores/auth-store";
+import { useScreenSize } from "@/lib/utils/responsive";
+import { initializeMobilePerformance } from "@/lib/utils/mobile-performance";
+import MobileNavigation from "@/components/ui/mobile-navigation";
+import MobileAccessibility from "@/components/ui/mobile-accessibility";
 import {
   Menu,
   X,
@@ -111,10 +115,12 @@ export default function EnhancedDashboardLayout({
   const router = useRouter();
   const { user, signOut } = useAuthStore();
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const { isMobile, isTablet } = useScreenSize();
 
-  // Handle dark mode
+  // Handle dark mode and mobile performance
   useEffect(() => {
     setMounted(true);
+    initializeMobilePerformance();
   }, []);
 
   useEffect(() => {
@@ -194,8 +200,6 @@ export default function EnhancedDashboardLayout({
     return pathname.startsWith(href);
   };
 
-
-
   const handleSidebarClose = () => {
     if (sidebarOpen && sidebarRef.current && overlayRef.current) {
       // Animate sidebar out
@@ -220,7 +224,7 @@ export default function EnhancedDashboardLayout({
         page: route.replace("/dashboard/", "").replace("/", ""),
       });
     }
-    handleSidebarClose()
+    handleSidebarClose();
   };
 
   // Render the overlay using createPortal to ensure proper z-index behavior
@@ -258,10 +262,11 @@ export default function EnhancedDashboardLayout({
       <aside
         ref={sidebarRef}
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-[280px] flex flex-col",
+          "fixed top-0 left-0 z-50 h-full flex flex-col",
           "bg-white border-r border-slate-200",
           "dark:bg-slate-800 dark:border-slate-700 dark:shadow-slate-900/20",
           "transform transition-transform duration-300 ease-in-out lg:translate-x-0",
+          isMobile ? "w-full max-w-sm" : "w-[280px]",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -506,10 +511,23 @@ export default function EnhancedDashboardLayout({
         </header>
 
         {/* Main Content Area */}
-        <main className="p-4 sm:p-6 transition-colors duration-300">
+        <main
+          className={cn(
+            "transition-colors duration-300",
+            "p-3 sm:p-4 md:p-6",
+            isMobile ? "pb-20" : "pb-6", // Add bottom padding for mobile navigation
+            "scroll-smooth-mobile"
+          )}
+        >
           {children}
         </main>
       </div>
+
+      {/* Mobile Navigation */}
+      <MobileNavigation />
+
+      {/* Mobile Accessibility */}
+      <MobileAccessibility />
     </div>
   );
 }

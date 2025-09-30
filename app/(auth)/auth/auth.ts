@@ -1,154 +1,107 @@
 "use client";
-import { createClient } from "@/utils/supabase/client";
-import { upsertUserProfile } from "@/lib/supabase";
+
+import { signIn, signOut as nextAuthSignOut } from "next-auth/react";
 
 export async function signInWithEmail(formData: {
   email: string;
   password: string;
 }) {
   try {
-    const supabase = createClient();
     const { email, password } = formData;
-
-    // console.log("Attempting sign in with:", { email }); // Debug log
-
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const result = await signIn("credentials", {
+      redirect: false,
       email,
       password,
     });
 
-    // console.log("Sign in response:", { data: !!data.user, error }); // Debug log
-
-    if (error) {
-      // console.error("Sign in error:", error);
-      return { error: error.message };
+    if (result?.error) {
+      return { error: result.error };
     }
 
-    if (!data.user) {
-      return { error: "No user returned from authentication" };
+    if (!result?.ok) {
+      return { error: "An unexpected error occurred during sign in" };
     }
 
-    // console.log("Sign in successful:", data.user.id); // Debug log
-    return { user: data.user };
+    return { success: true };
   } catch (error) {
-    // console.error("Sign in exception:", error);
-    return { error: "An unexpected error occurred during sign in" };
+    console.error("Sign in exception:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    return {
+      error: `An unexpected error occurred during sign in: ${errorMessage}`,
+    };
   }
 }
 
 export async function signInWithGoogle() {
   try {
-    const supabase = createClient();
-    
-    const origin = typeof window !== 'undefined' 
-      ? window.location.origin 
-      : process.env.NEXT_PUBLIC_SITE_URL;
-
-    // console.log("Google sign in attempt, origin:", origin); // Debug log
-
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${origin}/auth/callback`,
-      },
-    });
-
-    // console.log("Google sign in response:", { data: !!data.url, error }); // Debug log
-
-    if (error) {
-      // console.error("Google sign in error:", error);
-      return { error: error.message };
-    }
-
-    // For OAuth, we need to redirect to the returned URL
-    if (data.url) {
-      window.location.href = data.url;
-      return { success: true };
-    }
-
-    return { error: "No authorization URL returned" };
+    await signIn("google", { callbackUrl: "/dashboard" });
+    return { success: true };
   } catch (error) {
-    // console.error("Google sign in exception:", error);
-    return { error: "An unexpected error occurred during Google sign in" };
+    console.error("Google sign in exception:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    return {
+      error: `An unexpected error occurred during Google sign in: ${errorMessage}`,
+    };
   }
 }
 
 export async function signUp(formData: FormData) {
   try {
-    const supabase = createClient();
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const role = formData.get("role") as string;
-    const name = formData.get("full_name") as string;
-
-    // console.log("Attempting sign up with:", { email, role, name }); // Debug log
+    const fullName = formData.get("full_name") as string;
 
     // Validate required fields
-    if (!email || !password || !role || !name) {
-      throw new Error("All fields are required");
+    if (!email || !password || !role || !fullName) {
+      return { error: "All fields are required" };
     }
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: name,
-          role: role,
-        },
+    const response = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({ email, password, fullName, role }),
     });
 
-    // console.log("Sign up response:", { data: !!data.user, error }); // Debug log
+    const data = await response.json();
 
-    if (error) {
-      // console.error("Sign up error:", error);
-      throw error;
+    if (!response.ok) {
+      return { error: data.error || "Sign up failed" };
     }
 
-    if (!data.user) {
-      throw new Error("No user returned from sign up");
+    // Automatically sign in the user after successful registration
+    const signInResult = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (signInResult?.error) {
+      return {
+        error: `Registration successful, but sign in failed: ${signInResult.error}`,
+      };
     }
 
-    // Create user profile
-    try {
-      // console.log("Creating user profile..."); // Debug log
-      const profile = await upsertUserProfile({
-        id: data.user.id,
-        email: data.user.email || email,
-        full_name: name || data.user.user_metadata?.full_name || "",
-        role: role as "patient" | "doctor" | "admin",
-      });
-      // console.log("Profile created successfully:", profile?.id); // Debug log
-    } catch (profileError) {
-      // console.error("Profile creation error:", profileError);
-      // Don't fail the signup if profile creation fails
-      throw profileError
-    }
-
-    console.log("Sign up successful:", data.user.id); // Debug log
-    return { user: data.user };
+    return { user: data };
   } catch (error) {
     console.error("Sign up exception:", error);
-    throw error;
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    return {
+      error: `An unexpected error occurred during sign up: ${errorMessage}`,
+    };
   }
 }
 
 export async function signOut() {
   try {
-    const supabase = createClient();
-    // console.log("Attempting sign out..."); // Debug log
-    
-    const { error } = await supabase.auth.signOut();
-    
-    if (error) {
-      // console.error("Sign out error:", error);
-      throw error;
-    }
-    
-    // console.log("Sign out successful"); // Debug log
+    await nextAuthSignOut({ callbackUrl: "/" });
   } catch (error) {
-    // console.error("Sign out exception:", error);
+    console.error("Sign out exception:", error);
     throw error;
   }
 }

@@ -27,6 +27,7 @@ import { useAuthStore } from "@/lib/stores/auth-store";
 import { LoggingService } from "@/lib/services/logging-service";
 import ModernDashboardOverview from "@/components/dashboard/ModernDashboardOverview";
 import DashboardSummaryStats from "@/components/dashboard/DashboardSummaryStats";
+import { DashboardAnalytics } from "@/components/dashboard/DashboardAnalytics";
 
 interface MedicalSummaryProps {
   selectedRecordIds?: string[];
@@ -382,10 +383,17 @@ export default function DashboardPage() {
 
   return (
     <div className="py-6">
-      <h1 className="text-3xl font-bold mb-6 max-lg:mb-3 hidden max-lg:block">Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-6 max-lg:mb-3 hidden max-lg:block">
+        Dashboard
+      </h1>
 
       {/* Summary Statistics */}
       <DashboardSummaryStats />
+
+      {/* Health Analytics */}
+      <div className="mb-8">
+        <DashboardAnalytics />
+      </div>
 
       <ModernDashboardOverview />
     </div>

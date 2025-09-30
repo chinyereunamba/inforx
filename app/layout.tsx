@@ -1,4 +1,5 @@
 import Badge from "@/components/Badge";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter, Noto_Sans } from "next/font/google";
@@ -47,7 +48,8 @@ export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+  }) {
+  
   return (
     <html lang="en">
       <head>
@@ -59,8 +61,10 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${inter.className} ${noto.className} antialiased`}>
-        {children}
-        <Badge />
+        <SessionProvider>{children}</SessionProvider>
+        {/* <Badge /> */}
+        {/* Scroll to Top Button */}
+       
       </body>
     </html>
   );
